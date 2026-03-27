@@ -50,8 +50,6 @@ def create_part():
     part_type = 'assembly' if data.get("is_assembly") else 'part'
     now = datetime.now().isoformat()
 
-    print(f"DEBUG: Inserting part {part_no} for user {data.get('created_by')}")
-
     # execute
     try:
         db.execute(
@@ -75,17 +73,17 @@ def create_part():
         )
         db.commit()
     except sqlite3.IntegrityError:
-        return jsonify({"error": f"Part number {part_no} already exists"}), 409
+        return jsonify({"error": f"part number {part_no} already exists"}), 409
     
     # retrieve
     row = db.execute("SELECT * FROM parts WHERE part_id = ?", (part_id,)).fetchone()
     return jsonify(_row_to_dict(row)), 201
 
 
-@bp.get("/parts/<int:part_id>")
-def get_part(part_id: int):
+@bp.get("/<string:part_id>")
+def get_part(part_id: str):
     db = get_db()
-    row = db.execute("SELECT * FROM parts WHERE id = ?", (part_id,)).fetchone()
+    row = db.execute("SELECT * FROM parts WHERE part_id = ?", (part_id,)).fetchone()
     if not row:
         return jsonify({"error": "not found"}), 404
     return jsonify(_row_to_dict(row))
