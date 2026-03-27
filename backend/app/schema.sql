@@ -1,3 +1,11 @@
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS parts;
+DROP TABLE IF EXISTS vendors;
+DROP TABLE IF EXISTS purchase_orders;
+DROP TABLE IF EXISTS boms;
+DROP TABLE IF EXISTS part_vendor;
+DROP TABLE IF EXISTS part_subpart;
+DROP TABLE IF EXISTS components;
 
 
 -- Entities --
@@ -12,6 +20,9 @@ CREATE TABLE IF NOT EXISTS users (
     created_at  TEXT NOT NULL DEFAULT (datetime('now')),
     updated_at  TEXT NOT NULL DEFAULT (datetime('now'))
 );
+
+INSERT INTO users (uid, username, password, first_name, last_name)
+VALUES ('0', 'admin', 'password', 'John', 'Doe');
 
 CREATE TABLE IF NOT EXISTS parts (
     part_id     TEXT PRIMARY KEY,

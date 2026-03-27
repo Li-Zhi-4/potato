@@ -15,6 +15,8 @@ def create_app(test_config=None) -> Flask:
 
     CORS(app, resources={r"/api/*": {"origins": "*"}})
 
+    from . import db
+    db.init_app(app)
 
     from app import routes
     app.register_blueprint(routes.bp)
@@ -24,11 +26,5 @@ def create_app(test_config=None) -> Flask:
 
     from app import auth
     app.register_blueprint(auth.bp)
-
-
-    app.teardown_appcontext(close_db)
-
-    with app.app_context():
-        init_db()
 
     return app
