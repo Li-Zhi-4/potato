@@ -22,9 +22,11 @@ def create_app(test_config=None) -> Flask:
     from app import parts
     from app import vendors
     from app import purchase_orders
+    from app import boms
     app.register_blueprint(auth.bp)
     app.register_blueprint(parts.bp)
     app.register_blueprint(vendors.bp)
     app.register_blueprint(purchase_orders.bp)
+    app.register_blueprint(boms.bp)
 
     return app
