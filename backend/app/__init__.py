@@ -18,13 +18,11 @@ def create_app(test_config=None) -> Flask:
     from . import db
     db.init_app(app)
 
-    from app import routes
-    app.register_blueprint(routes.bp)
-
-    from app import parts
-    app.register_blueprint(parts.bp)
-
     from app import auth
+    from app import parts
+    from app import vendors
     app.register_blueprint(auth.bp)
+    app.register_blueprint(parts.bp)
+    app.register_blueprint(vendors.bp)
 
     return app

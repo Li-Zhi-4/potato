@@ -4,27 +4,11 @@ from app.db import get_db
 import uuid
 from datetime import datetime
 
-bp = Blueprint('parts', __name__, url_prefix='/parts')
+bp = Blueprint('parts', __name__, url_prefix='/api/parts')
 
 
 def _row_to_dict(row) -> dict:
     return {k: row[k] for k in row.keys()}
-
-
-"""
-CREATE TABLE IF NOT EXISTS parts (
-    part_id     TEXT PRIMARY KEY,
-    part_no     TEXT NOT NULL UNIQUE,
-    description TEXT,
-    type        TEXT NOT NULL CHECK (type IN ('part', 'assembly')),
-    workflow_id TEXT,
-
-    created_at  TEXT NOT NULL DEFAULT (datetime('now')),
-    updated_at  TEXT NOT NULL DEFAULT (datetime('now')),
-    created_by  TEXT NOT NULL REFERENCES users(uid),
-    updated_by  TEXT REFERENCES users(uid)
-);
-"""
 
 # -- api --
 
@@ -132,8 +116,12 @@ def update_part(part_id: str):
     values.append(part_id)
 
     # execute
-    db.execute(f"UPDATE parts SET {', '.join(fields)} WHERE part_id = ?", values)
-    db.commit()
+    try:
+        db.execute(f"UPDATE parts SET {', '.join(fields)} WHERE part_id = ?", values)
+        db.commit()
+    except sqlite3.IntegrityError:
+        return jsonify({"error": f"part_no already exists"}), 409
+
 
     # retrieve
     row = db.execute("SELECT * FROM parts WHERE part_id = ?", (part_id,)).fetchone()
@@ -143,8 +131,9 @@ def update_part(part_id: str):
 @bp.delete("/<string:part_id>")
 def delete_part(part_id: str):
     db = get_db()
-    row = db.execute("DELETE FROM parts WHERE part_id = ?", (part_id,))
-    db.commit()
-    if not row:
+    id = db.execute("SELECT part_id FROM parts WHERE part_id = ?", (part_id,)).fetchone()
+    if not id:
         return jsonify({"error": "not found"}), 404
+    db.execute("DELETE FROM parts WHERE part_id = ?", (part_id,))
+    db.commit()
     return "", 204

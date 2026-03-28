@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS parts (
 
 CREATE TABLE IF NOT EXISTS vendors (
     vendor_id   TEXT PRIMARY KEY,
-    name        TEXT NOT NULL,
+    name        TEXT NOT NULL UNIQUE,
 
     created_at  TEXT NOT NULL DEFAULT (datetime('now')),
     updated_at  TEXT NOT NULL DEFAULT (datetime('now')),
