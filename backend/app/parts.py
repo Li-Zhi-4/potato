@@ -47,7 +47,7 @@ def create_part():
     # prep
     db = get_db()
     part_id = str(uuid.uuid4())
-    part_type = 'assembly' if data.get("is_assembly") else 'part'
+    is_assembly = 'assembly' if data.get("is_assembly") else 'part'
     now = datetime.now().isoformat()
 
     # execute
@@ -55,7 +55,7 @@ def create_part():
         db.execute(
             """
             INSERT INTO parts (
-                part_id, part_no, description, type, workflow_id, 
+                part_id, part_no, description, is_assembly, workflow_id, 
                 created_at, updated_at, created_by, updated_by
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
@@ -63,7 +63,7 @@ def create_part():
                 part_id,
                 part_no,
                 data.get("description"),
-                part_type,
+                is_assembly,
                 data.get("workflow_id", "0"),
                 now,
                 now,
@@ -89,46 +89,62 @@ def get_part(part_id: str):
     return jsonify(_row_to_dict(row))
 
 
-@bp.put("/parts/<int:part_id>")
-def update_part(part_id: int):
+@bp.put("/<string:part_id>")
+def update_part(part_id: str):
     data = request.get_json(silent=True) or {}
     db = get_db()
-    existing = db.execute("SELECT id FROM parts WHERE id = ?", (part_id,)).fetchone()
-    if not existing:
+
+    # validation 
+    id = db.execute("SELECT part_id FROM parts WHERE part_id = ?", (part_id,)).fetchone()
+    if not id:
         return jsonify({"error": "not found"}), 404
+    
     fields = []
     values = []
-    if "name" in data:
-        n = (data["name"] or "").strip()
-        if not n:
+
+    # field mapping
+    if "part_no" in data:
+        part_no = (data["part_no"] or "").strip()
+        if not part_no:
             return jsonify({"error": "name cannot be empty"}), 400
-        fields.append("name = ?")
-        values.append(n)
+        fields.append("part_no = ?")
+        values.append(part_no)
     if "description" in data:
         fields.append("description = ?")
         values.append(data.get("description"))
-    if "part_number" in data:
-        pn = (data.get("part_number") or "").strip() or None
-        fields.append("part_number = ?")
-        values.append(pn)
     if "is_assembly" in data:
+        is_assembly = 'assembly' if data.get("is_assembly") else 'part'
         fields.append("is_assembly = ?")
-        values.append(1 if data.get("is_assembly") else 0)
+        values.append(is_assembly)
+    if "workflow_id" in data:
+        fields.append("workflow_id = ?")
+        values.append(data.get("workflow_id"))
+    if "updated_by" in data:
+        fields.append("updated_by = ?")
+        values.append(data.get("updated_by"))
     if not fields:
-        row = db.execute("SELECT * FROM parts WHERE id = ?", (part_id,)).fetchone()
+        row = db.execute("SELECT * FROM parts WHERE part_id = ?", (part_id,)).fetchone()
         return jsonify(_row_to_dict(row))
+    
+    # timestamp
+    fields.append("updated_at = ?")
+    values.append(datetime.now().isoformat())
     values.append(part_id)
-    db.execute(f"UPDATE parts SET {', '.join(fields)} WHERE id = ?", values)
+
+    # execute
+    db.execute(f"UPDATE parts SET {', '.join(fields)} WHERE part_id = ?", values)
     db.commit()
-    row = db.execute("SELECT * FROM parts WHERE id = ?", (part_id,)).fetchone()
+
+    # retrieve
+    row = db.execute("SELECT * FROM parts WHERE part_id = ?", (part_id,)).fetchone()
     return jsonify(_row_to_dict(row))
 
 
-@bp.delete("/parts/<int:part_id>")
-def delete_part(part_id: int):
+@bp.delete("/<string:part_id>")
+def delete_part(part_id: str):
     db = get_db()
-    cur = db.execute("DELETE FROM parts WHERE id = ?", (part_id,))
+    row = db.execute("DELETE FROM parts WHERE part_id = ?", (part_id,))
     db.commit()
-    if cur.rowcount == 0:
+    if not row:
         return jsonify({"error": "not found"}), 404
     return "", 204

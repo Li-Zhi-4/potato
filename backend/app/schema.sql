@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS parts (
     part_id     TEXT PRIMARY KEY,
     part_no     TEXT NOT NULL UNIQUE,
     description TEXT,
-    type        TEXT NOT NULL CHECK (type IN ('part', 'assembly')),
+    is_assembly TEXT NOT NULL CHECK (is_assembly IN ('part', 'assembly')),
     workflow_id TEXT,
 
     created_at  TEXT NOT NULL DEFAULT (datetime('now')),

@@ -29,7 +29,6 @@ def init_db() -> None:
     db.execute("PRAGMA foreign_keys = ON")
     with current_app.open_resource('schema.sql') as f:
         db.executescript(f.read().decode('utf8'))
-
     db.commit()
     db.close()
 
