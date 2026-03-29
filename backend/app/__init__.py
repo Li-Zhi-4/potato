@@ -25,6 +25,7 @@ def create_app(test_config=None) -> Flask:
     from app import boms
     from app import part_vendor
     from app import part_subpart
+    from app import components
     app.register_blueprint(auth.bp)
     app.register_blueprint(parts.bp)
     app.register_blueprint(vendors.bp)
@@ -32,5 +33,6 @@ def create_app(test_config=None) -> Flask:
     app.register_blueprint(boms.bp)
     app.register_blueprint(part_vendor.bp)
     app.register_blueprint(part_subpart.bp)
+    app.register_blueprint(components.bp)
 
     return app

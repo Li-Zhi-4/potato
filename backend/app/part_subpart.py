@@ -4,7 +4,7 @@ from app.db import get_db
 import uuid
 from datetime import datetime
 
-bp = Blueprint('part_subpart', __name__, url_prefix='/api/part_subpart')
+bp = Blueprint('part_subpart', __name__, url_prefix='/api/part_subparts')
 
 
 def _row_to_dict(row) -> dict:
