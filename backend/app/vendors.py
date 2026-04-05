@@ -12,14 +12,14 @@ def _row_to_dict(row) -> dict:
 
 # -- api --
 
-@bp.get("/")
+@bp.get("")
 def list_vendors():
     db = get_db()
     rows = db.execute("SELECT * FROM vendors ORDER BY name").fetchall()
     return jsonify([_row_to_dict(r) for r in rows])
 
 
-@bp.post("/")
+@bp.post("")
 def create_vendor():
     data = request.get_json(silent=True) or {}
 

@@ -1,20 +1,17 @@
 import { Button } from "./components/ui/button"
-import { getPart, listParts, createPart, updatePart, deletePart, type CreatePartInput, type UpdatePartInput } from "./apis/parts"
+// import { getPart, listParts, createPart, updatePart, deletePart, type CreatePartInput, type UpdatePartInput } from "./apis/parts"
+import { getVendor, listVendors, createVendor, updateVendor, deleteVendor, type CreateVendorInput, type UpdateVendorInput } from "./apis/vendors"
 import { useEffect } from "react"
 
-const CREATE_INPUT: CreatePartInput = {
-  "part_no": "test-part-3",
-  "description": "Vacuum pump",
-  "is_assembly": false,
-  "workflow_id": "WF-1",
+const CREATE_INPUT: CreateVendorInput = {
+  "name": "The Rock Company",
+
   "created_by": "0",
   "updated_by": "0"
 }
 
-const UPDATE_INPUT: UpdatePartInput = {
-    "part_no": "test-part-4",
-    "description": "Updated part description",
-    "is_assembly": true,
+const UPDATE_INPUT: UpdateVendorInput = {
+    "name": "The Wood Company",
     
     "updated_by": "0"
 }
@@ -22,7 +19,7 @@ const UPDATE_INPUT: UpdatePartInput = {
 export function App() {
   useEffect(() => {
     async function test() {
-      const res = await deletePart("26eaf3e7-369a-40c1-8e71-c2f8985035e6")
+      const res = await getVendor("d5be2712-415f-4b99-830f-205b923a636f")
       console.log(res)
     }
     test()
