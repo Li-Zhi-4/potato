@@ -1,6 +1,6 @@
 import * as React from "react"
 
-import { NavDocuments } from "@/components/nav-documents"
+import { NavDocuments } from "@/components/nav-entities"
 import { NavMain } from "@/components/nav-main"
 import { NavSecondary } from "@/components/nav-secondary"
 import { NavUser } from "@/components/nav-user"
@@ -25,51 +25,34 @@ const data = {
     {
       title: "Dashboard",
       url: "/",
-      icon: (
-        <LayoutDashboardIcon
-        />
-      ),
+      icon: ( <LayoutDashboardIcon /> ),
     },
     {
-      title: "Parts",
-      url: "/parts",
-      icon: (
-        <ListIcon
-        />
-      ),
+      title: "Lifecycle",
+      url: "#",
+      icon: ( <ListIcon /> ),
     },
     {
       title: "Analytics",
       url: "#",
-      icon: (
-        <ChartBarIcon
-        />
-      ),
+      icon: ( <ChartBarIcon /> ),
     },
     {
       title: "Projects",
       url: "#",
-      icon: (
-        <FolderIcon
-        />
-      ),
+      icon: ( <FolderIcon/> ),
     },
     {
       title: "Team",
       url: "#",
-      icon: (
-        <UsersIcon
-        />
+      icon: ( <UsersIcon />
       ),
     },
   ],
   navClouds: [
     {
       title: "Capture",
-      icon: (
-        <CameraIcon
-        />
-      ),
+      icon: ( <CameraIcon /> ),
       isActive: true,
       url: "#",
       items: [
@@ -146,28 +129,36 @@ const data = {
       ),
     },
   ],
-  documents: [
+  entities: [
     {
-      name: "Data Library",
-      url: "#",
+      name: "Parts",
+      url: "/parts",
       icon: (
         <DatabaseIcon
         />
       ),
     },
     {
-      name: "Reports",
-      url: "#",
+      name: "Vendors",
+      url: "/vendors",
       icon: (
         <FileChartColumnIcon
         />
       ),
     },
     {
-      name: "Word Assistant",
-      url: "#",
+      name: "Purchase Orders",
+      url: "/purchase-orders",
       icon: (
         <FileIcon
+        />
+      ),
+    },
+        {
+      name: "BOMs",
+      url: "/boms",
+      icon: (
+        <FileChartColumnIcon
         />
       ),
     },
@@ -194,7 +185,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavDocuments items={data.documents} />
+        <NavDocuments items={data.entities} />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
