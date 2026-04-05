@@ -16,6 +16,7 @@ export type Part = {
 
 // GET /parts
 export async function listParts(): Promise<Part[]> {
+    console.log(`Fetching ${API_BASE}/parts`)
     const res = await fetch(`${API_BASE}/parts`)
     return handle<Part[]>(res)
 }

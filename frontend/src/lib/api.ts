@@ -1,4 +1,4 @@
-export const API_BASE = '/api'
+export const API_BASE = 'http://127.0.0.1:5000/api'
 
 // returns the {"error": "error message"} or the res in a pre-defined interface
 export async function handle<T>(res: Response): Promise<T> {
