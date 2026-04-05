@@ -12,14 +12,14 @@ def _row_to_dict(row) -> dict:
 
 # -- api --
 
-@bp.get("/")
+@bp.get("")
 def list_purchase_orders():
     db = get_db()
     rows = db.execute("SELECT * FROM purchase_orders ORDER BY purchase_order_no").fetchall()
     return jsonify([_row_to_dict(r) for r in rows])
 
 
-@bp.post("/")
+@bp.post("")
 def create_purchase_order():
     data = request.get_json(silent=True) or {}
 

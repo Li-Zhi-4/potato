@@ -59,7 +59,7 @@ export async function updateVendor(id: string, input: UpdateVendorInput): Promis
 
 
 // DELETE /vendor/:id
-export async function deleteVendor(id: string): Promise<Vendor> {
+export async function deleteVendor(id: string): Promise<void> {
     const res = await fetch(`${API_BASE}/vendors/${id}`, { method: 'DELETE' })
-    return handle<Vendor>(res)
+    return handle<void>(res)
 }
