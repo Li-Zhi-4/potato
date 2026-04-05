@@ -12,14 +12,14 @@ def _row_to_dict(row) -> dict:
 
 # -- api --
 
-@bp.get("/")
+@bp.get("")
 def list_part_subparts():
     db = get_db()
     rows = db.execute("SELECT * FROM part_subpart ORDER BY part_id").fetchall()
     return jsonify([_row_to_dict(r) for r in rows])
 
 
-@bp.post("/")
+@bp.post("")
 def create_part_subpart():
     data = request.get_json(silent=True) or {}
 

@@ -12,14 +12,14 @@ def _row_to_dict(row) -> dict:
 
 # -- api --
 
-@bp.get("/")
+@bp.get("")
 def list_components():
     db = get_db()
     rows = db.execute("SELECT * FROM components ORDER BY bom_id").fetchall()
     return jsonify([_row_to_dict(r) for r in rows])
 
 
-@bp.post("/")
+@bp.post("")
 def create_component():
     data = request.get_json(silent=True) or {}
 
