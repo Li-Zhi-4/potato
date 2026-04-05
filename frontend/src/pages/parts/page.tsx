@@ -1,6 +1,6 @@
 import { AppSidebar } from "@/components/app-sidebar"
 import { ChartAreaInteractive } from "@/components/chart-area-interactive"
-import { DataTable } from "@/components/data-table"
+import { DataTable } from "@/components/data-table-2"
 import { SectionCards } from "@/components/section-cards"
 import { SiteHeader } from "@/components/site-header"
 import {
@@ -8,9 +8,8 @@ import {
     SidebarProvider,
 } from "@/components/ui/sidebar"
 import { useState } from "react"
+import { useEffect } from "react"
 import { createPart, type CreatePartInput } from "@/apis/parts"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import {
     Field,
     FieldDescription,
@@ -20,9 +19,32 @@ import {
 } from "@/components/ui/field"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Textarea } from "@/components/ui/textarea"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 
+import { columns } from "./columns"
+import { API_BASE } from "@/lib/api"
+import { type Part } from "@/apis/parts"
 
-import data from "./data.json"
+export type Payment = {
+    id: string
+    amount: number
+    status: "pending" | "processing" | "success" | "failed"
+    email: string
+}
+
+async function getData(): Promise<Payment[]> {
+  // Fetch data from your API here.
+  return [
+    {
+      id: "728ed52f",
+      amount: 100,
+      status: "pending",
+      email: "m@example.com",
+    },
+    // ...
+  ]
+}
 
 export default function Page() {
     const [partNo, setPartNo] = useState("")
@@ -31,6 +53,19 @@ export default function Page() {
     const [workflowId, setWorkflowId] = useState("")
     const [createdBy, setCreatedBy] = useState("0")
     const [updatedBy, setUpdatedBy] = useState("0")
+    const [data, setData] = useState<Part[]>([])
+    const [refresh, setRefresh] = useState(0)
+
+    useEffect(() => {
+        async function fetchData() {
+            // const result = await getData()
+            // setData(result)
+            const res = await fetch(`${API_BASE}/parts`)
+            const result = await res.json()
+            setData(result)
+        }
+        fetchData()
+    }, [refresh])
 
     function handleReset() {
         setPartNo("")
@@ -52,6 +87,7 @@ export default function Page() {
     async function handleSubmit() {
         await createPart(INPUT)
         handleReset()
+        setRefresh(r => r + 1)
     }
 
     return (
@@ -69,8 +105,6 @@ export default function Page() {
             <div className="flex flex-1 flex-col">
                 <div className="@container/main flex flex-1 flex-col gap-2">
                     <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-                        <SectionCards />
-                        
                         <div className="px-8">
                             <FieldGroup>
                                 <Field>
@@ -125,11 +159,10 @@ export default function Page() {
                                 </Field>
                             </FieldGroup>
                         </div>
-
+                        
                         <div className="px-4 lg:px-6">
-                            <ChartAreaInteractive />
+                            <DataTable columns={columns} data={data} />
                         </div>
-                        <DataTable data={data} />
                     </div>
                 </div>
             </div>
