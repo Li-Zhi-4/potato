@@ -1,22 +1,6 @@
-const API_BASE = '/api'
+import { API_BASE, handle } from "../lib/api"
 
 
-
-// returns the {"error": "error message"} or the res in a pre-defined interface
-async function handle<T>(res: Response): Promise<T> {
-    if (!res.ok) {
-        const err = await res.json().catch(() => ({ error: res.statusText }))
-        throw new Error((err as { error?: string }).error || res.statusText)
-    }
-    if (res.status === 204) return undefined as T
-    return (await res.json()) as T
-}
-
-export function getHealth(): Promise<{ status: string }> {
-    return fetch(`${API_BASE}/health`).then((r) => handle<{ status: string }>(r))
-}
-
-// GET /parts
 export type Part = {
     part_id: string
     part_no: string
@@ -30,81 +14,61 @@ export type Part = {
     updated_by: string | null
 }
 
+// GET /parts
 export async function listParts(): Promise<Part[]> {
     const res = await fetch(`${API_BASE}/parts`)
     return handle<Part[]>(res)
 }
 
-// POST /parts
+// GET /parts/:id
+export async function getPart(id: string): Promise<Part> {
+    const res = await fetch(`${API_BASE}/parts/${id}`)
+    return handle<Part>(res)
+}
+
+
 export type CreatePartInput = {
-  name: string
-  description?: string | null
-  part_number?: string | null
-  is_assembly?: boolean
+    part_no: string
+    description: string | null
+    is_assembly: boolean
+    workflow_id: string | null
+
+    created_by: string
+    updated_by: string | null
 }
 
-export function createPart(input: CreatePartInput): Promise<Part> {
-  return fetch(`${API_BASE}/parts`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(input),
-  }).then((r) => handle<Part>(r))
+// POST /parts
+export async function createPart(input: CreatePartInput): Promise<Part> {
+    const res = await fetch(`${API_BASE}/parts`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(input)
+    })
+    return handle<Part>(res)
 }
 
 
-export type Bom = {
-  id: number
-  name: string
-  description: string | null
-  created_at?: string
+export type UpdatePartInput = {
+    part_no?: string | null
+    description?: string | null
+    is_assembly?: boolean | null
+    workflow_id?: string | null
+
+    updated_by: string
 }
 
-export function listBoms(): Promise<Bom[]> {
-  return fetch(`${API_BASE}/boms`).then((r) => handle<Bom[]>(r))
+// PUT /parts/:id
+export async function updatePart(id: string, input: UpdatePartInput): Promise<Part> {
+    const res = await fetch(`${API_BASE}/parts/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(input)
+    })
+    return handle<Part>(res)
 }
 
-export function createBom(input: {
-  name: string
-  description?: string | null
-}): Promise<Bom> {
-  return fetch(`${API_BASE}/boms`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(input),
-  }).then((r) => handle<Bom>(r))
-}
-
-export type BomLine = {
-  id: number
-  bom_id: number
-  part_id: number
-  quantity: number
-  uom: string
-  notes: string | null
-  sort_order: number
-  part_name: string
-  part_number: string | null
-}
-
-export function listBomLines(bomId: number): Promise<BomLine[]> {
-  return fetch(`${API_BASE}/boms/${bomId}/lines`).then((r) =>
-    handle<BomLine[]>(r),
-  )
-}
-
-export function addBomLine(
-  bomId: number,
-  input: {
-    part_id: number
-    quantity: number
-    uom?: string
-    notes?: string | null
-    sort_order?: number
-  },
-): Promise<BomLine> {
-  return fetch(`${API_BASE}/boms/${bomId}/lines`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(input),
-  }).then((r) => handle<BomLine>(r))
+// DELETE /parts/:id
+export async function deletePart(id: string): Promise<void> {
+    const res = await fetch(`${API_BASE}/parts/${id}`, { method: 'DELETE' })
+    return handle<void>(res)
 }
