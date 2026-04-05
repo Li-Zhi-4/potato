@@ -1,5 +1,5 @@
 import { Button } from "./components/ui/button"
-import { getPart, listParts, createPart, updatePart, deletePart, type CreatePartInput } from "./apis/parts"
+import { getPart, listParts, createPart, updatePart, deletePart, type CreatePartInput, type UpdatePartInput } from "./apis/parts"
 import { useEffect } from "react"
 
 const CREATE_INPUT: CreatePartInput = {
@@ -11,10 +11,18 @@ const CREATE_INPUT: CreatePartInput = {
   "updated_by": "0"
 }
 
+const UPDATE_INPUT: UpdatePartInput = {
+    "part_no": "test-part-4",
+    "description": "Updated part description",
+    "is_assembly": true,
+    
+    "updated_by": "0"
+}
+
 export function App() {
   useEffect(() => {
     async function test() {
-      const res = await createPart(CREATE_INPUT)
+      const res = await deletePart("26eaf3e7-369a-40c1-8e71-c2f8985035e6")
       console.log(res)
     }
     test()
