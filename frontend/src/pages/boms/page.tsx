@@ -7,39 +7,41 @@ import {
 } from "@/components/ui/sidebar"
 import { useState } from "react"
 import { useEffect } from "react"
-import { createPart, type CreatePartInput } from "@/apis/parts"
 import {
     Field,
-    FieldDescription,
     FieldGroup,
     FieldLabel,
-    FieldContent
 } from "@/components/ui/field"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectLabel,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
+import { Textarea } from "@/components/ui/textarea"
 
 import { columns } from "./columns"
 import { API_BASE } from "@/lib/api"
-import { type Part } from "@/apis/parts"
+// import { type PurchaseOrder, createPurchaseOrder, type CreatePurchaseOrderInput } from "@/apis/purchaseOrders"
+import { type Bom, createBom, type CreateBomInput } from "@/apis/boms"
 
 
 export default function Page() {
-    const [partNo, setPartNo] = useState("")
+    const [jobNo, setJobNo] = useState(0)
     const [description, setDescription] = useState("")
-    const [isAssembly, setIsAssembly] = useState(false)
-    const [workflowId, setWorkflowId] = useState("")
     const [createdBy, setCreatedBy] = useState("0")
     const [updatedBy, setUpdatedBy] = useState("0")
-    const [data, setData] = useState<Part[]>([])
+    const [data, setData] = useState<Bom[]>([])
     const [refresh, setRefresh] = useState(0)
 
     useEffect(() => {
         async function fetchData() {
-            // const result = await getData()
-            // setData(result)
-            const res = await fetch(`${API_BASE}/parts`)
+            const res = await fetch(`${API_BASE}/boms`)
             const result = await res.json()
             setData(result)
         }
@@ -47,24 +49,20 @@ export default function Page() {
     }, [refresh])
 
     function handleReset() {
-        setPartNo("")
+        setJobNo(0)
         setDescription("")
-        setIsAssembly(false)
-        setWorkflowId("")
     }
 
-    const INPUT: CreatePartInput = {
-        part_no: partNo,
+    const INPUT: CreateBomInput = {
+        job_no: jobNo,
         description: description,
-        is_assembly: isAssembly,
-        workflow_id: workflowId,
 
         created_by: createdBy,
         updated_by: updatedBy
     }
 
     async function handleSubmit() {
-        await createPart(INPUT)
+        await createBom(INPUT)
         handleReset()
         setRefresh(r => r + 1)
     }
@@ -80,20 +78,20 @@ export default function Page() {
         >
         <AppSidebar variant="inset" />
         <SidebarInset>
-            <SiteHeader title="Parts"/>
+            <SiteHeader title="Purchase Orders"/>
             <div className="flex flex-1 flex-col">
                 <div className="@container/main flex flex-1 flex-col gap-2">
                     <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
                         <div className="px-8">
                             <FieldGroup>
                                 <Field>
-                                    <FieldLabel htmlFor="part-no">Part No.</FieldLabel>
+                                    <FieldLabel htmlFor="job-no">Job No.</FieldLabel>
                                     <Input 
-                                        id="part-no" 
-                                        type="text"
-                                        placeholder="part-001" 
-                                        value={partNo} 
-                                        onChange={(e) => setPartNo(e.target.value)}
+                                        id="job-no" 
+                                        type="number"
+                                        placeholder="" 
+                                        value={jobNo} 
+                                        onChange={(e) => setJobNo(Number(e.target.value))}
                                     />
                                 </Field>
                                 <Field>
@@ -103,30 +101,6 @@ export default function Page() {
                                         placeholder="Type your description here." 
                                         value={description}
                                         onChange={(e) => setDescription(e.target.value)}
-                                    />
-                                </Field>
-                                <Field orientation={"horizontal"}>
-                                    <Checkbox
-                                        id="is-assembly"
-                                        name="is-assembly"
-                                        checked={isAssembly}
-                                        onCheckedChange={(checked) => setIsAssembly(checked as boolean)}
-                                    />
-                                    <FieldContent>
-                                        <FieldLabel htmlFor="is-assembly">Is this an assembly?</FieldLabel>
-                                        <FieldDescription>
-                                            By clicking this checkbox, this part is considered an assembly.
-                                        </FieldDescription>
-                                    </FieldContent>
-                                </Field>
-                                <Field>
-                                    <FieldLabel htmlFor="workflow-id">Workflow Id</FieldLabel>
-                                    <Input 
-                                        id="workflow-id" 
-                                        type="text"
-                                        placeholder="123" 
-                                        value={workflowId} 
-                                        onChange={(e) => setWorkflowId(e.target.value)}
                                     />
                                 </Field>
 

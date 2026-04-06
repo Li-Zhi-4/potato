@@ -20,5 +20,9 @@ export const columns: ColumnDef<Part>[] = [
     {
         accessorKey: "workflow_id",
         header: "Workflow Id"
+    },
+    {
+        accessorKey: "part_id",
+        header: "Part Id"
     }
 ]
