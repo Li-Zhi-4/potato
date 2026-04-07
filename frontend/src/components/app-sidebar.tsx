@@ -1,6 +1,7 @@
 import * as React from "react"
 
 import { NavDocuments } from "@/components/nav-entities"
+import { NavRelationships } from "./nav-relationships"
 import { NavMain } from "@/components/nav-main"
 import { NavSecondary } from "@/components/nav-secondary"
 import { NavUser } from "@/components/nav-user"
@@ -163,6 +164,23 @@ const data = {
       ),
     },
   ],
+  relationships: [
+    {
+      name: "Part/Vendors",
+      url: "/part-vendors",
+      icon: (<DatabaseIcon />)
+    },
+    {
+      name: "Part/Subpart",
+      url: "/part-subparts",
+      icon: (<DatabaseIcon />)
+    },
+    {
+      name: "Components",
+      url: "/components",
+      icon: (<DatabaseIcon />)
+    },
+  ]
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -186,6 +204,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         <NavMain items={data.navMain} />
         <NavDocuments items={data.entities} />
+        <NavRelationships items={data.relationships} />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>

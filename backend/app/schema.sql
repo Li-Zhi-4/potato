@@ -1,11 +1,11 @@
-DROP TABLE IF EXISTS users;
-DROP TABLE IF EXISTS parts;
-DROP TABLE IF EXISTS vendors;
-DROP TABLE IF EXISTS purchase_orders;
-DROP TABLE IF EXISTS boms;
-DROP TABLE IF EXISTS part_vendor;
-DROP TABLE IF EXISTS part_subpart;
-DROP TABLE IF EXISTS components;
+-- DROP TABLE IF EXISTS users;
+-- DROP TABLE IF EXISTS parts;
+-- DROP TABLE IF EXISTS vendors;
+-- DROP TABLE IF EXISTS purchase_orders;
+-- DROP TABLE IF EXISTS boms;
+-- DROP TABLE IF EXISTS part_vendor;
+-- DROP TABLE IF EXISTS part_subpart;
+-- DROP TABLE IF EXISTS components;
 
 
 -- Entities --

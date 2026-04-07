@@ -14,24 +14,25 @@ import {
 } from "@/components/ui/field"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
 
 import { columns } from "./columns"
 import { API_BASE } from "@/lib/api"
-import { type Bom, createBom, type CreateBomInput } from "@/apis/boms"
+import { type CreatePartSubpartInput, createPartSubpart, type PartSubpart } from "@/apis/part_subpart"
 
 
 export default function Page() {
-    const [jobNo, setJobNo] = useState(0)
-    const [description, setDescription] = useState("")
+    const [partId, setPartId] = useState("")
+    const [subpartId, setSubpartId] = useState("")
+    const [quantity, setQuantity] = useState(1)
+    const [uom, setUOM] = useState("each")
     const [createdBy, setCreatedBy] = useState("0")
     const [updatedBy, setUpdatedBy] = useState("0")
-    const [data, setData] = useState<Bom[]>([])
+    const [data, setData] = useState<PartSubpart[]>([])
     const [refresh, setRefresh] = useState(0)
 
     useEffect(() => {
         async function fetchData() {
-            const res = await fetch(`${API_BASE}/boms`)
+            const res = await fetch(`${API_BASE}/part_subparts`)
             const result = await res.json()
             setData(result)
         }
@@ -39,20 +40,26 @@ export default function Page() {
     }, [refresh])
 
     function handleReset() {
-        setJobNo(0)
-        setDescription("")
+        setPartId("")
+        setSubpartId("")
+        setQuantity(1)
+        setUOM("each")
+        setCreatedBy("0")
+        setUpdatedBy("0")
     }
 
-    const INPUT: CreateBomInput = {
-        job_no: jobNo,
-        description: description,
+    const INPUT: CreatePartSubpartInput = {
+        part_id: partId,
+        subpart_id: subpartId,
+        quantity: quantity,
+        uom: uom,
 
         created_by: createdBy,
         updated_by: updatedBy
     }
 
     async function handleSubmit() {
-        await createBom(INPUT)
+        await createPartSubpart(INPUT)
         handleReset()
         setRefresh(r => r + 1)
     }
@@ -68,29 +75,52 @@ export default function Page() {
         >
         <AppSidebar variant="inset" />
         <SidebarInset>
-            <SiteHeader title="Purchase Orders"/>
+            <SiteHeader title="Parts/Subparts"/>
             <div className="flex flex-1 flex-col">
                 <div className="@container/main flex flex-1 flex-col gap-2">
                     <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
                         <div className="px-8">
                             <FieldGroup>
+                                <div className="flex flex-row gap-4">
+                                    <Field>
+                                        <FieldLabel htmlFor="part-id">Part Id</FieldLabel>
+                                        <Input
+                                            id="part-id"
+                                            type="text"
+                                            placeholder=""
+                                            value={partId}
+                                            onChange={(e) => setPartId(e.target.value)}
+                                        />
+                                    </Field>
+                                    <Field>
+                                        <FieldLabel htmlFor="subpart-id">Subpart Id</FieldLabel>
+                                        <Input
+                                            id="subpart-id"
+                                            type="text"
+                                            placeholder=""
+                                            value={subpartId}
+                                            onChange={(e) => setSubpartId(e.target.value)}
+                                        />
+                                    </Field>
+                                </div>
                                 <Field>
-                                    <FieldLabel htmlFor="job-no">Job No.</FieldLabel>
+                                    <FieldLabel htmlFor="quantity">Quantity</FieldLabel>
                                     <Input 
-                                        id="job-no" 
+                                        id="quantity" 
                                         type="number"
                                         placeholder="" 
-                                        value={jobNo} 
-                                        onChange={(e) => setJobNo(Number(e.target.value))}
+                                        value={quantity} 
+                                        onChange={(e) => setQuantity(Number(e.target.value))}
                                     />
                                 </Field>
                                 <Field>
-                                    <FieldLabel htmlFor="description">Description</FieldLabel>
-                                    <Textarea 
-                                        id="description" 
-                                        placeholder="Type your description here." 
-                                        value={description}
-                                        onChange={(e) => setDescription(e.target.value)}
+                                    <FieldLabel htmlFor="uom">UOM</FieldLabel>
+                                    <Input 
+                                        id="uom" 
+                                        type="text"
+                                        placeholder="" 
+                                        value={uom} 
+                                        onChange={(e) => setUOM(e.target.value)}
                                     />
                                 </Field>
 
