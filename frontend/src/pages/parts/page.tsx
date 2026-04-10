@@ -37,8 +37,6 @@ export default function Page() {
 
     useEffect(() => {
         async function fetchData() {
-            // const result = await getData()
-            // setData(result)
             const res = await fetch(`${API_BASE}/parts`)
             const result = await res.json()
             setData(result)
