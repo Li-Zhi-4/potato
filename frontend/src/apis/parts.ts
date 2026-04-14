@@ -72,3 +72,24 @@ export async function deletePart(id: string): Promise<void> {
     const res = await fetch(`${API_BASE}/parts/${id}`, { method: 'DELETE' })
     return handle<void>(res)
 }
+
+
+export type PartsTable = {
+    part_id: string
+    part_no: string
+    description: string | null
+    is_assembly: 'part' | 'assembly'
+    workflow_id: string | null
+    name: string | null
+
+    created_at: string
+    updated_at: string
+    created_by: string
+    updated_by: string | null
+}
+
+// GET /parts/table
+export async function getPartsTable(): Promise<PartsTable[]> {
+    const res = await fetch(`${API_BASE}/parts/table`)
+    return handle<PartsTable[]>(res)
+}
