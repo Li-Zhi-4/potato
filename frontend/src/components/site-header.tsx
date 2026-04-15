@@ -4,10 +4,10 @@ import { SidebarTrigger } from "@/components/ui/sidebar"
 
 interface SiteHeaderProps {
   title: string
-  button: string
+  children: React.ReactNode
 }
 
-export function SiteHeader({ title, button }: SiteHeaderProps) {
+export function SiteHeader({ title, children }: SiteHeaderProps) {
   return (
     <header className="flex h-(--header-height) shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">
       <div className="flex w-full px-4 lg:px-6 justify-between items-center">
@@ -21,7 +21,7 @@ export function SiteHeader({ title, button }: SiteHeaderProps) {
           </div>
           <h1 className="text-base font-medium">{title}</h1>
         </div>
-        <Button>{button}</Button>
+        {children}
       </div>
     </header>
   )

@@ -33,6 +33,7 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { listVendors, type Vendor } from "@/apis/vendors"
+import { CreatePartSheet } from "@/components/sheets/create-part-sheet"
 
 
 export default function Page() {
@@ -48,6 +49,8 @@ export default function Page() {
     const [globalFilter, setGlobalFilter] = useState("")
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
     const [vendors, setVendors] = useState<Vendor[]>([])
+
+    const [sheetOpen, setSheetOpen] = useState(false)
 
     useEffect(() => {
         async function fetchData() {
@@ -92,10 +95,9 @@ export default function Page() {
                 } as React.CSSProperties
             }
         >
-        <AppSidebar variant="inset" />
+            <AppSidebar variant="inset" />
             <SidebarInset>
-                {/* Add a child component to SiteHeader for the button*/}
-                <SiteHeader title="Parts" button="Create Part"/>
+                <SiteHeader title="Parts" children={<Button onClick={() => setSheetOpen(true)}>test</Button>}/>
                 <div className="flex flex-1 flex-col">
                     <div className="@container/main flex flex-1 flex-col gap-2">
                         <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
@@ -213,6 +215,7 @@ export default function Page() {
                     </div>
                 </div>
             </SidebarInset>
+            <CreatePartSheet open={sheetOpen} onOpenChange={setSheetOpen}/>
         </SidebarProvider>
     )
 }
