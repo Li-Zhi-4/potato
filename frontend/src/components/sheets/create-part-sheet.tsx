@@ -37,21 +37,26 @@ import { Textarea } from "../ui/textarea"
 import { Checkbox } from "../ui/checkbox"
 import { useState, useEffect } from "react"
 import { type Vendor, listVendors } from "@/apis/vendors"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm, Controller, type FieldValues, type ControllerRenderProps, type ControllerFieldState, type UseFormReturn } from "react-hook-form"
+import { Controller, type ControllerRenderProps, type ControllerFieldState, type UseFormReturn, useForm } from "react-hook-form"
 import * as z from "zod"
-import { formSchema } from "@/pages/parts/page"
 import { createPart } from "@/apis/parts"
+import { zodResolver } from "@hookform/resolvers/zod"
 
-
+export const formSchema = z.object({
+    part_no: z.string().min(1, "Part number is required"),
+    description: z.string().optional(),
+    is_assembly: z.boolean(),
+    vendor: z.string().optional()
+})
 
 interface CreatePartSheetProps {
     open: boolean,
     onOpenChange: (open: boolean) => void
-    form: UseFormReturn<z.infer<typeof formSchema>>
 }
 
-export function CreatePartSheet({ open, onOpenChange, form }: CreatePartSheetProps) {
+// form: UseFormReturn<z.infer<typeof formSchema>>
+
+export function CreatePartSheet({ open, onOpenChange }: CreatePartSheetProps) {
     const [vendors, setVendors] = useState<Vendor[]>([])
 
     useEffect(() => {
@@ -62,10 +67,20 @@ export function CreatePartSheet({ open, onOpenChange, form }: CreatePartSheetPro
         fetchData()
     }, [])
 
+    const form = useForm<z.infer<typeof formSchema>>({
+            resolver: zodResolver(formSchema),
+            defaultValues: {
+                part_no: "",
+                description: "",
+                is_assembly: false,
+                vendor: "none"
+            },
+        })
+
     async function onSubmit(data: z.infer<typeof formSchema>) {
         await createPart({
             part_no: data.part_no,
-            description: data.description,
+            description: data.description ?? null,
             is_assembly: data.is_assembly,
             workflow_id: "0",
             created_by: "0",
@@ -77,7 +92,10 @@ export function CreatePartSheet({ open, onOpenChange, form }: CreatePartSheetPro
     }
 
     return (
-        <Sheet open={open} onOpenChange={onOpenChange}>
+        <Sheet open={open} onOpenChange={(value) => {
+            if (!value) form.reset()
+                onOpenChange(value)
+        }}>
             <SheetContent>
 
                 <SheetHeader className="border-b-1 border-neutral-200">
@@ -210,7 +228,10 @@ export function CreatePartSheet({ open, onOpenChange, form }: CreatePartSheetPro
 
                 <SheetFooter className="border-t-1 border-neutral-200">
                     <Button type="submit" form="create-part-form" >Save</Button>
-                    <Button variant="secondary" onClick={() => onOpenChange(false)}>Cancel</Button>
+                    <Button variant="secondary" onClick={() => {
+                        form.reset()
+                        onOpenChange(false)
+                    }}>Cancel</Button>
                 </SheetFooter>
 
             </SheetContent>

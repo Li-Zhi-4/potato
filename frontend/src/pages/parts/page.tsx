@@ -35,17 +35,15 @@ import {
 import { listVendors, type Vendor } from "@/apis/vendors"
 import { CreatePartSheet } from "@/components/sheets/create-part-sheet"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm, Controller, type FieldValues, type ControllerRenderProps, type ControllerFieldState, type UseFormReturn } from "react-hook-form"
+import { useForm } from "react-hook-form"
 import * as z from "zod"
 
-export const formSchema = z.object({
-    part_no: z
-        .string()
-        .min(1, "Bug part number must be at least 1 character long"),
-    description: z.string(),
-    is_assembly: z.boolean(),
-    vendor: z.string()
-})
+// export const formSchema = z.object({
+//     part_no: z.string().min(1, "Part number is required"),
+//     description: z.string().optional(),
+//     is_assembly: z.boolean(),
+//     vendor: z.string().optional()
+// })
 
 
 export default function Page() {
@@ -63,16 +61,6 @@ export default function Page() {
     const [vendors, setVendors] = useState<Vendor[]>([])
 
     const [sheetOpen, setSheetOpen] = useState(false)
-
-    const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema),
-        defaultValues: {
-            part_no: "",
-            description: "",
-            is_assembly: false,
-            vendor: "none"
-        },
-    })
 
     useEffect(() => {
         async function fetchData() {
@@ -237,7 +225,7 @@ export default function Page() {
                     </div>
                 </div>
             </SidebarInset>
-            <CreatePartSheet 
+            {/* <CreatePartSheet 
                 open={sheetOpen} 
                 onOpenChange={(value) => {
                     if (!value) form.reset()
@@ -245,6 +233,13 @@ export default function Page() {
                     setRefresh(r => r + 1)
                 }} 
                 form={form} 
+            /> */}
+            <CreatePartSheet
+                open={sheetOpen}
+                onOpenChange={(value) => {
+                    setSheetOpen(value)
+                    setRefresh(r => r + 1)
+                }} 
             />
         </SidebarProvider>
     )
