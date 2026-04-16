@@ -34,6 +34,18 @@ import {
 } from "@/components/ui/select"
 import { listVendors, type Vendor } from "@/apis/vendors"
 import { CreatePartSheet } from "@/components/sheets/create-part-sheet"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm, Controller, type FieldValues, type ControllerRenderProps, type ControllerFieldState, type UseFormReturn } from "react-hook-form"
+import * as z from "zod"
+
+export const formSchema = z.object({
+    part_no: z
+        .string()
+        .min(1, "Bug part number must be at least 1 character long"),
+    description: z.string(),
+    is_assembly: z.boolean(),
+    vendor: z.string()
+})
 
 
 export default function Page() {
@@ -51,6 +63,16 @@ export default function Page() {
     const [vendors, setVendors] = useState<Vendor[]>([])
 
     const [sheetOpen, setSheetOpen] = useState(false)
+
+    const form = useForm<z.infer<typeof formSchema>>({
+        resolver: zodResolver(formSchema),
+        defaultValues: {
+            part_no: "",
+            description: "",
+            is_assembly: false,
+            vendor: "none"
+        },
+    })
 
     useEffect(() => {
         async function fetchData() {
@@ -97,7 +119,7 @@ export default function Page() {
         >
             <AppSidebar variant="inset" />
             <SidebarInset>
-                <SiteHeader title="Parts" children={<Button onClick={() => setSheetOpen(true)}>test</Button>}/>
+                <SiteHeader title="Parts" children={<Button onClick={() => setSheetOpen(true)}>Create a Part</Button>}/>
                 <div className="flex flex-1 flex-col">
                     <div className="@container/main flex flex-1 flex-col gap-2">
                         <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
@@ -215,7 +237,15 @@ export default function Page() {
                     </div>
                 </div>
             </SidebarInset>
-            <CreatePartSheet open={sheetOpen} onOpenChange={setSheetOpen}/>
+            <CreatePartSheet 
+                open={sheetOpen} 
+                onOpenChange={(value) => {
+                    if (!value) form.reset()
+                    setSheetOpen(value)
+                    setRefresh(r => r + 1)
+                }} 
+                form={form} 
+            />
         </SidebarProvider>
     )
 }

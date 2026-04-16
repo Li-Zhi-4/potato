@@ -37,13 +37,21 @@ import { Textarea } from "../ui/textarea"
 import { Checkbox } from "../ui/checkbox"
 import { useState, useEffect } from "react"
 import { type Vendor, listVendors } from "@/apis/vendors"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm, Controller, type FieldValues, type ControllerRenderProps, type ControllerFieldState, type UseFormReturn } from "react-hook-form"
+import * as z from "zod"
+import { formSchema } from "@/pages/parts/page"
+import { createPart } from "@/apis/parts"
+
+
 
 interface CreatePartSheetProps {
     open: boolean,
     onOpenChange: (open: boolean) => void
+    form: UseFormReturn<z.infer<typeof formSchema>>
 }
 
-export function CreatePartSheet({ open, onOpenChange }: CreatePartSheetProps) {
+export function CreatePartSheet({ open, onOpenChange, form }: CreatePartSheetProps) {
     const [vendors, setVendors] = useState<Vendor[]>([])
 
     useEffect(() => {
@@ -54,6 +62,20 @@ export function CreatePartSheet({ open, onOpenChange }: CreatePartSheetProps) {
         fetchData()
     }, [])
 
+    async function onSubmit(data: z.infer<typeof formSchema>) {
+        await createPart({
+            part_no: data.part_no,
+            description: data.description,
+            is_assembly: data.is_assembly,
+            workflow_id: "0",
+            created_by: "0",
+            updated_by: "0",
+        })
+        console.log(data)
+        form.reset()
+        onOpenChange(false)
+    }
+
     return (
         <Sheet open={open} onOpenChange={onOpenChange}>
             <SheetContent>
@@ -63,54 +85,111 @@ export function CreatePartSheet({ open, onOpenChange }: CreatePartSheetProps) {
                     <SheetDescription>Create a part with a unique part number.</SheetDescription>
                 </SheetHeader>
 
-                <form id="create-part-form" action="/">
+                <form id="create-part-form" onSubmit={form.handleSubmit(onSubmit)}>
                     <FieldGroup className="p-6">
                         <FieldSet>
                             {/* Include this when more sets are added */}
                             {/* <FieldLegend>Part Info</FieldLegend>
                             <FieldDescription>Describe the part and its relevant information.</FieldDescription> */}
                             <FieldGroup>
-                                <Field>
-                                    <FieldLabel htmlFor="part-no">Part No.</FieldLabel>
-                                    <Input 
-                                        id="part-no"
-                                        placeholder="Enter part number"
-                                        required
-                                    />
-                                </Field>
-                                <Field>
-                                    <FieldLabel htmlFor="description">Description</FieldLabel>
-                                    <Textarea 
-                                        id="description"
-                                        placeholder="Enter part description"
-                                    />
-                                </Field>
-                                <Field>
-                                    <FieldLabel>Primary Vendor</FieldLabel>
-                                    <Select defaultValue="none">
-                                        <SelectTrigger className="w-full">
-                                            <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectGroup>
-                                                <SelectLabel>Vendors</SelectLabel>
-                                                <SelectItem value="none">None</SelectItem>
-                                                {vendors.map((value) => (
-                                                    <SelectItem key={value.vendor_id} value={value.name}>{value.name}</SelectItem>
-                                                ))}
-                                            </SelectGroup>
-                                        </SelectContent>
-                                    </Select>
-                                </Field>
-                                <Field orientation={"horizontal"}>
-                                    <Checkbox id="is-assembly" />
-                                    <FieldContent>
-                                        <FieldLabel htmlFor="is-assembly">Is this an assembly?</FieldLabel>
-                                        <FieldDescription>
-                                            By clicking this checkbox, this part is considered an assembly.
-                                        </FieldDescription>
-                                    </FieldContent>
-                                </Field>
+                                <Controller 
+                                    name="part_no"
+                                    control={form.control}
+                                    render={({ field, fieldState }: { 
+                                        field: ControllerRenderProps<z.infer<typeof formSchema>, "part_no">, 
+                                        fieldState: ControllerFieldState }) => (
+                                        <Field data-invalid={fieldState.invalid}>
+                                            <FieldLabel htmlFor="part-no">Part No.</FieldLabel>
+                                            <Input 
+                                                {...field}
+                                                id="part-no"
+                                                aria-invalid={fieldState.invalid}
+                                                placeholder="Enter part number"
+                                                required
+                                            />
+                                            {fieldState.invalid && (
+                                                <FieldError errors={[fieldState.error]} />
+                                            )}
+                                        </Field>
+                                    )}
+                                />
+                                <Controller 
+                                    name="description"
+                                    control={form.control}
+                                    render={({ field, fieldState }: { 
+                                        field: ControllerRenderProps<z.infer<typeof formSchema>, "description">, 
+                                        fieldState: ControllerFieldState }) => (
+                                        <Field data-invalid={fieldState.invalid}>
+                                            <FieldLabel htmlFor="description">Description</FieldLabel>
+                                            <Textarea 
+                                                {...field}
+                                                id="description"
+                                                aria-invalid={fieldState.invalid}
+                                                placeholder="Enter part description"
+                                            />
+                                            {fieldState.invalid && (
+                                                <FieldError errors={[fieldState.error]} />
+                                            )}
+                                        </Field>
+                                    )}
+                                />
+                                <Controller 
+                                    name="vendor"
+                                    control={form.control}
+                                    render={({ field, fieldState }: { 
+                                        field: ControllerRenderProps<z.infer<typeof formSchema>, "vendor">, 
+                                        fieldState: ControllerFieldState }) => (
+                                        <Field data-invalid={fieldState.invalid}>
+                                            <FieldLabel htmlFor="vendor">Primary Vendor</FieldLabel>
+                                            <Select 
+                                                value={field.value}
+                                                onValueChange={field.onChange}
+                                            >
+                                                <SelectTrigger className="w-full">
+                                                    <SelectValue />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectGroup>
+                                                        <SelectLabel>Vendors</SelectLabel>
+                                                        <SelectItem value="none">None</SelectItem>
+                                                        {vendors.map((value) => (
+                                                            <SelectItem key={value.vendor_id} value={value.name}>{value.name}</SelectItem>
+                                                        ))}
+                                                    </SelectGroup>
+                                                </SelectContent>
+                                            </Select>
+                                            {fieldState.invalid && (
+                                                <FieldError errors={[fieldState.error]} />
+                                            )}
+                                        </Field>
+                                    )}
+                                />
+                                <Controller 
+                                    name="is_assembly"
+                                    control={form.control}
+                                    render={({ field, fieldState }: { 
+                                        field: ControllerRenderProps<z.infer<typeof formSchema>, "is_assembly">, 
+                                        fieldState: ControllerFieldState }) => (
+                                        <Field orientation={"horizontal"} data-invalid={fieldState.invalid}>
+                                            <Checkbox 
+                                                id="is-assembly" 
+                                                checked={field.value}
+                                                onCheckedChange={field.onChange}
+                                                onBlur={field.onBlur}
+                                                ref={field.ref}
+                                            />
+                                            <FieldContent>
+                                                <FieldLabel htmlFor="is-assembly">Is this an assembly?</FieldLabel>
+                                                <FieldDescription>
+                                                    By clicking this checkbox, this part is considered an assembly.
+                                                </FieldDescription>
+                                                {fieldState.invalid && (
+                                                    <FieldError errors={[fieldState.error]} />
+                                                )}                                                
+                                            </FieldContent>
+                                        </Field>
+                                    )}
+                                />
                             </FieldGroup>
                         </FieldSet>
                         {/* <FieldSeparator />
@@ -130,7 +209,7 @@ export function CreatePartSheet({ open, onOpenChange }: CreatePartSheetProps) {
                 </form>
 
                 <SheetFooter className="border-t-1 border-neutral-200">
-                    <Button type="submit" form="create-part-form">Save</Button>
+                    <Button type="submit" form="create-part-form" >Save</Button>
                     <Button variant="secondary" onClick={() => onOpenChange(false)}>Cancel</Button>
                 </SheetFooter>
 
