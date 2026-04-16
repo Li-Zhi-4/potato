@@ -52,11 +52,10 @@ export const formSchema = z.object({
 interface CreatePartSheetProps {
     open: boolean,
     onOpenChange: (open: boolean) => void
+    onPartCreated: () => void
 }
 
-// form: UseFormReturn<z.infer<typeof formSchema>>
-
-export function CreatePartSheet({ open, onOpenChange }: CreatePartSheetProps) {
+export function CreatePartSheet({ open, onOpenChange, onPartCreated }: CreatePartSheetProps) {
     const [vendors, setVendors] = useState<Vendor[]>([])
 
     useEffect(() => {
@@ -89,6 +88,7 @@ export function CreatePartSheet({ open, onOpenChange }: CreatePartSheetProps) {
         console.log(data)
         form.reset()
         onOpenChange(false)
+        onPartCreated()
     }
 
     return (
@@ -110,47 +110,25 @@ export function CreatePartSheet({ open, onOpenChange }: CreatePartSheetProps) {
                             {/* <FieldLegend>Part Info</FieldLegend>
                             <FieldDescription>Describe the part and its relevant information.</FieldDescription> */}
                             <FieldGroup>
-                                <Controller 
-                                    name="part_no"
-                                    control={form.control}
-                                    render={({ field, fieldState }: { 
-                                        field: ControllerRenderProps<z.infer<typeof formSchema>, "part_no">, 
-                                        fieldState: ControllerFieldState }) => (
-                                        <Field data-invalid={fieldState.invalid}>
-                                            <FieldLabel htmlFor="part-no">Part No.</FieldLabel>
-                                            <Input 
-                                                {...field}
-                                                id="part-no"
-                                                aria-invalid={fieldState.invalid}
-                                                placeholder="Enter part number"
-                                                required
-                                            />
-                                            {fieldState.invalid && (
-                                                <FieldError errors={[fieldState.error]} />
-                                            )}
-                                        </Field>
+                                <Field data-invalid={!!form.formState.errors.part_no} >
+                                    <FieldLabel htmlFor="part-no">Part No.</FieldLabel>
+                                    <Input 
+                                        id="part-no" 
+                                        {...form.register("part_no")} 
+                                        aria-invalid={!!form.formState.errors.part_no}
+                                    />
+                                    {form.formState.errors.part_no && (
+                                        <FieldError errors={[form.formState.errors.part_no]} />
                                     )}
-                                />
-                                <Controller 
-                                    name="description"
-                                    control={form.control}
-                                    render={({ field, fieldState }: { 
-                                        field: ControllerRenderProps<z.infer<typeof formSchema>, "description">, 
-                                        fieldState: ControllerFieldState }) => (
-                                        <Field data-invalid={fieldState.invalid}>
-                                            <FieldLabel htmlFor="description">Description</FieldLabel>
-                                            <Textarea 
-                                                {...field}
-                                                id="description"
-                                                aria-invalid={fieldState.invalid}
-                                                placeholder="Enter part description"
-                                            />
-                                            {fieldState.invalid && (
-                                                <FieldError errors={[fieldState.error]} />
-                                            )}
-                                        </Field>
-                                    )}
-                                />
+                                </Field>
+                                <Field>
+                                    <FieldLabel htmlFor="description">Description</FieldLabel>
+                                    <Textarea 
+                                        id="description"
+                                        {...form.register("description")} 
+                                        placeholder="Enter part description"
+                                    />
+                                </Field>                                
                                 <Controller 
                                     name="vendor"
                                     control={form.control}
