@@ -14,7 +14,6 @@ import {
     type ColumnFiltersState,
 } from "@tanstack/react-table"
 import { columns } from "./columns"
-import { type Part } from "@/apis/parts"
 import {
     Select,
     SelectContent,
