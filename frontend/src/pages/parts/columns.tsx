@@ -14,10 +14,9 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 import { EllipsisVertical } from "lucide-react"
+import { type PartsTable } from "@/apis/parts"
 
-
-
-export const columns: ColumnDef<Part>[] = [
+export const columns: ColumnDef<PartsTable>[] = [
     {
         accessorKey: "part_no",
         header: () => <div className="text-center">Part No.</div>,
@@ -39,9 +38,9 @@ export const columns: ColumnDef<Part>[] = [
         }
     },
     {
-        accessorKey: "name",
+        accessorKey: "vendor_name",
         header: () => <div className="text-center">Vendor</div>,
-        cell: ({ row }) => <div className="text-center">{row.getValue("name") || "N/A"}</div>
+        cell: ({ row }) => <div className="text-center">{row.getValue("vendor_name") || "N/A"}</div>
     },
     {
         id: "actions",

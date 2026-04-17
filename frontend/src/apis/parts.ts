@@ -80,7 +80,7 @@ export type PartsTable = {
     description: string | null
     is_assembly: 'part' | 'assembly'
     workflow_id: string | null
-    name: string | null
+    vendor_name: string | null
 
     created_at: string
     updated_at: string

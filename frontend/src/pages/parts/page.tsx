@@ -25,10 +25,11 @@ import {
 } from "@/components/ui/select"
 import { listVendors, type Vendor } from "@/apis/vendors"
 import { CreatePartSheet } from "@/components/sheets/create-part-sheet"
+import { type PartsTable } from "@/apis/parts"
 
 
 export default function Page() {
-    const [data, setData] = useState<Part[]>([])
+    const [data, setData] = useState<PartsTable[]>([])
     const [refresh, setRefresh] = useState(0)
 
     const [globalFilter, setGlobalFilter] = useState("")
@@ -41,6 +42,7 @@ export default function Page() {
         async function fetchData() {
             const result = await getPartsTable()
             setData(result)
+            // console.log("Data", result)
 
             const vendorList = await listVendors()
             setVendors(vendorList)

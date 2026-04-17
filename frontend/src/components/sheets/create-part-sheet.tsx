@@ -41,12 +41,13 @@ import { Controller, type ControllerRenderProps, type ControllerFieldState, type
 import * as z from "zod"
 import { createPart } from "@/apis/parts"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { createPartVendor } from "@/apis/part_vendor"
 
 export const formSchema = z.object({
     part_no: z.string().min(1, "Part number is required"),
     description: z.string().optional(),
     is_assembly: z.boolean(),
-    vendor: z.string().optional()
+    vendor: z.string()
 })
 
 interface CreatePartSheetProps {
@@ -77,7 +78,7 @@ export function CreatePartSheet({ open, onOpenChange, onPartCreated }: CreatePar
         })
 
     async function onSubmit(data: z.infer<typeof formSchema>) {
-        await createPart({
+        const response = await createPart({
             part_no: data.part_no,
             description: data.description ?? null,
             is_assembly: data.is_assembly,
@@ -85,7 +86,15 @@ export function CreatePartSheet({ open, onOpenChange, onPartCreated }: CreatePar
             created_by: "0",
             updated_by: "0",
         })
-        console.log(data)
+        const response2 = await createPartVendor({
+            part_id: response.part_id,
+            vendor_id: data.vendor,
+            is_primary: true,
+
+            created_by: "0",
+            updated_by: "0"
+        })
+        console.log(response2)
         form.reset()
         onOpenChange(false)
         onPartCreated()
@@ -149,7 +158,7 @@ export function CreatePartSheet({ open, onOpenChange, onPartCreated }: CreatePar
                                                         <SelectLabel>Vendors</SelectLabel>
                                                         <SelectItem value="none">None</SelectItem>
                                                         {vendors.map((value) => (
-                                                            <SelectItem key={value.vendor_id} value={value.name}>{value.name}</SelectItem>
+                                                            <SelectItem key={value.vendor_id} value={value.vendor_id}>{value.name}</SelectItem>
                                                         ))}
                                                     </SelectGroup>
                                                 </SelectContent>
