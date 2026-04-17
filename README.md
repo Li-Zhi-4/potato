@@ -31,7 +31,7 @@ Request body:
     "description": "Main process chamber assembly with 4-port flange configuration",
     "is_assembly": true,
     "workflow_id": "WF-PROD-2026",
-    "created_by": "sara_admin",
-    "updated_by": "sara_admin"
+    "created_by": "0",
+    "updated_by": "0"
 }
 ```
