@@ -79,7 +79,6 @@ CREATE TABLE IF NOT EXISTS part_vendor (
     part_vendor_id  TEXT PRIMARY KEY,
     part_id         TEXT NOT NULL REFERENCES parts(part_id),
     vendor_id       TEXT NOT NULL REFERENCES vendors(vendor_id),
-    name            TEXT,
     part_no         TEXT,
     description     TEXT,
     is_primary      INTEGER NOT NULL DEFAULT 0 CHECK (is_primary IN (0, 1)),

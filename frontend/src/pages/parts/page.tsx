@@ -39,11 +39,11 @@ export default function Page() {
 
     useEffect(() => {
         async function fetchData() {
-            const result = await getPartsTable()
-            setData(result)
-            // console.log("Data", result)
-
-            const vendorList = await listVendors()
+            const [partResults, vendorList] = await Promise.all([
+                getPartsTable(),
+                listVendors()
+            ])
+            setData(partResults)
             setVendors(vendorList)
         }
         fetchData()
