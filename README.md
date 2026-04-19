@@ -1,14 +1,10 @@
 # potato
 
-Welcome to the potato project.
+Welcome to the BOM Management project. The purpose of this project is to build a local BOM Management system from the tools that you already possess. Using a lightweight backend that can integrate with Excel, the purpose of this project is to separate Excel/spreadsheets from the database, enabling small companies to utilize their familiar tools while taking a step towards a more modern workflow.
 
 ## API Documentation
 
-For localhost settings, use the following as the base url:
-
-```
-http://127.0.0.1:5000/
-```
+To be continued...
 
 ### /parts
 
