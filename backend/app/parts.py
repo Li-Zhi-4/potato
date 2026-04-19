@@ -73,6 +73,15 @@ def get_part(part_id: str):
     return jsonify(_row_to_dict(row))
 
 
+@bp.get("/part-no/<string:part_no>")
+def get_part_by_part_no(part_no: str):
+    db = get_db()
+    row = db.execute("SELECT * FROM parts WHERE part_no = ?", (part_no,)).fetchone()
+    if not row:
+        return jsonify({"error": "not found"}), 404
+    return jsonify(_row_to_dict(row))
+
+
 @bp.put("/<string:part_id>")
 def update_part(part_id: str):
     data = request.get_json(silent=True) or {}
@@ -151,3 +160,15 @@ def get_parts_table():
         LEFT JOIN vendors ON part_vendor.vendor_id = vendors.vendor_id
     """).fetchall()
     return jsonify([_row_to_dict(r) for r in rows]) 
+
+
+@bp.get("/vendor-table/<string:part_id>")
+def get_vendor_table(part_id: str):
+    db = get_db()
+    rows = db.execute("""
+        SELECT pv.*, v.name AS vendor_name
+        FROM part_vendor pv
+        LEFT JOIN vendors v ON pv.vendor_id = v.vendor_id
+        WHERE pv.part_id = ?
+    """, (part_id,)).fetchall()
+    return jsonify([_row_to_dict(r) for r in rows])

@@ -7,6 +7,7 @@ import BOMs from "./pages/boms/page"
 import PartVendor from "./pages/part_vendors/pages"
 import PartSubpart from "./pages/part_subparts/pages"
 import Components from "./pages/components/pages"
+import PartsInfo from "./pages/parts-info/page"
 
 export function App() {
 
@@ -15,6 +16,7 @@ export function App() {
       <Routes>
         <Route path="/" element={<Page />} />
         <Route path="/parts" element={<Parts />} />
+        <Route path="/parts/:id/info" element={<PartsInfo />} />
         <Route path="/vendors" element={<Vendors />} />
         <Route path="/purchase-orders" element={<PurchaseOrders />} />
         <Route path="/boms" element={<BOMs />} />

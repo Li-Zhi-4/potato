@@ -13,7 +13,7 @@ def create_app(test_config=None) -> Flask:
     if test_config:
         app.config.update(test_config)
 
-    CORS(app, resources={r"/api/*": {"origins": "*"}})
+    CORS(app, resources={r"/api/.*": {"origins": "*"}})
 
     from . import db
     db.init_app(app)

@@ -26,6 +26,12 @@ export async function getPart(id: string): Promise<Part> {
     return handle<Part>(res)
 }
 
+// GET /parts/:id
+export async function getPartByPartNo(part_no: string): Promise<Part> {
+    const res = await fetch(`${API_BASE}/parts/part-no/${part_no}`)
+    return handle<Part>(res)
+}
+
 
 export type CreatePartInput = {
     part_no: string
@@ -73,6 +79,7 @@ export async function deletePart(id: string): Promise<void> {
     return handle<void>(res)
 }
 
+// -- tables --
 
 export type PartsTable = {
     part_id: string
@@ -92,4 +99,29 @@ export type PartsTable = {
 export async function getPartsTable(): Promise<PartsTable[]> {
     const res = await fetch(`${API_BASE}/parts/table`)
     return handle<PartsTable[]>(res)
+}
+
+
+
+export type VendorTable = {
+    part_vendor_id: string
+    part_id: string
+    vendor_id: string
+
+    name: string
+    vendor_name: string
+    part_no: string
+    description: string
+    is_primary: boolean
+
+    created_at: string
+    updated_at: string
+    created_by: string
+    updated_by: string | null
+}
+
+// GET /parts/vendor-table/:id
+export async function getVendorTable(id: string): Promise<VendorTable[]> {
+    const res = await fetch(`${API_BASE}/parts/vendor-table/${id}`)
+    return handle<VendorTable[]>(res)
 }

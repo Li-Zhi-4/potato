@@ -13,38 +13,33 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 import { EllipsisVertical } from "lucide-react"
-import { type PartsTable } from "@/apis/parts"
-import { Link } from "react-router-dom"
+import { type VendorTable } from "@/apis/parts"
 
-export const columns: ColumnDef<PartsTable>[] = [
+export const columns: ColumnDef<VendorTable>[] = [
+    {
+        accessorKey: "vendor_name",
+        header: () => <div className="text-center">Vendor</div>,
+        cell: ({ row }) => <div className="text-center">{row.getValue("vendor_name")}</div>
+    },
     {
         accessorKey: "part_no",
-        header: () => <div className="text-center">Part No.</div>,
-        cell: ({ row }) => <div className="text-center">
-            <Link to={`/parts/${row.getValue("part_no")}/info`} className="no-underline hover:underline underline-offset-4 font-medium">
-                {row.getValue("part_no")}
-            </Link>
-        </div>
+        header: () => <div className="text-center">Vendor Part No.</div>,
+        cell: ({ row }) => <div className="text-center">{row.getValue("part_no")}</div>
     },
     {
         accessorKey: "description",
         header: "Description"
     },
     {
-        accessorKey: "is_assembly",
-        header: () => <div className="text-center">Assembly</div>,
+        accessorKey: "is_primary",
+        header: () => <div className="text-center">Primary</div>,
         cell: ({ row }) => {
             return (
                 <div className="flex justify-center">
-                    <Badge variant="outline" >{row.getValue("is_assembly")}</Badge>
+                    <Badge variant="outline" >{row.getValue("is_primary")}</Badge>
                 </div>
             )
         }
-    },
-    {
-        accessorKey: "vendor_name",
-        header: () => <div className="text-center">Vendor</div>,
-        cell: ({ row }) => <div className="text-center">{row.getValue("vendor_name") || "N/A"}</div>
     },
     {
         id: "actions",
