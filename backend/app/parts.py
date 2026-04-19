@@ -172,3 +172,20 @@ def get_vendor_table(part_id: str):
         WHERE pv.part_id = ?
     """, (part_id,)).fetchall()
     return jsonify([_row_to_dict(r) for r in rows])
+
+
+@bp.get("/subparts-table/<string:part_id>")
+def get_subparts_table(part_id: str):
+    db = get_db()
+    rows = db.execute("""
+        SELECT 
+            sp.quantity, 
+            sp.uom,
+            p.part_id as subpart_id,
+            p.part_no as subpart_part_no,
+            p.description as subpart_description
+        FROM part_subpart sp
+        LEFT JOIN parts p ON sp.subpart_id = p.part_id
+        WHERE sp.part_id = ?
+    """, (part_id,)).fetchall()
+    return jsonify([_row_to_dict(r) for r in rows])

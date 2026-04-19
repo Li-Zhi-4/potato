@@ -125,3 +125,19 @@ export async function getVendorTable(id: string): Promise<VendorTable[]> {
     const res = await fetch(`${API_BASE}/parts/vendor-table/${id}`)
     return handle<VendorTable[]>(res)
 }
+
+
+
+export type SubpartTable = {
+    subpart_id: string
+    subpart_part_no: string
+    subpart_description: string
+    quantity: number
+    uom: string
+}
+
+// GET /parts/subparts-table/:id
+export async function getSubpartTable(id: string): Promise<SubpartTable[]> {
+    const res = await fetch(`${API_BASE}/parts/subparts-table/${id}`)
+    return handle<SubpartTable[]>(res)
+}

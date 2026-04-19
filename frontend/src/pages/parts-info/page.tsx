@@ -8,16 +8,19 @@ import {
 import { useState } from "react"
 import { useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { columns } from "./columns"
+import { columns, subpartsColumns } from "./columns"
 import { CreatePartSheet } from "@/components/sheets/create-part-sheet"
-import { getPartByPartNo, type Part, type VendorTable, getVendorTable } from "@/apis/parts"
+import { getPartByPartNo, type Part, type VendorTable, getVendorTable, type SubpartTable, getSubpartTable } from "@/apis/parts"
 import { useParams } from "react-router-dom"
 import { Badge } from "@/components/ui/badge"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Store, Component } from "lucide-react"
 
 
 export default function Page() {
     const { id } = useParams<{ id: string }>();
     const [data, setData] = useState<VendorTable[]>([])
+    const [subpartData, setSubpartData] = useState<SubpartTable[]>([])
     const [refresh, setRefresh] = useState(0)
 
     const [partData, setPartData] = useState<Part>()
@@ -29,8 +32,10 @@ export default function Page() {
             if (!id) return
             const part = await getPartByPartNo(id)
             const partResults = await getVendorTable(part.part_id)
+            const subpartsResults = await getSubpartTable(part.part_id)
             setData(partResults)
             setPartData(part)
+            setSubpartData(subpartsResults)
         }
         fetchData()
     }, [refresh])
@@ -64,10 +69,30 @@ export default function Page() {
                                     <div className="text-neutral-500">{partData?.description}</div>
                                 </div>
 
-                                <DataTable 
-                                    columns={columns} 
-                                    data={data}  
-                                />
+                                <Tabs defaultValue="vendors" className="flex flex-col gap-3">
+                                    <TabsList>
+                                        <TabsTrigger value="vendors">
+                                            <Store />
+                                            Vendors
+                                        </TabsTrigger>
+                                        <TabsTrigger value="subparts">
+                                            <Component />
+                                            Subparts
+                                        </TabsTrigger>
+                                    </TabsList>
+                                    <TabsContent value="vendors" className="flex flex-col gap-3">
+                                        <DataTable 
+                                            columns={columns} 
+                                            data={data}  
+                                        />
+                                    </TabsContent>
+                                    <TabsContent value="subparts" className="flex flex-col gap-3">
+                                        <DataTable 
+                                            columns={subpartsColumns} 
+                                            data={subpartData}  
+                                        />
+                                    </TabsContent>
+                                </Tabs>
                                 
                             </div>
                         </div>
