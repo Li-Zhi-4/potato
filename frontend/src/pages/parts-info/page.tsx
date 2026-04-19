@@ -16,6 +16,7 @@ import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Store, Component } from "lucide-react"
 import { AddVendorSheet } from "@/components/sheets/add-vendor-sheet"
+import { AddSubpartSheet } from "@/components/sheets/add-subpart-sheet"
 
 
 export default function Page() {
@@ -28,6 +29,7 @@ export default function Page() {
     const [partData, setPartData] = useState<Part>()
 
     const [sheetOpen, setSheetOpen] = useState(false)
+    const [subpartSheetOpen, setSubpartSheetOpen] = useState(false)
 
     useEffect(() => {
         async function fetchData() {
@@ -92,7 +94,7 @@ export default function Page() {
                                             {tabValue === "vendors" ? (
                                                 <Button onClick={() => setSheetOpen(true)}>Add a Vendor</Button>
                                             ) : (
-                                                <Button onClick={() => setSheetOpen(true)}>Add a Subpart</Button>
+                                                <Button onClick={() => setSubpartSheetOpen(true)}>Add a Subpart</Button>
                                             )}
                                         </div>
                                     </div>
@@ -120,6 +122,17 @@ export default function Page() {
                 <AddVendorSheet
                     open={sheetOpen}
                     onOpenChange={setSheetOpen} 
+                    onPartCreated={handlePartCreated}
+                    part={partData}
+                />
+            ) : (
+                <p>Loading part info...</p>
+            )}
+
+            {partData ? (
+                <AddSubpartSheet
+                    open={subpartSheetOpen}
+                    onOpenChange={setSubpartSheetOpen} 
                     onPartCreated={handlePartCreated}
                     part={partData}
                 />
