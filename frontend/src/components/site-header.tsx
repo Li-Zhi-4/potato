@@ -3,7 +3,7 @@ import { SidebarTrigger } from "@/components/ui/sidebar"
 
 interface SiteHeaderProps {
   title: string
-  children: React.ReactNode
+  children?: React.ReactNode
 }
 
 export function SiteHeader({ title, children }: SiteHeaderProps) {

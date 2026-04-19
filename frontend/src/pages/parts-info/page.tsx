@@ -15,6 +15,7 @@ import { useParams } from "react-router-dom"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Store, Component } from "lucide-react"
+import { AddVendorSheet } from "@/components/sheets/add-vendor-sheet"
 
 
 export default function Page() {
@@ -22,6 +23,7 @@ export default function Page() {
     const [data, setData] = useState<VendorTable[]>([])
     const [subpartData, setSubpartData] = useState<SubpartTable[]>([])
     const [refresh, setRefresh] = useState(0)
+    const [tabValue, setTabValue] = useState("vendors")
 
     const [partData, setPartData] = useState<Part>()
 
@@ -55,7 +57,7 @@ export default function Page() {
         >
             <AppSidebar variant="inset" />
             <SidebarInset>
-                <SiteHeader title={`Parts / ${partData?.part_no}`} children={<Button onClick={() => setSheetOpen(true)}>Create a Part</Button>}/>
+                <SiteHeader title={`Parts / ${partData?.part_no}`}/>
                 <div className="flex flex-1 flex-col">
                     <div className="@container/main flex flex-1 flex-col gap-2">
                         <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6"> 
@@ -69,17 +71,31 @@ export default function Page() {
                                     <div className="text-neutral-500">{partData?.description}</div>
                                 </div>
 
-                                <Tabs defaultValue="vendors" className="flex flex-col gap-3">
-                                    <TabsList>
-                                        <TabsTrigger value="vendors">
-                                            <Store />
-                                            Vendors
-                                        </TabsTrigger>
-                                        <TabsTrigger value="subparts">
-                                            <Component />
-                                            Subparts
-                                        </TabsTrigger>
-                                    </TabsList>
+                                <Tabs 
+                                    value={tabValue}
+                                    onValueChange={setTabValue}
+                                    defaultValue="vendors" 
+                                    className="flex flex-col gap-3"
+                                >
+                                    <div className="flex flex-row justify-between items-center">
+                                        <TabsList>
+                                            <TabsTrigger value="vendors">
+                                                <Store />
+                                                Vendors
+                                            </TabsTrigger>
+                                            <TabsTrigger value="subparts">
+                                                <Component />
+                                                Subparts
+                                            </TabsTrigger>
+                                        </TabsList>
+                                        <div>
+                                            {tabValue === "vendors" ? (
+                                                <Button onClick={() => setSheetOpen(true)}>Add a Vendor</Button>
+                                            ) : (
+                                                <Button onClick={() => setSheetOpen(true)}>Add a Subpart</Button>
+                                            )}
+                                        </div>
+                                    </div>
                                     <TabsContent value="vendors" className="flex flex-col gap-3">
                                         <DataTable 
                                             columns={columns} 
@@ -100,11 +116,16 @@ export default function Page() {
                 </div>
             </SidebarInset>
 
-            <CreatePartSheet
-                open={sheetOpen}
-                onOpenChange={setSheetOpen} 
-                onPartCreated={handlePartCreated}
-            />
+            {partData ? (
+                <AddVendorSheet
+                    open={sheetOpen}
+                    onOpenChange={setSheetOpen} 
+                    onPartCreated={handlePartCreated}
+                    part={partData}
+                />
+            ) : (
+                <p>Loading part info...</p>
+            )}
         </SidebarProvider>
     )
 }

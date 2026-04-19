@@ -36,7 +36,13 @@ export const columns: ColumnDef<VendorTable>[] = [
         cell: ({ row }) => {
             return (
                 <div className="flex justify-center">
-                    <Badge variant="outline" >{row.getValue("is_primary")}</Badge>
+                    <Badge variant="outline" >
+                        {row.getValue("is_primary") ? (
+                            "true"
+                        ) : (
+                            "false"
+                        )}
+                    </Badge>
                 </div>
             )
         }

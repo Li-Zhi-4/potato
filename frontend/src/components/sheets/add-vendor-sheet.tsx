@@ -1,0 +1,217 @@
+"use client"
+
+import {
+    Sheet,
+    SheetClose,
+    SheetContent,
+    SheetDescription,
+    SheetFooter,
+    SheetHeader,
+    SheetTitle,
+    SheetTrigger,
+} from "@/components/ui/sheet"
+import { Button } from "../ui/button"
+import {
+    Field,
+    FieldContent,
+    FieldDescription,
+    FieldError,
+    FieldGroup,
+    FieldLabel,
+    FieldLegend,
+    FieldSeparator,
+    FieldSet,
+    FieldTitle,
+} from "@/components/ui/field"
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectLabel,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
+import { Input } from "../ui/input"
+import { Textarea } from "../ui/textarea"
+import { Checkbox } from "../ui/checkbox"
+import { useState, useEffect } from "react"
+import { type Vendor, listVendors } from "@/apis/vendors"
+import { Controller, type ControllerRenderProps, type ControllerFieldState, type UseFormReturn, useForm } from "react-hook-form"
+import * as z from "zod"
+import { createPart, type Part } from "@/apis/parts"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { createPartVendor } from "@/apis/part_vendor"
+
+export const formSchema = z.object({
+    part_id: z.string().optional(),
+    vendor_id: z.string().min(1, "required"),
+    part_no: z.string().optional(),
+    description: z.string().optional(),
+    is_primary: z.boolean()
+})
+
+interface FormSheetProps {
+    open: boolean,
+    onOpenChange: (open: boolean) => void
+    onPartCreated: () => void
+    part: Part
+}
+
+export function AddVendorSheet({ open, onOpenChange, onPartCreated, part }: FormSheetProps) {
+    const [vendors, setVendors] = useState<Vendor[]>([])
+
+    useEffect(() => {
+        async function fetchData() {
+            const vendorList = await listVendors()
+            setVendors(vendorList)
+        }
+        fetchData()
+    }, [])
+
+    const form = useForm<z.infer<typeof formSchema>>({
+            resolver: zodResolver(formSchema),
+            defaultValues: {
+                part_id: "",
+                vendor_id: "",
+                part_no: "",
+                description: "",
+                is_primary: false,
+            },
+        })
+
+    async function onSubmit(data: z.infer<typeof formSchema>) {
+        console.log("tes")
+        const response2 = await createPartVendor({
+            part_id: part.part_id,
+            vendor_id: data.vendor_id,
+            is_primary: data.is_primary,
+            part_no: data.part_no,
+            description: data.description,
+
+            created_by: "0",
+            updated_by: "0"
+        })
+        console.log(response2)
+        form.reset()
+        onOpenChange(false)
+        onPartCreated()
+    }
+
+    return (
+        <Sheet open={open} onOpenChange={(value) => {
+            if (!value) form.reset()
+                onOpenChange(value)
+        }}>
+            <SheetContent>
+
+                <SheetHeader className="border-b-1 border-neutral-200">
+                    <SheetTitle>Add a Vendor</SheetTitle>
+                    <SheetDescription>Attach a vendor to {part.part_no}.</SheetDescription>
+                </SheetHeader>
+
+                <form id="add-vendor-form" onSubmit={form.handleSubmit(onSubmit)}>
+                    <FieldGroup className="p-6">
+                        <FieldSet>
+                            {/* Include this when more sets are added */}
+                            {/* <FieldLegend>Part Info</FieldLegend>
+                            <FieldDescription>Describe the part and its relevant information.</FieldDescription> */}
+                            <FieldGroup>                              
+                                <Controller 
+                                    name="vendor_id"
+                                    control={form.control}
+                                    render={({ field, fieldState }: { 
+                                        field: ControllerRenderProps<z.infer<typeof formSchema>, "vendor_id">, 
+                                        fieldState: ControllerFieldState }) => (
+                                        <Field data-invalid={fieldState.invalid}>
+                                            <FieldLabel htmlFor="vendor_id">Primary Vendor</FieldLabel>
+                                            <Select 
+                                                value={field.value}
+                                                onValueChange={field.onChange}
+                                            >
+                                                <SelectTrigger className="w-full">
+                                                    <SelectValue />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectGroup>
+                                                        <SelectLabel>Vendors</SelectLabel>
+                                                        <SelectItem value="none">None</SelectItem>
+                                                        {vendors.map((value) => (
+                                                            <SelectItem key={value.vendor_id} value={value.vendor_id}>{value.name}</SelectItem>
+                                                        ))}
+                                                    </SelectGroup>
+                                                </SelectContent>
+                                            </Select>
+                                            {fieldState.invalid && (
+                                                <FieldError errors={[fieldState.error]} />
+                                            )}
+                                        </Field>
+                                    )}
+                                />
+                                <Controller 
+                                    name="is_primary"
+                                    control={form.control}
+                                    render={({ field, fieldState }: { 
+                                        field: ControllerRenderProps<z.infer<typeof formSchema>, "is_primary">, 
+                                        fieldState: ControllerFieldState }) => (
+                                        <Field orientation={"horizontal"} data-invalid={fieldState.invalid}>
+                                            <Checkbox 
+                                                id="is-assembly" 
+                                                checked={field.value}
+                                                onCheckedChange={field.onChange}
+                                                onBlur={field.onBlur}
+                                                ref={field.ref}
+                                            />
+                                            <FieldContent>
+                                                <FieldLabel htmlFor="is-assembly">Is this the primary vendor?</FieldLabel>
+                                                <FieldDescription>
+                                                    By clicking this checkbox, this vendor is considered the primary vendor.
+                                                </FieldDescription>
+                                                {fieldState.invalid && (
+                                                    <FieldError errors={[fieldState.error]} />
+                                                )}                                                
+                                            </FieldContent>
+                                        </Field>
+                                    )}
+                                />
+                            </FieldGroup>
+                        </FieldSet>
+                        <FieldSeparator />
+                        <FieldSet>
+                            <FieldLegend>Unique Vendor Info</FieldLegend>
+                            <FieldDescription>Input any unique vendor information about {part.part_no}.</FieldDescription>
+                            <Field data-invalid={!!form.formState.errors.part_no} >
+                                    <FieldLabel htmlFor="part-no">Vendor Part No.</FieldLabel>
+                                    <Input 
+                                        id="part-no" 
+                                        {...form.register("part_no")} 
+                                        aria-invalid={!!form.formState.errors.part_no}
+                                    />
+                                    {form.formState.errors.part_no && (
+                                        <FieldError errors={[form.formState.errors.part_no]} />
+                                    )}
+                                </Field>
+                                <Field>
+                                    <FieldLabel htmlFor="description">Vendor Description</FieldLabel>
+                                    <Textarea 
+                                        id="description"
+                                        {...form.register("description")} 
+                                        placeholder="Enter part description"
+                                    />
+                                </Field>  
+                        </FieldSet>
+                    </FieldGroup>
+                </form>
+
+                <SheetFooter className="border-t-1 border-neutral-200">
+                    <Button type="submit" form="add-vendor-form" onClick={() => console.log("Errors:", form.formState.errors)}>Save</Button>
+                    <Button variant="secondary" onClick={() => {
+                        form.reset()
+                        onOpenChange(false)
+                    }}>Cancel</Button>
+                </SheetFooter>
+
+            </SheetContent>
+        </Sheet>
+    )
+}
