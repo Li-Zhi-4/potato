@@ -9,16 +9,11 @@ import { useState } from "react"
 import { useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { columns } from "./columns"
-import { CreatePartSheet } from "@/components/sheets/create-part-sheet"
-import { getPartByPartNo, type Part, type VendorTable, getVendorTable, type SubpartTable, getSubpartTable } from "@/apis/parts"
 import { useParams } from "react-router-dom"
-import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Store, Component } from "lucide-react"
-import { AddVendorSheet } from "@/components/sheets/add-vendor-sheet"
-import { AddSubpartSheet } from "@/components/sheets/add-subpart-sheet"
 import { type BOMTable, getBOMByJobNo, getBOMTable, type Bom } from "@/apis/boms"
-
+import { Link } from "react-router-dom"
 
 export default function Page() {
     const { id } = useParams<{ id: string }>();
@@ -59,7 +54,12 @@ export default function Page() {
         >
             <AppSidebar variant="inset" />
             <SidebarInset>
-                <SiteHeader title={`BOMs / ${id}`} children={<Button onClick={() => setSheetOpen(true)}>Add a Part</Button>}/>
+                <SiteHeader title={`BOMs / ${id}`} children={
+                    <Button asChild>
+                        <Link to="/components">
+                            Add a Component
+                        </Link>
+                    </Button>}/>
                 <div className="flex flex-1 flex-col">
                     <div className="@container/main flex flex-1 flex-col gap-2">
                         <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6"> 
