@@ -2,13 +2,11 @@
 
 import {
     Sheet,
-    SheetClose,
     SheetContent,
     SheetDescription,
     SheetFooter,
     SheetHeader,
     SheetTitle,
-    SheetTrigger,
 } from "@/components/ui/sheet"
 import { Button } from "../ui/button"
 import {
@@ -21,7 +19,6 @@ import {
     FieldLegend,
     FieldSeparator,
     FieldSet,
-    FieldTitle,
 } from "@/components/ui/field"
 import {
     Select,
@@ -37,9 +34,9 @@ import { Textarea } from "../ui/textarea"
 import { Checkbox } from "../ui/checkbox"
 import { useState, useEffect } from "react"
 import { type Vendor, listVendors } from "@/apis/vendors"
-import { Controller, type ControllerRenderProps, type ControllerFieldState, type UseFormReturn, useForm } from "react-hook-form"
+import { Controller, type ControllerRenderProps, type ControllerFieldState, useForm } from "react-hook-form"
 import * as z from "zod"
-import { createPart, type Part } from "@/apis/parts"
+import { type Part } from "@/apis/parts"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { createPartVendor } from "@/apis/part_vendor"
 
