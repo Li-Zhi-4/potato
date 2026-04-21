@@ -115,3 +115,37 @@ def delete_bom(bom_id: str):
     db.execute("DELETE FROM boms WHERE bom_id = ?", (bom_id,))
     db.commit()
     return "", 204
+
+
+# -- tables --
+
+@bp.get("/job-id/<int:job_no>")
+def get_bom_by_job_id(job_no: str):
+    db = get_db()
+    row = db.execute("SELECT * FROM boms WHERE job_no = ?", (job_no,)).fetchone()
+    if not row:
+        return jsonify({"error": "not found"}), 404
+    return jsonify(_row_to_dict(row))
+
+
+
+@bp.get("/bom-table/<string:bom_id>")
+def get_bom_table(bom_id: str):
+    db = get_db()
+    row = db.execute(
+        """
+        SELECT 
+            c.quantity, 
+            c.status, 
+            c.uom, 
+            p.part_no, 
+            p.description, 
+            po.purchase_order_no
+        FROM components c
+        LEFT JOIN parts p ON c.part_id = p.part_id
+        LEFT JOIN purchase_orders po ON c.purchase_order_id = po.purchase_order_id
+        WHERE c.bom_id = ?;
+        """, (bom_id,)).fetchall()
+    if not row:
+        return jsonify({"error": "not found"}), 404
+    return jsonify([_row_to_dict(r) for r in row])

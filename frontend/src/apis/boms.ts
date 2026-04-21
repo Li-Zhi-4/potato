@@ -67,3 +67,27 @@ export async function deleteBom(id: string): Promise<void> {
     const res = await fetch(`${API_BASE}/boms/${id}`, { method: 'DELETE' })
     return handle<void>(res)
 }
+
+
+// -- tables --
+
+// GET /boms/:id
+export async function getBOMByJobNo(job_no: string): Promise<Bom> {
+    const res = await fetch(`${API_BASE}/boms/job-id/${job_no}`)
+    return handle<Bom>(res)
+}
+
+export type BOMTable = {
+    part_no: string
+    description?: string | null
+    status?: string | null
+    quantity: number
+    uom: string
+    purchase_order_no: string
+}
+
+// GET /boms/:id
+export async function getBOMTable(bom_id: string): Promise<BOMTable[]> {
+    const res = await fetch(`${API_BASE}/boms/bom-table/${bom_id}`)
+    return handle<BOMTable[]>(res)
+}
