@@ -25,49 +25,49 @@ INSERT INTO users (uid, username, password, first_name, last_name)
 VALUES ('0', 'admin', 'password', 'John', 'Doe');
 
 CREATE TABLE IF NOT EXISTS parts (
-    part_id     TEXT PRIMARY KEY,
-    part_no     TEXT NOT NULL UNIQUE,
-    description TEXT,
-    is_assembly TEXT NOT NULL CHECK (is_assembly IN ('part', 'assembly')),
-    workflow_id TEXT,
+    part_id         TEXT PRIMARY KEY,
+    part_no         TEXT NOT NULL UNIQUE,
+    description     TEXT,
+    is_assembly     TEXT NOT NULL CHECK (is_assembly IN ('part', 'assembly')),
 
-    created_at  TEXT NOT NULL DEFAULT (datetime('now')),
-    updated_at  TEXT NOT NULL DEFAULT (datetime('now')),
-    created_by  TEXT NOT NULL REFERENCES users(uid),
-    updated_by  TEXT REFERENCES users(uid)
+    created_at      TEXT NOT NULL DEFAULT (datetime('now')),
+    updated_at      TEXT NOT NULL DEFAULT (datetime('now')),
+    created_by      TEXT NOT NULL REFERENCES users(uid),
+    updated_by      TEXT NOT NULL REFERENCES users(uid)
 );
 
 CREATE TABLE IF NOT EXISTS vendors (
-    vendor_id   TEXT PRIMARY KEY,
-    name        TEXT NOT NULL UNIQUE,
+    vendor_id       TEXT PRIMARY KEY,
+    vendor_name     TEXT NOT NULL UNIQUE,
 
-    created_at  TEXT NOT NULL DEFAULT (datetime('now')),
-    updated_at  TEXT NOT NULL DEFAULT (datetime('now')),
-    created_by  TEXT NOT NULL REFERENCES users(uid),
-    updated_by  TEXT REFERENCES users(uid)
+    created_at      TEXT NOT NULL DEFAULT (datetime('now')),
+    updated_at      TEXT NOT NULL DEFAULT (datetime('now')),
+    created_by      TEXT NOT NULL REFERENCES users(uid),
+    updated_by      TEXT NOT NULL REFERENCES users(uid)
 );
 
 CREATE TABLE IF NOT EXISTS purchase_orders (
-    purchase_order_id   TEXT PRIMARY KEY,
-    purchase_order_no   INTEGER NOT NULL UNIQUE,
-    vendor_id           TEXT NOT NULL REFERENCES vendors(vendor_id),
-    status              TEXT NOT NULL DEFAULT 'draft' CHECK (status IN ('draft', 'sent', 'received', 'cancelled')),
+    po_id           TEXT PRIMARY KEY,
+    po_no           TEXT NOT NULL UNIQUE,
+    vendor_id       TEXT NOT NULL REFERENCES vendors(vendor_id),
+    status          TEXT NOT NULL DEFAULT 'draft' CHECK (status IN ('draft', 'sent', 'received', 'cancelled')),
 
-    created_at          TEXT NOT NULL DEFAULT (datetime('now')),
-    updated_at          TEXT NOT NULL DEFAULT (datetime('now')),
-    created_by          TEXT NOT NULL REFERENCES users(uid),
-    updated_by          TEXT REFERENCES users(uid)
+    created_at      TEXT NOT NULL DEFAULT (datetime('now')),
+    updated_at      TEXT NOT NULL DEFAULT (datetime('now')),
+    created_by      TEXT NOT NULL REFERENCES users(uid),
+    updated_by      TEXT NOT NULL REFERENCES users(uid)
 );
 
 CREATE TABLE IF NOT EXISTS boms (
     bom_id      TEXT PRIMARY KEY,
-    job_no      INTEGER,
+    title       TEXT NOT NULL,
+    job_no      TEXT UNIQUE,
     description TEXT,
 
     created_at  TEXT NOT NULL DEFAULT (datetime('now')),
     updated_at  TEXT NOT NULL DEFAULT (datetime('now')),
     created_by  TEXT NOT NULL REFERENCES users(uid),
-    updated_by  TEXT REFERENCES users(uid)
+    updated_by  TEXT NOT NULL REFERENCES users(uid)
 );
 
 
@@ -75,33 +75,34 @@ CREATE TABLE IF NOT EXISTS boms (
 
 -- Relationships --
 
-CREATE TABLE IF NOT EXISTS part_vendor (
-    part_vendor_id  TEXT PRIMARY KEY,
-    part_id         TEXT NOT NULL REFERENCES parts(part_id),
-    vendor_id       TEXT NOT NULL REFERENCES vendors(vendor_id),
-    part_no         TEXT,
-    description     TEXT,
-    is_primary      INTEGER NOT NULL DEFAULT 0 CHECK (is_primary IN (0, 1)),
+CREATE TABLE IF NOT EXISTS vendor_parts (
+    vendor_part_id      TEXT PRIMARY KEY,
+    part_id             TEXT NOT NULL REFERENCES parts(part_id),
+    vendor_id           TEXT NOT NULL REFERENCES vendors(vendor_id),
+    part_no             TEXT,
+    description         TEXT,
+    is_primary          INTEGER NOT NULL DEFAULT 0 CHECK (is_primary IN (0, 1)),
 
-    created_at      TEXT NOT NULL DEFAULT (datetime('now')),
-    updated_at      TEXT NOT NULL DEFAULT (datetime('now')),
-    created_by      TEXT NOT NULL REFERENCES users(uid),
-    updated_by      TEXT REFERENCES users(uid),
+    created_at          TEXT NOT NULL DEFAULT (datetime('now')),
+    updated_at          TEXT NOT NULL DEFAULT (datetime('now')),
+    created_by          TEXT NOT NULL REFERENCES users(uid),
+    updated_by          TEXT NOT NULL REFERENCES users(uid),
     UNIQUE(part_id, vendor_id)
 );
 
-CREATE TABLE IF NOT EXISTS part_subpart (
-    part_subpart_id TEXT PRIMARY KEY,
-    part_id         TEXT NOT NULL REFERENCES parts(part_id),
-    subpart_id      TEXT NOT NULL REFERENCES parts(part_id),
-    quantity        REAL NOT NULL DEFAULT 1,
-    uom             TEXT NOT NULL DEFAULT 'each',
+CREATE TABLE IF NOT EXISTS assembly_parts (
+    assembly_part_id    TEXT PRIMARY KEY,
+    part_id             TEXT NOT NULL REFERENCES parts(part_id),
+    subpart_id          TEXT NOT NULL REFERENCES parts(part_id),
+    quantity            REAL NOT NULL DEFAULT 1,
+    uom                 TEXT NOT NULL DEFAULT 'each',
 
-    created_at      TEXT NOT NULL DEFAULT (datetime('now')),
-    updated_at      TEXT NOT NULL DEFAULT (datetime('now')),
-    created_by      TEXT NOT NULL REFERENCES users(uid),
-    updated_by      TEXT REFERENCES users(uid),
+    created_at          TEXT NOT NULL DEFAULT (datetime('now')),
+    updated_at          TEXT NOT NULL DEFAULT (datetime('now')),
+    created_by          TEXT NOT NULL REFERENCES users(uid),
+    updated_by          TEXT NOT NULL REFERENCES users(uid),
     UNIQUE(part_id, subpart_id)
+    CHECK (subpart_id != part_id)
 );
 
 
@@ -113,7 +114,6 @@ CREATE TABLE IF NOT EXISTS components (
     component_id        TEXT PRIMARY KEY,
     bom_id              TEXT NOT NULL REFERENCES boms(bom_id),
     part_id             TEXT NOT NULL REFERENCES parts(part_id),
-    part_vendor_id      TEXT REFERENCES part_vendor(part_vendor_id),
     purchase_order_id   TEXT REFERENCES purchase_orders(purchase_order_id),
     quantity            REAL NOT NULL DEFAULT 1,
     uom                 TEXT NOT NULL DEFAULT 'each',
@@ -122,5 +122,5 @@ CREATE TABLE IF NOT EXISTS components (
     created_at          TEXT NOT NULL DEFAULT (datetime('now')),
     updated_at          TEXT NOT NULL DEFAULT (datetime('now')),
     created_by          TEXT NOT NULL REFERENCES users(uid),
-    updated_by          TEXT REFERENCES users(uid)
+    updated_by          TEXT NOT NULL REFERENCES users(uid)
 );
