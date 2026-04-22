@@ -19,7 +19,7 @@ def create_app(test_config=None) -> Flask:
     db.init_app(app)
 
     from app import auth
-    from app import parts
+    from app.controllers import parts
     from app import vendors
     from app import purchase_orders
     from app import boms
