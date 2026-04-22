@@ -3,7 +3,7 @@ from flask import Blueprint, jsonify, request
 from app.db import get_db
 import uuid
 from datetime import datetime
-# from utils.helpers import row_to_dict
+from app.utils.helpers import row_to_dict
 
 bp = Blueprint('parts', __name__, url_prefix='/api/parts')
 
@@ -17,7 +17,7 @@ def _row_to_dict(row) -> dict:
 def list_parts():
     db = get_db()
     rows = db.execute("SELECT * FROM parts ORDER BY part_no").fetchall()
-    return jsonify([_row_to_dict(r) for r in rows])
+    return jsonify([row_to_dict(r) for r in rows])
 
 
 @bp.post("")
@@ -62,7 +62,7 @@ def create_part():
     
     # retrieve
     row = db.execute("SELECT * FROM parts WHERE part_id = ?", (part_id,)).fetchone()
-    return jsonify(_row_to_dict(row)), 201
+    return jsonify(row_to_dict(row)), 201
 
 
 @bp.get("/<string:part_id>")
@@ -71,7 +71,7 @@ def get_part(part_id: str):
     row = db.execute("SELECT * FROM parts WHERE part_id = ?", (part_id,)).fetchone()
     if not row:
         return jsonify({"error": "not found"}), 404
-    return jsonify(_row_to_dict(row))
+    return jsonify(row_to_dict(row))
 
 
 @bp.get("/part-no/<string:part_no>")
@@ -80,7 +80,7 @@ def get_part_by_part_no(part_no: str):
     row = db.execute("SELECT * FROM parts WHERE part_no = ?", (part_no,)).fetchone()
     if not row:
         return jsonify({"error": "not found"}), 404
-    return jsonify(_row_to_dict(row))
+    return jsonify(row_to_dict(row))
 
 
 @bp.put("/<string:part_id>")
@@ -118,7 +118,7 @@ def update_part(part_id: str):
         values.append(data.get("updated_by"))
     if not fields:
         row = db.execute("SELECT * FROM parts WHERE part_id = ?", (part_id,)).fetchone()
-        return jsonify(_row_to_dict(row))
+        return jsonify(row_to_dict(row))
     
     # timestamp
     fields.append("updated_at = ?")
@@ -135,7 +135,7 @@ def update_part(part_id: str):
 
     # retrieve
     row = db.execute("SELECT * FROM parts WHERE part_id = ?", (part_id,)).fetchone()
-    return jsonify(_row_to_dict(row))
+    return jsonify(row_to_dict(row))
 
 
 @bp.delete("/<string:part_id>")
@@ -160,7 +160,7 @@ def get_parts_table():
         LEFT JOIN part_vendor ON parts.part_id = part_vendor.part_id AND part_vendor.is_primary = 1
         LEFT JOIN vendors ON part_vendor.vendor_id = vendors.vendor_id
     """).fetchall()
-    return jsonify([_row_to_dict(r) for r in rows]) 
+    return jsonify([row_to_dict(r) for r in rows]) 
 
 
 @bp.get("/vendor-table/<string:part_id>")
@@ -172,7 +172,7 @@ def get_vendor_table(part_id: str):
         LEFT JOIN vendors v ON pv.vendor_id = v.vendor_id
         WHERE pv.part_id = ?
     """, (part_id,)).fetchall()
-    return jsonify([_row_to_dict(r) for r in rows])
+    return jsonify([row_to_dict(r) for r in rows])
 
 
 @bp.get("/subparts-table/<string:part_id>")
@@ -189,4 +189,4 @@ def get_subparts_table(part_id: str):
         LEFT JOIN parts p ON sp.subpart_id = p.part_id
         WHERE sp.part_id = ?
     """, (part_id,)).fetchall()
-    return jsonify([_row_to_dict(r) for r in rows])
+    return jsonify([row_to_dict(r) for r in rows])
