@@ -18,6 +18,12 @@ export async function listBoms(): Promise<Bom[]> {
     return handle<Bom[]>(res)
 }
 
+// GET /boms?job_no
+export async function getBomByJobNo(job_no: string): Promise<Bom> {
+    const res = await fetch(`${API_BASE}/boms?job_no=${job_no}`)
+    return handle<Bom>(res)
+}
+
 // GET /boms/:id
 export async function getBom(id: string): Promise<Bom> {
     const res = await fetch(`${API_BASE}/boms/${id}`)
@@ -71,11 +77,6 @@ export async function deleteBom(id: string): Promise<void> {
 
 // -- tables --
 
-// GET /boms/:id
-export async function getBOMByJobNo(job_no: string): Promise<Bom> {
-    const res = await fetch(`${API_BASE}/boms/job-id/${job_no}`)
-    return handle<Bom>(res)
-}
 
 export type BOMTable = {
     part_no: string
@@ -88,6 +89,6 @@ export type BOMTable = {
 
 // GET /boms/:id
 export async function getBOMTable(bom_id: string): Promise<BOMTable[]> {
-    const res = await fetch(`${API_BASE}/boms/bom-table/${bom_id}`)
+    const res = await fetch(`${API_BASE}/boms/boms-table/${bom_id}`)
     return handle<BOMTable[]>(res)
 }

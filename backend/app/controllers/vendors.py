@@ -3,11 +3,13 @@ from flask import Blueprint, jsonify, request
 from app.db import get_db
 import uuid
 from datetime import datetime
+from app.utils.helpers import row_to_dict
+
 
 bp = Blueprint('vendors', __name__, url_prefix='/api/vendors')
 
 
-def _row_to_dict(row) -> dict:
+def row_to_dict(row) -> dict:
     return {k: row[k] for k in row.keys()}
 
 # -- api --
@@ -16,7 +18,7 @@ def _row_to_dict(row) -> dict:
 def list_vendors():
     db = get_db()
     rows = db.execute("SELECT * FROM vendors ORDER BY name").fetchall()
-    return jsonify([_row_to_dict(r) for r in rows])
+    return jsonify([row_to_dict(r) for r in rows])
 
 
 @bp.post("")
@@ -57,7 +59,7 @@ def create_vendor():
 
     # retrieve
     row = db.execute("SELECT * FROM vendors WHERE vendor_id = ?", (vendor_id,)).fetchone()
-    return jsonify(_row_to_dict(row)), 201
+    return jsonify(row_to_dict(row)), 201
 
 
 @bp.get("/<string:vendor_id>")
@@ -66,7 +68,7 @@ def get_vendor(vendor_id: str):
     row = db.execute("SELECT * FROM vendors WHERE vendor_id = ?", (vendor_id,)).fetchone()
     if not row:
         return jsonify({"error": "not found"}), 404
-    return jsonify(_row_to_dict(row))
+    return jsonify(row_to_dict(row))
 
 
 @bp.put("/<string:vendor_id>")
@@ -94,7 +96,7 @@ def update_vendor(vendor_id: str):
         values.append(data.get("updated_by"))
     if not fields:
         row = db.execute("SELECT * FROM vendors WHERE vendor_id = ?", (vendor_id,)).fetchone()
-        return jsonify(_row_to_dict(row))
+        return jsonify(row_to_dict(row))
 
     # timestamp
     fields.append("updated_at = ?")
@@ -110,7 +112,7 @@ def update_vendor(vendor_id: str):
 
     # retrieve
     row = db.execute("SELECT * FROM vendors WHERE vendor_id = ?", (vendor_id,)).fetchone()
-    return jsonify(_row_to_dict(row))
+    return jsonify(row_to_dict(row))
 
 
 @bp.delete("/<string:vendor_id>")

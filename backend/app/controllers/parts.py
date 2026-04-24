@@ -8,10 +8,7 @@ from app.utils.helpers import row_to_dict
 bp = Blueprint('parts', __name__, url_prefix='/api/parts')
 
 
-def _row_to_dict(row) -> dict:
-    return {k: row[k] for k in row.keys()}
-
-# -- api --
+# -- crud api --
 
 @bp.get("")
 def list_parts():
@@ -151,11 +148,11 @@ def delete_part(part_id: str):
 
 # -- tables --
 
-@bp.get("/table")
+@bp.get("/parts-table")
 def get_parts_table():
     db = get_db()
     rows = db.execute("""
-        SELECT parts.*, vendors.name AS vendor_name
+        SELECT parts.part_no, parts.description, parts.is_assembly, vendors.name AS vendor_name
         FROM parts
         LEFT JOIN part_vendor ON parts.part_id = part_vendor.part_id AND part_vendor.is_primary = 1
         LEFT JOIN vendors ON part_vendor.vendor_id = vendors.vendor_id
@@ -163,11 +160,11 @@ def get_parts_table():
     return jsonify([row_to_dict(r) for r in rows]) 
 
 
-@bp.get("/vendor-table/<string:part_id>")
+@bp.get("/vendors-table/<string:part_id>")
 def get_vendor_table(part_id: str):
     db = get_db()
     rows = db.execute("""
-        SELECT pv.*, v.name AS vendor_name
+        SELECT pv.part_no, pv.description, pv.is_primary, v.name AS vendor_name
         FROM part_vendor pv
         LEFT JOIN vendors v ON pv.vendor_id = v.vendor_id
         WHERE pv.part_id = ?

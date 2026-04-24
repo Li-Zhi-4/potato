@@ -3,20 +3,33 @@ from flask import Blueprint, jsonify, request
 from app.db import get_db
 import uuid
 from datetime import datetime
+from app.utils.helpers import row_to_dict
 
 bp = Blueprint('boms', __name__, url_prefix='/api/boms')
 
 
-def _row_to_dict(row) -> dict:
-    return {k: row[k] for k in row.keys()}
-
-# -- api --
+# -- crud api --
 
 @bp.get("")
-def list_boms():
+def get_bom():
     db = get_db()
-    rows = db.execute("SELECT * FROM boms ORDER BY job_no").fetchall()
-    return jsonify([_row_to_dict(r) for r in rows])
+    job_no = request.args.get("job_no")
+
+    if job_no:
+        row = db.execute("SELECT * FROM boms WHERE job_no = ?", (job_no,)).fetchone()
+        return jsonify(row_to_dict(row)) if row else (jsonify({"error": "not found"}), 404)
+
+    rows = db.execute("SELECT * FROM boms").fetchall()
+    return jsonify([row_to_dict(r) for r in rows])
+
+
+@bp.get("/<string:bom_id>")
+def get_bom_by_id(bom_id: str):
+    db = get_db()
+    row = db.execute("SELECT * FROM boms WHERE bom_id = ?", (bom_id,)).fetchone()
+    if not row:
+        return jsonify({"error": "not found"}), 404
+    return jsonify(row_to_dict(row))
 
 
 @bp.post("")
@@ -53,16 +66,8 @@ def create_bom():
 
     # retrieve
     row = db.execute("SELECT * FROM boms WHERE bom_id = ?", (bom_id,)).fetchone()
-    return jsonify(_row_to_dict(row)), 201
+    return jsonify(row_to_dict(row)), 201
 
-
-@bp.get("/<string:bom_id>")
-def get_bom(bom_id: str):
-    db = get_db()
-    row = db.execute("SELECT * FROM boms WHERE bom_id = ?", (bom_id,)).fetchone()
-    if not row:
-        return jsonify({"error": "not found"}), 404
-    return jsonify(_row_to_dict(row))
 
 
 @bp.put("/<string:bom_id>")
@@ -90,7 +95,7 @@ def update_bom(bom_id: str):
         values.append(data["updated_by"])
     if not fields:
         row = db.execute("SELECT * FROM boms WHERE bom_id = ?", (bom_id,)).fetchone()
-        return jsonify(_row_to_dict(row))
+        return jsonify(row_to_dict(row))
 
     # timestamp
     fields.append("updated_at = ?")
@@ -103,7 +108,7 @@ def update_bom(bom_id: str):
 
     # retrieve
     row = db.execute("SELECT * FROM boms WHERE bom_id = ?", (bom_id,)).fetchone()
-    return jsonify(_row_to_dict(row))
+    return jsonify(row_to_dict(row))
 
 
 @bp.delete("/<string:bom_id>")
@@ -119,17 +124,10 @@ def delete_bom(bom_id: str):
 
 # -- tables --
 
-@bp.get("/job-id/<int:job_no>")
-def get_bom_by_job_id(job_no: str):
-    db = get_db()
-    row = db.execute("SELECT * FROM boms WHERE job_no = ?", (job_no,)).fetchone()
-    if not row:
-        return jsonify({"error": "not found"}), 404
-    return jsonify(_row_to_dict(row))
 
 
 
-@bp.get("/bom-table/<string:bom_id>")
+@bp.get("/boms-table/<string:bom_id>")
 def get_bom_table(bom_id: str):
     db = get_db()
     row = db.execute(
@@ -148,4 +146,4 @@ def get_bom_table(bom_id: str):
         """, (bom_id,)).fetchall()
     if not row:
         return jsonify({"error": "not found"}), 404
-    return jsonify([_row_to_dict(r) for r in row])
+    return jsonify([row_to_dict(r) for r in row])

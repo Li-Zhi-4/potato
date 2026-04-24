@@ -3,11 +3,13 @@ from flask import Blueprint, jsonify, request
 from app.db import get_db
 import uuid
 from datetime import datetime
+from app.utils.helpers import row_to_dict
+
 
 bp = Blueprint('part_subpart', __name__, url_prefix='/api/part_subparts')
 
 
-def _row_to_dict(row) -> dict:
+def row_to_dict(row) -> dict:
     return {k: row[k] for k in row.keys()}
 
 # -- api --
@@ -16,7 +18,7 @@ def _row_to_dict(row) -> dict:
 def list_part_subparts():
     db = get_db()
     rows = db.execute("SELECT * FROM part_subpart ORDER BY part_id").fetchall()
-    return jsonify([_row_to_dict(r) for r in rows])
+    return jsonify([row_to_dict(r) for r in rows])
 
 
 @bp.post("")
@@ -73,7 +75,7 @@ def create_part_subpart():
 
     # retrieve
     row = db.execute("SELECT * FROM part_subpart WHERE part_subpart_id = ?", (part_subpart_id,)).fetchone()
-    return jsonify(_row_to_dict(row)), 201
+    return jsonify(row_to_dict(row)), 201
 
 
 @bp.get("/<string:part_subpart_id>")
@@ -82,7 +84,7 @@ def get_part_subpart(part_subpart_id: str):
     row = db.execute("SELECT * FROM part_subpart WHERE part_subpart_id = ?", (part_subpart_id,)).fetchone()
     if not row:
         return jsonify({"error": "not found"}), 404
-    return jsonify(_row_to_dict(row))
+    return jsonify(row_to_dict(row))
 
 
 @bp.put("/<string:part_subpart_id>")
@@ -128,7 +130,7 @@ def update_part_subpart(part_subpart_id: str):
         values.append(data["updated_by"])
     if not fields:
         row = db.execute("SELECT * FROM part_subpart WHERE part_subpart_id = ?", (part_subpart_id,)).fetchone()
-        return jsonify(_row_to_dict(row))
+        return jsonify(row_to_dict(row))
 
     # timestamp
     fields.append("updated_at = ?")
@@ -144,7 +146,7 @@ def update_part_subpart(part_subpart_id: str):
 
     # retrieve
     row = db.execute("SELECT * FROM part_subpart WHERE part_subpart_id = ?", (part_subpart_id,)).fetchone()
-    return jsonify(_row_to_dict(row))
+    return jsonify(row_to_dict(row))
 
 
 @bp.delete("/<string:part_subpart_id>")

@@ -20,12 +20,12 @@ def create_app(test_config=None) -> Flask:
 
     from app import auth
     from app.controllers import parts
-    from app import vendors
-    from app import purchase_orders
-    from app import boms
-    from app import part_vendor
-    from app import part_subpart
-    from app import components
+    from app.controllers import vendors
+    from app.controllers import purchase_orders
+    from app.controllers import boms
+    from app.controllers import part_vendor
+    from app.controllers import part_subpart
+    from app.controllers import components
     app.register_blueprint(auth.bp)
     app.register_blueprint(parts.bp)
     app.register_blueprint(vendors.bp)

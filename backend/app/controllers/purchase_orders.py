@@ -3,11 +3,13 @@ from flask import Blueprint, jsonify, request
 from app.db import get_db
 import uuid
 from datetime import datetime
+from app.utils.helpers import row_to_dict
+
 
 bp = Blueprint('purchase_orders', __name__, url_prefix='/api/purchase_orders')
 
 
-def _row_to_dict(row) -> dict:
+def row_to_dict(row) -> dict:
     return {k: row[k] for k in row.keys()}
 
 # -- api --
@@ -16,7 +18,7 @@ def _row_to_dict(row) -> dict:
 def list_purchase_orders():
     db = get_db()
     rows = db.execute("SELECT * FROM purchase_orders ORDER BY purchase_order_no").fetchall()
-    return jsonify([_row_to_dict(r) for r in rows])
+    return jsonify([row_to_dict(r) for r in rows])
 
 
 @bp.post("")
@@ -68,7 +70,7 @@ def create_purchase_order():
 
     # retrieve
     row = db.execute("SELECT * FROM purchase_orders WHERE purchase_order_id = ?", (purchase_order_id,)).fetchone()
-    return jsonify(_row_to_dict(row)), 201
+    return jsonify(row_to_dict(row)), 201
 
 
 @bp.get("/<string:purchase_order_id>")
@@ -77,7 +79,7 @@ def get_purchase_order(purchase_order_id: str):
     row = db.execute("SELECT * FROM purchase_orders WHERE purchase_order_id = ?", (purchase_order_id,)).fetchone()
     if not row:
         return jsonify({"error": "not found"}), 404
-    return jsonify(_row_to_dict(row))
+    return jsonify(row_to_dict(row))
 
 
 @bp.put("/<string:purchase_order_id>")
@@ -123,7 +125,7 @@ def update_purchase_order(purchase_order_id: str):
         values.append(data.get("updated_by"))
     if not fields:
         row = db.execute("SELECT * FROM purchase_orders WHERE purchase_order_id = ?", (purchase_order_id,)).fetchone()
-        return jsonify(_row_to_dict(row))
+        return jsonify(row_to_dict(row))
 
     # timestamp
     fields.append("updated_at = ?")
@@ -136,7 +138,7 @@ def update_purchase_order(purchase_order_id: str):
 
     # retrieve
     row = db.execute("SELECT * FROM purchase_orders WHERE purchase_order_id = ?", (purchase_order_id,)).fetchone()
-    return jsonify(_row_to_dict(row))
+    return jsonify(row_to_dict(row))
 
 
 @bp.delete("/<string:purchase_order_id>")

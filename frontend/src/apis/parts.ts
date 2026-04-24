@@ -97,7 +97,7 @@ export type PartsTable = {
 
 // GET /parts/table
 export async function getPartsTable(): Promise<PartsTable[]> {
-    const res = await fetch(`${API_BASE}/parts/table`)
+    const res = await fetch(`${API_BASE}/parts/parts-table`)
     return handle<PartsTable[]>(res)
 }
 
@@ -122,7 +122,7 @@ export type VendorTable = {
 
 // GET /parts/vendor-table/:id
 export async function getVendorTable(id: string): Promise<VendorTable[]> {
-    const res = await fetch(`${API_BASE}/parts/vendor-table/${id}`)
+    const res = await fetch(`${API_BASE}/parts/vendors-table/${id}`)
     return handle<VendorTable[]>(res)
 }
 

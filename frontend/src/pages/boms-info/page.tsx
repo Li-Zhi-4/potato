@@ -12,7 +12,7 @@ import { columns } from "./columns"
 import { useParams } from "react-router-dom"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Store, Component } from "lucide-react"
-import { type BOMTable, getBOMByJobNo, getBOMTable, type Bom } from "@/apis/boms"
+import { type BOMTable, getBomByJobNo, getBOMTable, type Bom } from "@/apis/boms"
 import { Link } from "react-router-dom"
 
 export default function Page() {
@@ -29,7 +29,7 @@ export default function Page() {
     useEffect(() => {
         async function fetchData() {
             if (!id) return
-            const bom = await getBOMByJobNo(id)
+            const bom = await getBomByJobNo(id)
             const results = await getBOMTable(bom.bom_id)
             console.log("test")
             console.log(results)
