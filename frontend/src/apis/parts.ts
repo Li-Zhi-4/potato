@@ -28,7 +28,7 @@ export async function getPart(id: string): Promise<Part> {
 
 // GET /parts/:id
 export async function getPartByPartNo(part_no: string): Promise<Part> {
-    const res = await fetch(`${API_BASE}/parts/part-no/${part_no}`)
+    const res = await fetch(`${API_BASE}/parts?part_no=${part_no}`)
     return handle<Part>(res)
 }
 

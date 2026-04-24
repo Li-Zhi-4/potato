@@ -13,6 +13,12 @@ bp = Blueprint('parts', __name__, url_prefix='/api/parts')
 @bp.get("")
 def list_parts():
     db = get_db()
+    part_no = request.args.get("part_no")
+
+    if part_no:
+        row = db.execute("SELECT * FROM parts WHERE part_no = ?", (part_no,)).fetchone()
+        return jsonify(row_to_dict(row)) if row else (jsonify({"error": "not found"}), 404)
+    
     rows = db.execute("SELECT * FROM parts ORDER BY part_no").fetchall()
     return jsonify([row_to_dict(r) for r in rows])
 
@@ -66,15 +72,6 @@ def create_part():
 def get_part(part_id: str):
     db = get_db()
     row = db.execute("SELECT * FROM parts WHERE part_id = ?", (part_id,)).fetchone()
-    if not row:
-        return jsonify({"error": "not found"}), 404
-    return jsonify(row_to_dict(row))
-
-
-@bp.get("/part-no/<string:part_no>")
-def get_part_by_part_no(part_no: str):
-    db = get_db()
-    row = db.execute("SELECT * FROM parts WHERE part_no = ?", (part_no,)).fetchone()
     if not row:
         return jsonify({"error": "not found"}), 404
     return jsonify(row_to_dict(row))
