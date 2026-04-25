@@ -14,7 +14,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { LayoutDashboardIcon, ListIcon, ChartBarIcon, FolderIcon, UsersIcon, CameraIcon, FileTextIcon, Settings2Icon, CircleHelpIcon, SearchIcon, DatabaseIcon, FileChartColumnIcon, FileIcon, CommandIcon } from "lucide-react"
+import { LayoutDashboardIcon, CameraIcon, FileTextIcon, Settings2Icon, CircleHelpIcon, SearchIcon, DatabaseIcon, FileChartColumnIcon, FileIcon, CommandIcon } from "lucide-react"
+import { Salad } from "lucide-react"
 
 const data = {
   user: {
@@ -28,27 +29,6 @@ const data = {
       url: "/",
       icon: ( <LayoutDashboardIcon /> ),
     },
-    // {
-    //   title: "Lifecycle",
-    //   url: "#",
-    //   icon: ( <ListIcon /> ),
-    // },
-    // {
-    //   title: "Analytics",
-    //   url: "#",
-    //   icon: ( <ChartBarIcon /> ),
-    // },
-    // {
-    //   title: "Projects",
-    //   url: "#",
-    //   icon: ( <FolderIcon/> ),
-    // },
-    // {
-    //   title: "Team",
-    //   url: "#",
-    //   icon: ( <UsersIcon />
-    //   ),
-    // },
   ],
   navClouds: [
     {
@@ -194,8 +174,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               className="data-[slot=sidebar-menu-button]:p-1.5!"
             >
               <a href="#">
-                <CommandIcon className="size-5!" />
-                <span className="text-base font-semibold">Acme Inc.</span>
+                <Salad className="size-5!" />
+                <span className="text-base font-semibold">Potato Salad</span>
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -204,7 +184,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         <NavMain items={data.navMain} />
         <NavDocuments items={data.entities} />
-        <NavRelationships items={data.relationships} />
+        {/* <NavRelationships items={data.relationships} /> */}
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
