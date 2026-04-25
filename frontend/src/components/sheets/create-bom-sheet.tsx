@@ -24,6 +24,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { createBom } from "@/apis/boms"
 
 export const formSchema = z.object({
+    title: z.string().optional(),
     job_no: z.coerce.number().min(1, "required"),
     description: z.string().optional(),
 })
@@ -39,6 +40,7 @@ export function CreateBomSheet({ open, onOpenChange, onUpdate }: FormSheetProps)
     const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: {
+            title: "",
             job_no: 1,
             description: "",
         },
@@ -46,6 +48,7 @@ export function CreateBomSheet({ open, onOpenChange, onUpdate }: FormSheetProps)
 
     async function onSubmit(data: z.infer<typeof formSchema>) {
         await createBom({
+            title: data.title ?? null,
             job_no: Number(data.job_no),
             description: data.description ?? null,
 
@@ -73,6 +76,17 @@ export function CreateBomSheet({ open, onOpenChange, onUpdate }: FormSheetProps)
                     <FieldGroup className="p-6">
                         <FieldSet>
                             <FieldGroup>
+                                <Field data-invalid={!!form.formState.errors.title} >
+                                    <FieldLabel htmlFor="title">Title</FieldLabel>
+                                    <Input 
+                                        id="title" 
+                                        {...form.register("title")} 
+                                        aria-invalid={!!form.formState.errors.title}
+                                    />
+                                    {form.formState.errors.title && (
+                                        <FieldError errors={[form.formState.errors.title]} />
+                                    )}
+                                </Field>
                                 <Field data-invalid={!!form.formState.errors.job_no} >
                                     <FieldLabel htmlFor="job-no">Job No.</FieldLabel>
                                     <Input 

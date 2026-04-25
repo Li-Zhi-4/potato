@@ -21,7 +21,7 @@ import { Input } from "@/components/ui/input"
 
 import { columns } from "./columns"
 import { API_BASE } from "@/lib/api"
-import { type CreatePartVendorInput, createPartVendor, type PartVendor } from "@/apis/part_vendor"
+import { type CreateVendorPartInput, createVendorPart, type VendorPart } from "@/apis/vendorParts"
 
 
 export default function Page() {
@@ -33,12 +33,12 @@ export default function Page() {
     const [isPrimary, setIsPrimary] = useState(false)
     const [createdBy, setCreatedBy] = useState("0")
     const [updatedBy, setUpdatedBy] = useState("0")
-    const [data, setData] = useState<PartVendor[]>([])
+    const [data, setData] = useState<VendorPart[]>([])
     const [refresh, setRefresh] = useState(0)
 
     useEffect(() => {
         async function fetchData() {
-            const res = await fetch(`${API_BASE}/part_vendors`)
+            const res = await fetch(`${API_BASE}/vendor_parts`)
             const result = await res.json()
             setData(result)
         }
@@ -56,7 +56,7 @@ export default function Page() {
         setUpdatedBy("0")
     }
 
-    const INPUT: CreatePartVendorInput = {
+    const INPUT: CreateVendorPartInput = {
         part_id: partId,
         vendor_id: vendorId,
         name: name,
@@ -69,7 +69,7 @@ export default function Page() {
     }
 
     async function handleSubmit() {
-        await createPartVendor(INPUT)
+        await createVendorPart(INPUT)
         handleReset()
         setRefresh(r => r + 1)
     }

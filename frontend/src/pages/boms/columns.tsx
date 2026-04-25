@@ -7,11 +7,11 @@ import { Link } from "react-router-dom"
 
 export const columns: ColumnDef<Bom>[] = [
     {
-        accessorKey: "job_no",
-        header: () => <div className="text-center">Job No.</div>,
+        accessorKey: "title",
+        header: () => <div className="text-center">Title</div>,
         cell: ({ row }) => <div className="text-center">
             <Link to={`/boms/${row.getValue("job_no")}/info`} className="no-underline hover:underline underline-offset-4 font-medium">
-                {row.getValue("job_no")}
+                {row.getValue("title")}
             </Link>
         </div>
     },
@@ -20,7 +20,10 @@ export const columns: ColumnDef<Bom>[] = [
         header: "Description"
     },
     {
-        accessorKey: "bom_id",
-        header: "BOM Id"
+        accessorKey: "job_no",
+        header: () => <div className="text-center">Job No.</div>,
+        cell: ({ row }) => <div className="text-center">
+            {row.getValue("job_no")}
+        </div>
     },
 ]

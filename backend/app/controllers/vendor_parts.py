@@ -5,7 +5,7 @@ import uuid
 from datetime import datetime
 from app.utils.helpers import row_to_dict
 
-bp = Blueprint('part_vendor', __name__, url_prefix='/api/part_vendors')
+bp = Blueprint('vendor_parts', __name__, url_prefix='/api/vendor_parts')
 
 
 def row_to_dict(row) -> dict:
@@ -14,9 +14,9 @@ def row_to_dict(row) -> dict:
 # -- api --
 
 @bp.get("")
-def list_part_vendors():
+def list_vendor_parts():
     db = get_db()
-    rows = db.execute("SELECT * FROM part_vendor ORDER BY part_id").fetchall()
+    rows = db.execute("SELECT * FROM vendor_parts ORDER BY part_id").fetchall()
     return jsonify([row_to_dict(r) for r in rows])
 
 
@@ -43,7 +43,7 @@ def create_part_vendor():
         return jsonify({"error": "vendor not found"}), 404
 
     # prep
-    part_vendor_id = str(uuid.uuid4())
+    vendor_part_id = str(uuid.uuid4())
     is_primary = 1 if data.get("is_primary") else 0
     now = datetime.now().isoformat()
 
@@ -51,16 +51,15 @@ def create_part_vendor():
     try:
         db.execute(
             """
-            INSERT INTO part_vendor (
-                part_vendor_id, part_id, vendor_id, name, part_no, description, is_primary,
+            INSERT INTO vendor_parts (
+                vendor_part_id, part_id, vendor_id, part_no, description, is_primary,
                 created_at, updated_at, created_by, updated_by
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
-                part_vendor_id,
+                vendor_part_id,
                 part_id,
                 vendor_id,
-                data.get("name"),
                 data.get("part_no"),
                 data.get("description"),
                 is_primary,
@@ -75,26 +74,26 @@ def create_part_vendor():
         return jsonify({"error": "a vendor entry for this part already exists"}), 409
 
     # retrieve
-    row = db.execute("SELECT * FROM part_vendor WHERE part_vendor_id = ?", (part_vendor_id,)).fetchone()
+    row = db.execute("SELECT * FROM vendor_parts WHERE vendor_part_id = ?", (vendor_part_id,)).fetchone()
     return jsonify(row_to_dict(row)), 201
 
 
-@bp.get("/<string:part_vendor_id>")
-def get_part_vendor(part_vendor_id: str):
+@bp.get("/<string:vendor_part_id>")
+def get_part_vendor(vendor_part_id: str):
     db = get_db()
-    row = db.execute("SELECT * FROM part_vendor WHERE part_vendor_id = ?", (part_vendor_id,)).fetchone()
+    row = db.execute("SELECT * FROM vendor_parts WHERE vendor_part_id = ?", (vendor_part_id,)).fetchone()
     if not row:
         return jsonify({"error": "not found"}), 404
     return jsonify(row_to_dict(row))
 
 
-@bp.put("/<string:part_vendor_id>")
-def update_part_vendor(part_vendor_id: str):
+@bp.put("/<string:vendor_part_id>")
+def update_part_vendor(vendor_part_id: str):
     data = request.get_json(silent=True) or {}
     db = get_db()
 
     # validation
-    id = db.execute("SELECT part_vendor_id FROM part_vendor WHERE part_vendor_id = ?", (part_vendor_id,)).fetchone()
+    id = db.execute("SELECT vendor_part_id FROM vendor_parts WHERE vendor_part_id = ?", (vendor_part_id,)).fetchone()
     if not id:
         return jsonify({"error": "not found"}), 404
 
@@ -120,9 +119,6 @@ def update_part_vendor(part_vendor_id: str):
             return jsonify({"error": "vendor not found"}), 404
         fields.append("vendor_id = ?")
         values.append(vendor_id)
-    if "name" in data:
-        fields.append("name = ?")
-        values.append(data["name"])
     if "part_no" in data:
         fields.append("part_no = ?")
         values.append(data["part_no"])
@@ -136,32 +132,32 @@ def update_part_vendor(part_vendor_id: str):
         fields.append("updated_by = ?")
         values.append(data["updated_by"])
     if not fields:
-        row = db.execute("SELECT * FROM part_vendor WHERE part_vendor_id = ?", (part_vendor_id,)).fetchone()
+        row = db.execute("SELECT * FROM vendor_parts WHERE vendor_part_id = ?", (vendor_part_id,)).fetchone()
         return jsonify(row_to_dict(row))
 
     # timestamp
     fields.append("updated_at = ?")
     values.append(datetime.now().isoformat())
-    values.append(part_vendor_id)
+    values.append(vendor_part_id)
 
     # execute
     try:
-        db.execute(f"UPDATE part_vendor SET {', '.join(fields)} WHERE part_vendor_id = ?", values)
+        db.execute(f"UPDATE vendor_parts SET {', '.join(fields)} WHERE vendor_part_id = ?", values)
         db.commit()
     except sqlite3.IntegrityError:
         return jsonify({"error": "a vendor entry for this part already exists"}), 409
 
     # retrieve
-    row = db.execute("SELECT * FROM part_vendor WHERE part_vendor_id = ?", (part_vendor_id,)).fetchone()
+    row = db.execute("SELECT * FROM vendor_parts WHERE vendor_part_id = ?", (vendor_part_id,)).fetchone()
     return jsonify(row_to_dict(row))
 
 
-@bp.delete("/<string:part_vendor_id>")
-def delete_part_vendor(part_vendor_id: str):
+@bp.delete("/<string:vendor_part_id>")
+def delete_part_vendor(vendor_part_id: str):
     db = get_db()
-    id = db.execute("SELECT part_vendor_id FROM part_vendor WHERE part_vendor_id = ?", (part_vendor_id,)).fetchone()
+    id = db.execute("SELECT vendor_part_id FROM vendor_parts WHERE vendor_part_id = ?", (vendor_part_id,)).fetchone()
     if not id:
         return jsonify({"error": "not found"}), 404
-    db.execute("DELETE FROM part_vendor WHERE part_vendor_id = ?", (part_vendor_id,))
+    db.execute("DELETE FROM vendor_parts WHERE vendor_part_id = ?", (vendor_part_id,))
     db.commit()
     return "", 204

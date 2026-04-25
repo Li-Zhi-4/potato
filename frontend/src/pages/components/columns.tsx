@@ -22,7 +22,7 @@ export const columns: ColumnDef<Component>[] = [
         header: "Part/Vendor Id"
     },
     {
-        accessorKey: "purchase_order_id",
+        accessorKey: "po_id",
         header: "PO Id"
     },
     {

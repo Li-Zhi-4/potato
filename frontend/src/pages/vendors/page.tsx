@@ -22,7 +22,7 @@ import { type Vendor } from "@/apis/vendors"
 
 
 export default function Page() {
-    const [name, setName] = useState("")
+    const [vendorName, setVendorName] = useState("")
     const [createdBy, setCreatedBy] = useState("0")
     const [updatedBy, setUpdatedBy] = useState("0")
     const [data, setData] = useState<Vendor[]>([])
@@ -38,11 +38,11 @@ export default function Page() {
     }, [refresh])
 
     function handleReset() {
-        setName("")
+        setVendorName("")
     }
 
     const INPUT: CreateVendorInput = {
-        name: name,
+        vendor_name: vendorName,
 
         created_by: createdBy,
         updated_by: updatedBy
@@ -77,8 +77,8 @@ export default function Page() {
                                         id="name" 
                                         type="text"
                                         placeholder="" 
-                                        value={name} 
-                                        onChange={(e) => setName(e.target.value)}
+                                        value={vendorName} 
+                                        onChange={(e) => setVendorName(e.target.value)}
                                     />
                                 </Field>
 

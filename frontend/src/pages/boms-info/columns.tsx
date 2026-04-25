@@ -12,9 +12,9 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 import { EllipsisVertical } from "lucide-react"
-import type { BOMTable } from "@/apis/boms"
+import type { BomTable } from "@/apis/boms"
 
-export const columns: ColumnDef<BOMTable>[] = [
+export const columns: ColumnDef<BomTable>[] = [
     {
         accessorKey: "part_no",
         header: () => <div className="text-center">Part No.</div>,
@@ -37,7 +37,7 @@ export const columns: ColumnDef<BOMTable>[] = [
         header: "UOM"
     },
     {
-        accessorKey: "purchase_order_no",
+        accessorKey: "po_no",
         header: "Purchase Order No."
     },
     {

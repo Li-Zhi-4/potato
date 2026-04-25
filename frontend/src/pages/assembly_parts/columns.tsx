@@ -1,12 +1,12 @@
 "use client"
 
 import { type ColumnDef } from "@tanstack/react-table"
-import { type PartSubpart } from "@/apis/part_subpart"
+import { type AssemblyPart } from "@/apis/assembly_parts"
 
 
-export const columns: ColumnDef<PartSubpart>[] = [
+export const columns: ColumnDef<AssemblyPart>[] = [
     {
-        accessorKey: "part_subpart_id",
+        accessorKey: "assembly_part_id",
         header: "Part/Subpart Id"
     },
     {

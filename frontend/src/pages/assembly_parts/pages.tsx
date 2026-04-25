@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input"
 
 import { columns } from "./columns"
 import { API_BASE } from "@/lib/api"
-import { type CreatePartSubpartInput, createPartSubpart, type PartSubpart } from "@/apis/part_subpart"
+import { type CreateAssemblyPartInput, createAssemblyPart, type AssemblyPart } from "@/apis/assembly_parts"
 
 
 export default function Page() {
@@ -27,12 +27,12 @@ export default function Page() {
     const [uom, setUOM] = useState("each")
     const [createdBy, setCreatedBy] = useState("0")
     const [updatedBy, setUpdatedBy] = useState("0")
-    const [data, setData] = useState<PartSubpart[]>([])
+    const [data, setData] = useState<AssemblyPart[]>([])
     const [refresh, setRefresh] = useState(0)
 
     useEffect(() => {
         async function fetchData() {
-            const res = await fetch(`${API_BASE}/part_subparts`)
+            const res = await fetch(`${API_BASE}/assembly_parts`)
             const result = await res.json()
             setData(result)
         }
@@ -48,7 +48,7 @@ export default function Page() {
         setUpdatedBy("0")
     }
 
-    const INPUT: CreatePartSubpartInput = {
+    const INPUT: CreateAssemblyPartInput = {
         part_id: partId,
         subpart_id: subpartId,
         quantity: quantity,
@@ -59,7 +59,7 @@ export default function Page() {
     }
 
     async function handleSubmit() {
-        await createPartSubpart(INPUT)
+        await createAssemblyPart(INPUT)
         handleReset()
         setRefresh(r => r + 1)
     }

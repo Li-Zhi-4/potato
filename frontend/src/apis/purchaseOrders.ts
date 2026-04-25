@@ -1,8 +1,8 @@
 import { API_BASE, handle } from "../lib/api"
 
 export type PurchaseOrder = {
-    purchase_order_id: string
-    purchase_order_no: number
+    po_id: string
+    po_no: number
     vendor_id: string
     status: 'draft' | 'sent' | 'received' | 'cancelled'
 
@@ -27,7 +27,7 @@ export async function getPurchaseOrder(id: string): Promise<PurchaseOrder> {
 
 export type CreatePurchaseOrderInput = {
     vendor_id: string
-    purchase_order_no?: number
+    po_no?: number
     status?: 'draft' | 'sent' | 'received' | 'cancelled'
 
     created_by: string
@@ -46,7 +46,7 @@ export async function createPurchaseOrder(input: CreatePurchaseOrderInput): Prom
 
 
 export type UpdatePurchaseOrderInput = {
-    purchase_order_no?: number
+    po_no?: number
     vendor_id?: string
     status?: 'draft' | 'sent' | 'received' | 'cancelled'
 

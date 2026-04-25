@@ -2,7 +2,7 @@ import { API_BASE, handle } from "../lib/api"
 
 export type Vendor = {
     vendor_id: string
-    name: string
+    vendor_name: string
 
     created_at: string
     updated_at: string
@@ -24,7 +24,7 @@ export async function getVendor(id: string): Promise<Vendor> {
 
 
 export type CreateVendorInput = {
-    name: string
+    vendor_name: string
 
     created_by: string
     updated_by: string | null
@@ -42,7 +42,7 @@ export async function createVendor(input: CreateVendorInput): Promise<Vendor> {
 
 
 export type UpdateVendorInput = {
-    name: string
+    vendor_name: string
 
     updated_by: string | null
 }

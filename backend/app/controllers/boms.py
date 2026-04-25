@@ -46,12 +46,13 @@ def create_bom():
         db.execute(
             """
             INSERT INTO boms (
-                bom_id, job_no, description,
+                bom_id, title, job_no, description,
                 created_at, updated_at, created_by, updated_by
-            ) VALUES (?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 bom_id,
+                data.get("title"),
                 data.get("job_no"),
                 data.get("description"),
                 now,
@@ -138,10 +139,10 @@ def get_boms_table(bom_id: str):
             c.uom, 
             p.part_no, 
             p.description, 
-            po.purchase_order_no
+            po.po_no
         FROM components c
         LEFT JOIN parts p ON c.part_id = p.part_id
-        LEFT JOIN purchase_orders po ON c.purchase_order_id = po.purchase_order_id
+        LEFT JOIN purchase_orders po ON c.po_id = po.po_id
         WHERE c.bom_id = ?;
         """, (bom_id,)).fetchall()
     if not row:

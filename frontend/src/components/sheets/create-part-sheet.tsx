@@ -36,13 +36,13 @@ import { Controller, type ControllerRenderProps, type ControllerFieldState, useF
 import * as z from "zod"
 import { createPart } from "@/apis/parts"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { createPartVendor } from "@/apis/part_vendor"
+import { createVendorPart } from "@/apis/vendorParts"
 
 export const formSchema = z.object({
     part_no: z.string().min(1, "Part number is required"),
     description: z.string().optional(),
     is_assembly: z.boolean(),
-    vendor: z.string()
+    vendor_id: z.string()
 })
 
 interface FormSheetProps {
@@ -68,7 +68,7 @@ export function CreatePartSheet({ open, onOpenChange, onUpdate }: FormSheetProps
                 part_no: "",
                 description: "",
                 is_assembly: false,
-                vendor: "none"
+                vendor_id: "none"
             },
         })
 
@@ -77,13 +77,12 @@ export function CreatePartSheet({ open, onOpenChange, onUpdate }: FormSheetProps
             part_no: data.part_no,
             description: data.description ?? null,
             is_assembly: data.is_assembly,
-            workflow_id: "0",
             created_by: "0",
             updated_by: "0",
         })
-        await createPartVendor({
+        await createVendorPart({
             part_id: response.part_id,
-            vendor_id: data.vendor,
+            vendor_id: data.vendor_id,
             is_primary: true,
 
             created_by: "0",
@@ -133,13 +132,13 @@ export function CreatePartSheet({ open, onOpenChange, onUpdate }: FormSheetProps
                                     />
                                 </Field>                                
                                 <Controller 
-                                    name="vendor"
+                                    name="vendor_id"
                                     control={form.control}
                                     render={({ field, fieldState }: { 
-                                        field: ControllerRenderProps<z.infer<typeof formSchema>, "vendor">, 
+                                        field: ControllerRenderProps<z.infer<typeof formSchema>, "vendor_id">, 
                                         fieldState: ControllerFieldState }) => (
                                         <Field data-invalid={fieldState.invalid}>
-                                            <FieldLabel htmlFor="vendor">Primary Vendor</FieldLabel>
+                                            <FieldLabel htmlFor="vendor_id">Primary Vendor</FieldLabel>
                                             <Select 
                                                 value={field.value}
                                                 onValueChange={field.onChange}
@@ -152,7 +151,7 @@ export function CreatePartSheet({ open, onOpenChange, onUpdate }: FormSheetProps
                                                         <SelectLabel>Vendors</SelectLabel>
                                                         <SelectItem value="none">None</SelectItem>
                                                         {vendorsData.map((value) => (
-                                                            <SelectItem key={value.vendor_id} value={value.vendor_id}>{value.name}</SelectItem>
+                                                            <SelectItem key={value.vendor_id} value={value.vendor_id}>{value.vendor_name}</SelectItem>
                                                         ))}
                                                     </SelectGroup>
                                                 </SelectContent>

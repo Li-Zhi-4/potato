@@ -5,7 +5,7 @@ export type Component = {
     bom_id: string
     part_id: string
     part_vendor_id: string | null
-    purchase_order_id: string | null
+    po_id: string | null
     quantity: number
     uom: string
     status: string | null
@@ -34,7 +34,7 @@ export type CreateComponentInput = {
     bom_id: string
     part_id: string
     part_vendor_id?: string | null
-    purchase_order_id?: string | null
+    po_id?: string | null
     quantity?: number
     uom?: string
     status?: string | null
@@ -58,7 +58,7 @@ export type UpdateComponentInput = {
     bom_id?: string
     part_id?: string
     part_vendor_id?: string | null
-    purchase_order_id?: string | null
+    po_id?: string | null
     quantity?: number
     uom?: string
     status?: string | null

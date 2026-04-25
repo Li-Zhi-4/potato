@@ -1,10 +1,10 @@
 "use client"
 
 import { type ColumnDef } from "@tanstack/react-table"
-import { type PartVendor } from "@/apis/part_vendor"
+import { type VendorPart } from "@/apis/vendorParts"
 
 
-export const columns: ColumnDef<PartVendor>[] = [
+export const columns: ColumnDef<VendorPart>[] = [
     {
         accessorKey: "part_vendor_id",
         header: "Part/Vendor Id"

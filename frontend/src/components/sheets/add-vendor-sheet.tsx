@@ -38,7 +38,7 @@ import { Controller, type ControllerRenderProps, type ControllerFieldState, useF
 import * as z from "zod"
 import { type Part } from "@/apis/parts"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { createPartVendor } from "@/apis/part_vendor"
+import { createVendorPart } from "@/apis/vendorParts"
 
 export const formSchema = z.object({
     part_id: z.string().optional(),
@@ -79,7 +79,7 @@ export function AddVendorSheet({ open, onOpenChange, onUpdate, part }: FormSheet
 
     async function onSubmit(data: z.infer<typeof formSchema>) {
         console.log("tes")
-        const response2 = await createPartVendor({
+        const response2 = await createVendorPart({
             part_id: part.part_id,
             vendor_id: data.vendor_id,
             is_primary: data.is_primary,
@@ -134,7 +134,7 @@ export function AddVendorSheet({ open, onOpenChange, onUpdate, part }: FormSheet
                                                         <SelectLabel>Vendors</SelectLabel>
                                                         <SelectItem value="none">None</SelectItem>
                                                         {vendors.map((value) => (
-                                                            <SelectItem key={value.vendor_id} value={value.vendor_id}>{value.name}</SelectItem>
+                                                            <SelectItem key={value.vendor_id} value={value.vendor_id}>{value.vendor_name}</SelectItem>
                                                         ))}
                                                     </SelectGroup>
                                                 </SelectContent>

@@ -43,16 +43,15 @@ def create_part():
         db.execute(
             """
             INSERT INTO parts (
-                part_id, part_no, description, is_assembly, workflow_id, 
+                part_id, part_no, description, is_assembly, 
                 created_at, updated_at, created_by, updated_by
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 part_id,
                 part_no,
                 data.get("description"),
                 is_assembly,
-                data.get("workflow_id", "0"),
                 now,
                 now,
                 data.get("created_by"),
@@ -104,9 +103,6 @@ def update_part(part_id: str):
         is_assembly = 'assembly' if data.get("is_assembly") else 'part'
         fields.append("is_assembly = ?")
         values.append(is_assembly)
-    if "workflow_id" in data:
-        fields.append("workflow_id = ?")
-        values.append(data.get("workflow_id"))
     if "updated_by" in data:
         fields.append("updated_by = ?")
         values.append(data.get("updated_by"))
@@ -149,10 +145,10 @@ def delete_part(part_id: str):
 def get_parts_table():
     db = get_db()
     rows = db.execute("""
-        SELECT parts.part_no, parts.description, parts.is_assembly, vendors.name AS vendor_name
+        SELECT parts.part_no, parts.description, parts.is_assembly, vendors.vendor_name AS vendor_name
         FROM parts
-        LEFT JOIN part_vendor ON parts.part_id = part_vendor.part_id AND part_vendor.is_primary = 1
-        LEFT JOIN vendors ON part_vendor.vendor_id = vendors.vendor_id
+        LEFT JOIN vendor_parts ON parts.part_id = vendor_parts.part_id AND vendor_parts.is_primary = 1
+        LEFT JOIN vendors ON vendor_parts.vendor_id = vendors.vendor_id
     """).fetchall()
     return jsonify([row_to_dict(r) for r in rows]) 
 
@@ -161,10 +157,10 @@ def get_parts_table():
 def get_vendors_table(part_id: str):
     db = get_db()
     rows = db.execute("""
-        SELECT pv.part_no, pv.description, pv.is_primary, v.name AS vendor_name
-        FROM part_vendor pv
-        LEFT JOIN vendors v ON pv.vendor_id = v.vendor_id
-        WHERE pv.part_id = ?
+        SELECT vp.part_no, vp.description, vp.is_primary, v.vendor_name AS vendor_name
+        FROM vendor_parts vp
+        LEFT JOIN vendors v ON vp.vendor_id = v.vendor_id
+        WHERE vp.part_id = ?
     """, (part_id,)).fetchall()
     return jsonify([row_to_dict(r) for r in rows])
 
@@ -179,7 +175,7 @@ def get_subparts_table(part_id: str):
             p.part_id as subpart_id,
             p.part_no as subpart_part_no,
             p.description as subpart_description
-        FROM part_subpart sp
+        FROM assembly_parts sp
         LEFT JOIN parts p ON sp.subpart_id = p.part_id
         WHERE sp.part_id = ?
     """, (part_id,)).fetchall()

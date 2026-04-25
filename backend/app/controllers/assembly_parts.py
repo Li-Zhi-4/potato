@@ -6,7 +6,7 @@ from datetime import datetime
 from app.utils.helpers import row_to_dict
 
 
-bp = Blueprint('part_subpart', __name__, url_prefix='/api/part_subparts')
+bp = Blueprint('assembly_parts', __name__, url_prefix='/api/assembly_parts')
 
 
 def row_to_dict(row) -> dict:
@@ -15,14 +15,14 @@ def row_to_dict(row) -> dict:
 # -- api --
 
 @bp.get("")
-def list_part_subparts():
+def list_assembly_parts():
     db = get_db()
-    rows = db.execute("SELECT * FROM part_subpart ORDER BY part_id").fetchall()
+    rows = db.execute("SELECT * FROM assembly_parts ORDER BY part_id").fetchall()
     return jsonify([row_to_dict(r) for r in rows])
 
 
 @bp.post("")
-def create_part_subpart():
+def create_assembly_parts():
     data = request.get_json(silent=True) or {}
 
     # validation
@@ -45,20 +45,20 @@ def create_part_subpart():
         return jsonify({"error": "subpart not found"}), 404
 
     # prep
-    part_subpart_id = str(uuid.uuid4())
+    assembly_part_id = str(uuid.uuid4())
     now = datetime.now().isoformat()
 
     # execute
     try:
         db.execute(
             """
-            INSERT INTO part_subpart (
-                part_subpart_id, part_id, subpart_id, quantity, uom,
+            INSERT INTO assembly_parts (
+                assembly_part_id, part_id, subpart_id, quantity, uom,
                 created_at, updated_at, created_by, updated_by
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
-                part_subpart_id,
+                assembly_part_id,
                 part_id,
                 subpart_id,
                 data.get("quantity", 1),
@@ -74,26 +74,26 @@ def create_part_subpart():
         return jsonify({"error": "this subpart is already assigned to this part"}), 409
 
     # retrieve
-    row = db.execute("SELECT * FROM part_subpart WHERE part_subpart_id = ?", (part_subpart_id,)).fetchone()
+    row = db.execute("SELECT * FROM assembly_parts WHERE assembly_part_id = ?", (assembly_part_id,)).fetchone()
     return jsonify(row_to_dict(row)), 201
 
 
-@bp.get("/<string:part_subpart_id>")
-def get_part_subpart(part_subpart_id: str):
+@bp.get("/<string:assembly_part_id>")
+def get_assembly_parts(assembly_part_id: str):
     db = get_db()
-    row = db.execute("SELECT * FROM part_subpart WHERE part_subpart_id = ?", (part_subpart_id,)).fetchone()
+    row = db.execute("SELECT * FROM assembly_parts WHERE assembly_part_id = ?", (assembly_part_id,)).fetchone()
     if not row:
         return jsonify({"error": "not found"}), 404
     return jsonify(row_to_dict(row))
 
 
-@bp.put("/<string:part_subpart_id>")
-def update_part_subpart(part_subpart_id: str):
+@bp.put("/<string:assembly_part_id>")
+def update_assembly_parts(assembly_part_id: str):
     data = request.get_json(silent=True) or {}
     db = get_db()
 
     # validation
-    id = db.execute("SELECT part_subpart_id FROM part_subpart WHERE part_subpart_id = ?", (part_subpart_id,)).fetchone()
+    id = db.execute("SELECT assembly_part_id FROM assembly_parts WHERE assembly_part_id = ?", (assembly_part_id,)).fetchone()
     if not id:
         return jsonify({"error": "not found"}), 404
 
@@ -129,32 +129,32 @@ def update_part_subpart(part_subpart_id: str):
         fields.append("updated_by = ?")
         values.append(data["updated_by"])
     if not fields:
-        row = db.execute("SELECT * FROM part_subpart WHERE part_subpart_id = ?", (part_subpart_id,)).fetchone()
+        row = db.execute("SELECT * FROM assembly_parts WHERE assembly_part_id = ?", (assembly_part_id,)).fetchone()
         return jsonify(row_to_dict(row))
 
     # timestamp
     fields.append("updated_at = ?")
     values.append(datetime.now().isoformat())
-    values.append(part_subpart_id)
+    values.append(assembly_part_id)
 
     # execute
     try:
-        db.execute(f"UPDATE part_subpart SET {', '.join(fields)} WHERE part_subpart_id = ?", values)
+        db.execute(f"UPDATE assembly_parts SET {', '.join(fields)} WHERE assembly_part_id = ?", values)
         db.commit()
     except sqlite3.IntegrityError:
         return jsonify({"error": "this subpart is already assigned to this part"}), 409
 
     # retrieve
-    row = db.execute("SELECT * FROM part_subpart WHERE part_subpart_id = ?", (part_subpart_id,)).fetchone()
+    row = db.execute("SELECT * FROM assembly_parts WHERE assembly_part_id = ?", (assembly_part_id,)).fetchone()
     return jsonify(row_to_dict(row))
 
 
-@bp.delete("/<string:part_subpart_id>")
-def delete_part_subpart(part_subpart_id: str):
+@bp.delete("/<string:assembly_part_id>")
+def delete_assembly_parts(assembly_part_id: str):
     db = get_db()
-    id = db.execute("SELECT part_subpart_id FROM part_subpart WHERE part_subpart_id = ?", (part_subpart_id,)).fetchone()
+    id = db.execute("SELECT assembly_part_id FROM assembly_parts WHERE assembly_part_id = ?", (assembly_part_id,)).fetchone()
     if not id:
         return jsonify({"error": "not found"}), 404
-    db.execute("DELETE FROM part_subpart WHERE part_subpart_id = ?", (part_subpart_id,))
+    db.execute("DELETE FROM assembly_parts WHERE assembly_part_id = ?", (assembly_part_id,))
     db.commit()
     return "", 204

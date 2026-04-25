@@ -32,6 +32,7 @@ export async function getBom(id: string): Promise<Bom> {
 
 
 export type CreateBomInput = {
+    title?: string | null
     job_no?: number | null
     description?: string | null
 
@@ -84,7 +85,7 @@ export type BomTable = {
     status?: string | null
     quantity: number
     uom: string
-    purchase_order_no: string
+    po_no: string
 }
 
 // GET /boms/boms-table/:bom_id

@@ -6,7 +6,7 @@ import { type PurchaseOrder } from "@/apis/purchaseOrders"
 
 export const columns: ColumnDef<PurchaseOrder>[] = [
     {
-        accessorKey: "purchase_order_no",
+        accessorKey: "po_no",
         header: "Purchase Order No."
     },
     {

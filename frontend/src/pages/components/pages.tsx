@@ -23,7 +23,7 @@ import { type CreateComponentInput, createComponent, type Component } from "@/ap
 export default function Page() {
     const [bomId, setBomId] = useState("")
     const [partId, setPartId] = useState("")
-    const [partVendorId, setPartVendorId] = useState("")
+    const [VendorPartId, setVendorPartId] = useState("")
     const [purchaseOrderId, setPurchaseOrderId] = useState("")
     const [quantity, setQuantity] = useState(1)
     const [uom, setUOM] = useState("each")
@@ -44,7 +44,7 @@ export default function Page() {
 
     function handleReset() {
         setBomId("")
-        setPartVendorId("")
+        setVendorPartId("")
         setPartId("")
         setPurchaseOrderId("")
         setQuantity(1)
@@ -57,8 +57,8 @@ export default function Page() {
     const INPUT: CreateComponentInput = {
         bom_id: bomId,
         part_id: partId,
-        part_vendor_id: partVendorId,
-        purchase_order_id: purchaseOrderId,
+        part_vendor_id: VendorPartId,
+        po_id: purchaseOrderId,
         quantity: quantity,
         uom: uom,
         status: status,
@@ -119,8 +119,8 @@ export default function Page() {
                                             id="part-vendor-id"
                                             type="text"
                                             placeholder=""
-                                            value={partVendorId}
-                                            onChange={(e) => setPartVendorId(e.target.value)}
+                                            value={VendorPartId}
+                                            onChange={(e) => setVendorPartId(e.target.value)}
                                         />
                                     </Field>
                                     <Field>

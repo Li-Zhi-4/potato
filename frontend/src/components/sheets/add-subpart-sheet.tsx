@@ -31,7 +31,7 @@ import { Controller, type ControllerRenderProps, type ControllerFieldState, useF
 import * as z from "zod"
 import { listParts, type Part } from "@/apis/parts"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { createPartSubpart } from "@/apis/part_subpart"
+import { createAssemblyPart } from "@/apis/assembly_parts"
 
 export const formSchema = z.object({
     part_id: z.string().optional(),
@@ -69,7 +69,7 @@ export function AddSubpartSheet({ open, onOpenChange, onUpdate, part }: FormShee
         })
 
     async function onSubmit(data: z.infer<typeof formSchema>) {
-        const response = await createPartSubpart({
+        const response = await createAssemblyPart({
             part_id: part.part_id,
             subpart_id: data.subpart_id,
             quantity: Number(data.quantity),

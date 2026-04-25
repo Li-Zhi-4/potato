@@ -6,7 +6,6 @@ export type Part = {
     part_no: string
     description: string | null
     is_assembly: 'part' | 'assembly'
-    workflow_id: string | null
 
     created_at: string
     updated_at: string
@@ -37,7 +36,6 @@ export type CreatePartInput = {
     part_no: string
     description: string | null
     is_assembly: boolean
-    workflow_id: string | null
 
     created_by: string
     updated_by: string | null
@@ -58,7 +56,6 @@ export type UpdatePartInput = {
     part_no?: string | null
     description?: string | null
     is_assembly?: boolean | null
-    workflow_id?: string | null
 
     updated_by: string
 }
@@ -86,7 +83,6 @@ export type PartsTable = {
     part_no: string
     description: string | null
     is_assembly: 'part' | 'assembly'
-    workflow_id: string | null
     vendor_name: string | null
 
     created_at: string

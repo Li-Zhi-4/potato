@@ -54,7 +54,7 @@ export default function Page() {
     }
 
     const INPUT: CreatePurchaseOrderInput = {
-        purchase_order_no: purchaseOrderNo,
+        po_no: purchaseOrderNo,
         vendor_id: vendorId,
         status: status,
 

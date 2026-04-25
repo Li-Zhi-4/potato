@@ -3,8 +3,8 @@
 -- DROP TABLE IF EXISTS vendors;
 -- DROP TABLE IF EXISTS purchase_orders;
 -- DROP TABLE IF EXISTS boms;
--- DROP TABLE IF EXISTS part_vendor;
--- DROP TABLE IF EXISTS part_subpart;
+-- DROP TABLE IF EXISTS vendor_parts;
+-- DROP TABLE IF EXISTS assembly_parts;
 -- DROP TABLE IF EXISTS components;
 
 
@@ -114,7 +114,7 @@ CREATE TABLE IF NOT EXISTS components (
     component_id        TEXT PRIMARY KEY,
     bom_id              TEXT NOT NULL REFERENCES boms(bom_id),
     part_id             TEXT NOT NULL REFERENCES parts(part_id),
-    purchase_order_id   TEXT REFERENCES purchase_orders(purchase_order_id),
+    po_id               TEXT REFERENCES purchase_orders(po_id),
     quantity            REAL NOT NULL DEFAULT 1,
     uom                 TEXT NOT NULL DEFAULT 'each',
     status              TEXT,

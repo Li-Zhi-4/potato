@@ -23,16 +23,16 @@ def create_app(test_config=None) -> Flask:
     from app.controllers import vendors
     from app.controllers import purchase_orders
     from app.controllers import boms
-    from app.controllers import part_vendor
-    from app.controllers import part_subpart
+    from app.controllers import vendor_parts
+    from app.controllers import assembly_parts
     from app.controllers import components
     app.register_blueprint(auth.bp)
     app.register_blueprint(parts.bp)
     app.register_blueprint(vendors.bp)
     app.register_blueprint(purchase_orders.bp)
     app.register_blueprint(boms.bp)
-    app.register_blueprint(part_vendor.bp)
-    app.register_blueprint(part_subpart.bp)
+    app.register_blueprint(vendor_parts.bp)
+    app.register_blueprint(assembly_parts.bp)
     app.register_blueprint(components.bp)
 
     return app

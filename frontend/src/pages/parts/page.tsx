@@ -104,7 +104,7 @@ export default function Page() {
                                                 <SelectGroup>
                                                     <SelectItem value="all">All</SelectItem>
                                                     {vendorsData.map((value) => (
-                                                        <SelectItem key={value.vendor_id} value={value.name}>{value.name}</SelectItem>
+                                                        <SelectItem key={value.vendor_id} value={value.vendor_name}>{value.vendor_name}</SelectItem>
                                                     ))}
                                                 </SelectGroup>
                                             </SelectContent>
