@@ -2,13 +2,11 @@
 
 import {
     Sheet,
-    SheetClose,
     SheetContent,
     SheetDescription,
     SheetFooter,
     SheetHeader,
     SheetTitle,
-    SheetTrigger,
 } from "@/components/ui/sheet"
 import { Button } from "../ui/button"
 import {
@@ -18,10 +16,7 @@ import {
     FieldError,
     FieldGroup,
     FieldLabel,
-    FieldLegend,
-    FieldSeparator,
     FieldSet,
-    FieldTitle,
 } from "@/components/ui/field"
 import {
     Select,
@@ -37,7 +32,7 @@ import { Textarea } from "../ui/textarea"
 import { Checkbox } from "../ui/checkbox"
 import { useState, useEffect } from "react"
 import { type Vendor, listVendors } from "@/apis/vendors"
-import { Controller, type ControllerRenderProps, type ControllerFieldState, type UseFormReturn, useForm } from "react-hook-form"
+import { Controller, type ControllerRenderProps, type ControllerFieldState, useForm } from "react-hook-form"
 import * as z from "zod"
 import { createPart } from "@/apis/parts"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -50,19 +45,19 @@ export const formSchema = z.object({
     vendor: z.string()
 })
 
-interface CreatePartSheetProps {
+interface FormSheetProps {
     open: boolean,
     onOpenChange: (open: boolean) => void
-    onPartCreated: () => void
+    onUpdate: () => void
 }
 
-export function CreatePartSheet({ open, onOpenChange, onPartCreated }: CreatePartSheetProps) {
-    const [vendors, setVendors] = useState<Vendor[]>([])
+export function CreatePartSheet({ open, onOpenChange, onUpdate }: FormSheetProps) {
+    const [vendorsData, setVendorsData] = useState<Vendor[]>([])
 
     useEffect(() => {
         async function fetchData() {
             const vendorList = await listVendors()
-            setVendors(vendorList)
+            setVendorsData(vendorList)
         }
         fetchData()
     }, [])
@@ -86,7 +81,7 @@ export function CreatePartSheet({ open, onOpenChange, onPartCreated }: CreatePar
             created_by: "0",
             updated_by: "0",
         })
-        const response2 = await createPartVendor({
+        await createPartVendor({
             part_id: response.part_id,
             vendor_id: data.vendor,
             is_primary: true,
@@ -94,10 +89,9 @@ export function CreatePartSheet({ open, onOpenChange, onPartCreated }: CreatePar
             created_by: "0",
             updated_by: "0"
         })
-        console.log(response2)
         form.reset()
         onOpenChange(false)
-        onPartCreated()
+        onUpdate()
     }
 
     return (
@@ -157,7 +151,7 @@ export function CreatePartSheet({ open, onOpenChange, onPartCreated }: CreatePar
                                                     <SelectGroup>
                                                         <SelectLabel>Vendors</SelectLabel>
                                                         <SelectItem value="none">None</SelectItem>
-                                                        {vendors.map((value) => (
+                                                        {vendorsData.map((value) => (
                                                             <SelectItem key={value.vendor_id} value={value.vendor_id}>{value.name}</SelectItem>
                                                         ))}
                                                     </SelectGroup>

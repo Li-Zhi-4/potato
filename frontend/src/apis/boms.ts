@@ -78,7 +78,7 @@ export async function deleteBom(id: string): Promise<void> {
 // -- tables --
 
 
-export type BOMTable = {
+export type BomTable = {
     part_no: string
     description?: string | null
     status?: string | null
@@ -87,8 +87,8 @@ export type BOMTable = {
     purchase_order_no: string
 }
 
-// GET /boms/:id
-export async function getBOMTable(bom_id: string): Promise<BOMTable[]> {
+// GET /boms/boms-table/:bom_id
+export async function getBomsTable(bom_id: string): Promise<BomTable[]> {
     const res = await fetch(`${API_BASE}/boms/boms-table/${bom_id}`)
-    return handle<BOMTable[]>(res)
+    return handle<BomTable[]>(res)
 }

@@ -158,7 +158,7 @@ def get_parts_table():
 
 
 @bp.get("/vendors-table/<string:part_id>")
-def get_vendor_table(part_id: str):
+def get_vendors_table(part_id: str):
     db = get_db()
     rows = db.execute("""
         SELECT pv.part_no, pv.description, pv.is_primary, v.name AS vendor_name

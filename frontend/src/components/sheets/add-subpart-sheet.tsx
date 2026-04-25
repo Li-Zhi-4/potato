@@ -43,11 +43,11 @@ export const formSchema = z.object({
 interface FormSheetProps {
     open: boolean,
     onOpenChange: (open: boolean) => void
-    onPartCreated: () => void
+    onUpdate: () => void
     part: Part
 }
 
-export function AddSubpartSheet({ open, onOpenChange, onPartCreated, part }: FormSheetProps) {
+export function AddSubpartSheet({ open, onOpenChange, onUpdate, part }: FormSheetProps) {
     const [parts, setParts] = useState<Part[]>([])
 
     useEffect(() => {
@@ -69,7 +69,7 @@ export function AddSubpartSheet({ open, onOpenChange, onPartCreated, part }: For
         })
 
     async function onSubmit(data: z.infer<typeof formSchema>) {
-        const response2 = await createPartSubpart({
+        const response = await createPartSubpart({
             part_id: part.part_id,
             subpart_id: data.subpart_id,
             quantity: Number(data.quantity),
@@ -78,10 +78,10 @@ export function AddSubpartSheet({ open, onOpenChange, onPartCreated, part }: For
             created_by: "0",
             updated_by: "0"
         })
-        console.log(response2)
+        console.log(response)
         form.reset()
         onOpenChange(false)
-        onPartCreated()
+        onUpdate()
     }
 
     return (

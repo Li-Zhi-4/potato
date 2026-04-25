@@ -121,7 +121,7 @@ export type VendorTable = {
 }
 
 // GET /parts/vendor-table/:id
-export async function getVendorTable(id: string): Promise<VendorTable[]> {
+export async function getVendorsTable(id: string): Promise<VendorTable[]> {
     const res = await fetch(`${API_BASE}/parts/vendors-table/${id}`)
     return handle<VendorTable[]>(res)
 }
@@ -137,7 +137,7 @@ export type SubpartTable = {
 }
 
 // GET /parts/subparts-table/:id
-export async function getSubpartTable(id: string): Promise<SubpartTable[]> {
+export async function getSubpartsTable(id: string): Promise<SubpartTable[]> {
     const res = await fetch(`${API_BASE}/parts/subparts-table/${id}`)
     return handle<SubpartTable[]>(res)
 }

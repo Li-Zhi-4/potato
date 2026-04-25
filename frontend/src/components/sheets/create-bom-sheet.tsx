@@ -2,61 +2,39 @@
 
 import {
     Sheet,
-    SheetClose,
     SheetContent,
     SheetDescription,
     SheetFooter,
     SheetHeader,
     SheetTitle,
-    SheetTrigger,
 } from "@/components/ui/sheet"
 import { Button } from "../ui/button"
 import {
     Field,
-    FieldContent,
-    FieldDescription,
     FieldError,
     FieldGroup,
     FieldLabel,
-    FieldLegend,
-    FieldSeparator,
     FieldSet,
-    FieldTitle,
 } from "@/components/ui/field"
-import {
-    Select,
-    SelectContent,
-    SelectGroup,
-    SelectItem,
-    SelectLabel,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select"
 import { Input } from "../ui/input"
 import { Textarea } from "../ui/textarea"
-import { Checkbox } from "../ui/checkbox"
-import { useState, useEffect } from "react"
-import { type Vendor, listVendors } from "@/apis/vendors"
-import { Controller, type ControllerRenderProps, type ControllerFieldState, type UseFormReturn, useForm } from "react-hook-form"
+import { useForm } from "react-hook-form"
 import * as z from "zod"
-import { createPart } from "@/apis/parts"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { createPartVendor } from "@/apis/part_vendor"
-import { createBom, type CreateBomInput } from "@/apis/boms"
-import type { Form } from "radix-ui"
+import { createBom } from "@/apis/boms"
 
 export const formSchema = z.object({
     job_no: z.coerce.number().min(1, "required"),
     description: z.string().optional(),
 })
 
-interface CreatePartSheetProps {
+interface FormSheetProps {
     open: boolean,
     onOpenChange: (open: boolean) => void
-    onPartCreated: () => void
+    onUpdate: () => void
 }
 
-export function CreateBOMSheet({ open, onOpenChange, onPartCreated }: CreatePartSheetProps) {
+export function CreateBomSheet({ open, onOpenChange, onUpdate }: FormSheetProps) {
 
     const form = useForm({
         resolver: zodResolver(formSchema),
@@ -76,7 +54,7 @@ export function CreateBOMSheet({ open, onOpenChange, onPartCreated }: CreatePart
         })
         form.reset()
         onOpenChange(false)
-        onPartCreated()
+        onUpdate()
     }
 
     return (

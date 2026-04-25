@@ -12,37 +12,34 @@ import { columns } from "./columns"
 import { useParams } from "react-router-dom"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Store, Component } from "lucide-react"
-import { type BOMTable, getBomByJobNo, getBOMTable, type Bom } from "@/apis/boms"
+import { type BomTable, getBomByJobNo, getBomsTable, type Bom } from "@/apis/boms"
 import { Link } from "react-router-dom"
 
 export default function Page() {
-    const { id } = useParams<{ id: string }>();
-    const [refresh, setRefresh] = useState(0)
-    const [tabValue, setTabValue] = useState("flattened")
-
+    const { job_no } = useParams<{ job_no: string }>();
     const [bomData, setBomData] = useState<Bom>()
-    const [bomTableData, setBomTableData] = useState<BOMTable[]>([])
+    const [bomTableData, setBomTableData] = useState<BomTable[]>([])
+    const [tabValue, setTabValue] = useState("flattened")
+    const [refresh, setRefresh] = useState(0)
 
     const [sheetOpen, setSheetOpen] = useState(false)
     const [subpartSheetOpen, setSubpartSheetOpen] = useState(false)
 
     useEffect(() => {
         async function fetchData() {
-            if (!id) return
-            const bom = await getBomByJobNo(id)
-            const results = await getBOMTable(bom.bom_id)
-            console.log("test")
-            console.log(results)
+            if (!job_no) return
+            const bom = await getBomByJobNo(job_no)
+            const bomsTable = await getBomsTable(bom.bom_id)
             setBomData(bom)
-            setBomTableData(results)
+            setBomTableData(bomsTable)
         }
         fetchData()
-    }, [id, refresh])
+    }, [job_no, refresh])
 
-    const handlePartCreated = () => {
+    const handleRefresh = () => {
         setRefresh(prev => prev + 1)
     }
-    console.log("Current Table Data Length:", bomTableData.length);
+
     return (
         <SidebarProvider
             style={
@@ -54,7 +51,7 @@ export default function Page() {
         >
             <AppSidebar variant="inset" />
             <SidebarInset>
-                <SiteHeader title={`BOMs / ${id}`} children={
+                <SiteHeader title={`BOMs / ${job_no}`} children={
                     <Button asChild>
                         <Link to="/components">
                             Add a Component

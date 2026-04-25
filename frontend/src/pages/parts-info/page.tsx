@@ -8,9 +8,8 @@ import {
 import { useState } from "react"
 import { useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { columns, subpartsColumns } from "./columns"
-import { CreatePartSheet } from "@/components/sheets/create-part-sheet"
-import { getPartByPartNo, type Part, type VendorTable, getVendorTable, type SubpartTable, getSubpartTable } from "@/apis/parts"
+import { vendorsTableColumns, subpartsTableColumns } from "./columns"
+import { getPartByPartNo, type Part, type VendorTable, getVendorsTable, type SubpartTable, getSubpartsTable } from "@/apis/parts"
 import { useParams } from "react-router-dom"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -20,31 +19,29 @@ import { AddSubpartSheet } from "@/components/sheets/add-subpart-sheet"
 
 
 export default function Page() {
-    const { id } = useParams<{ id: string }>();
-    const [data, setData] = useState<VendorTable[]>([])
-    const [subpartData, setSubpartData] = useState<SubpartTable[]>([])
-    const [refresh, setRefresh] = useState(0)
-    const [tabValue, setTabValue] = useState("vendors")
-
+    const { part_no } = useParams<{ part_no: string }>();
+    const [vendorTableData, setVendorTableData] = useState<VendorTable[]>([])
+    const [subpartTableData, setSubpartTableData] = useState<SubpartTable[]>([])
     const [partData, setPartData] = useState<Part>()
-
-    const [sheetOpen, setSheetOpen] = useState(false)
+    const [tabValue, setTabValue] = useState("vendors")
+    const [vendorSheetOpen, setVendorSheetOpen] = useState(false)
     const [subpartSheetOpen, setSubpartSheetOpen] = useState(false)
+    const [refresh, setRefresh] = useState(0)
 
     useEffect(() => {
         async function fetchData() {
-            if (!id) return
-            const part = await getPartByPartNo(id)
-            const partResults = await getVendorTable(part.part_id)
-            const subpartsResults = await getSubpartTable(part.part_id)
-            setData(partResults)
+            if (!part_no) return
+            const part = await getPartByPartNo(part_no)
+            const vendorsTable = await getVendorsTable(part.part_id)
+            const subpartsTable = await getSubpartsTable(part.part_id)
             setPartData(part)
-            setSubpartData(subpartsResults)
+            setVendorTableData(vendorsTable)
+            setSubpartTableData(subpartsTable)
         }
         fetchData()
     }, [refresh])
 
-    const handlePartCreated = () => {
+    const handleRefresh = () => {
         setRefresh(prev => prev + 1)
     }
 
@@ -92,7 +89,7 @@ export default function Page() {
                                         </TabsList>
                                         <div>
                                             {tabValue === "vendors" ? (
-                                                <Button onClick={() => setSheetOpen(true)}>Add a Vendor</Button>
+                                                <Button onClick={() => setVendorSheetOpen(true)}>Add a Vendor</Button>
                                             ) : (
                                                 <Button onClick={() => setSubpartSheetOpen(true)}>Add a Subpart</Button>
                                             )}
@@ -100,14 +97,14 @@ export default function Page() {
                                     </div>
                                     <TabsContent value="vendors" className="flex flex-col gap-3">
                                         <DataTable 
-                                            columns={columns} 
-                                            data={data}  
+                                            columns={vendorsTableColumns} 
+                                            data={vendorTableData}  
                                         />
                                     </TabsContent>
                                     <TabsContent value="subparts" className="flex flex-col gap-3">
                                         <DataTable 
-                                            columns={subpartsColumns} 
-                                            data={subpartData}  
+                                            columns={subpartsTableColumns} 
+                                            data={subpartTableData}  
                                         />
                                     </TabsContent>
                                 </Tabs>
@@ -120,9 +117,9 @@ export default function Page() {
 
             {partData ? (
                 <AddVendorSheet
-                    open={sheetOpen}
-                    onOpenChange={setSheetOpen} 
-                    onPartCreated={handlePartCreated}
+                    open={vendorSheetOpen}
+                    onOpenChange={setVendorSheetOpen} 
+                    onUpdate={handleRefresh}
                     part={partData}
                 />
             ) : (
@@ -133,7 +130,7 @@ export default function Page() {
                 <AddSubpartSheet
                     open={subpartSheetOpen}
                     onOpenChange={setSubpartSheetOpen} 
-                    onPartCreated={handlePartCreated}
+                    onUpdate={handleRefresh}
                     part={partData}
                 />
             ) : (

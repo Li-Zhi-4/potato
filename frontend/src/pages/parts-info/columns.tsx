@@ -15,7 +15,7 @@ import {
 import { EllipsisVertical } from "lucide-react"
 import { type SubpartTable, type VendorTable } from "@/apis/parts"
 
-export const columns: ColumnDef<VendorTable>[] = [
+export const vendorsTableColumns: ColumnDef<VendorTable>[] = [
     {
         accessorKey: "vendor_name",
         header: () => <div className="text-center">Vendor</div>,
@@ -74,7 +74,7 @@ export const columns: ColumnDef<VendorTable>[] = [
 ]
 
 
-export const subpartsColumns: ColumnDef<SubpartTable>[] = [
+export const subpartsTableColumns: ColumnDef<SubpartTable>[] = [
     {
         accessorKey: "subpart_part_no",
         header: () => <div className="text-center">Subpart Part No.</div>,

@@ -17,11 +17,11 @@ export function App() {
       <Routes>
         <Route path="/" element={<Page />} />
         <Route path="/parts" element={<Parts />} />
-        <Route path="/parts/:id/info" element={<PartsInfo />} />
+        <Route path="/parts/:part_no/info" element={<PartsInfo />} />
         <Route path="/vendors" element={<Vendors />} />
         <Route path="/purchase-orders" element={<PurchaseOrders />} />
         <Route path="/boms" element={<BOMs />} />
-        <Route path="/boms/:id/info" element={<BOMsInfo />} />
+        <Route path="/boms/:job_no/info" element={<BOMsInfo />} />
 
         <Route path="/part-vendors" element={<PartVendor />} />
         <Route path="/part-subparts" element={<PartSubpart />} />

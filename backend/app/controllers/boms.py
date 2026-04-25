@@ -128,7 +128,7 @@ def delete_bom(bom_id: str):
 
 
 @bp.get("/boms-table/<string:bom_id>")
-def get_bom_table(bom_id: str):
+def get_boms_table(bom_id: str):
     db = get_db()
     row = db.execute(
         """

@@ -28,28 +28,26 @@ import { type PartsTable } from "@/apis/parts"
 
 
 export default function Page() {
-    const [data, setData] = useState<PartsTable[]>([])
-    const [refresh, setRefresh] = useState(0)
-
+    const [partsData, setPartsData] = useState<PartsTable[]>([])
+    const [vendorsData, setVendorsData] = useState<Vendor[]>([])
+    const [partSheetOpen, setPartSheetOpen] = useState(false)
     const [globalFilter, setGlobalFilter] = useState("")
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-    const [vendors, setVendors] = useState<Vendor[]>([])
-
-    const [sheetOpen, setSheetOpen] = useState(false)
+    const [refresh, setRefresh] = useState(0)
 
     useEffect(() => {
         async function fetchData() {
-            const [partResults, vendorList] = await Promise.all([
+            const [partsTable, vendorsList] = await Promise.all([
                 getPartsTable(),
                 listVendors()
             ])
-            setData(partResults)
-            setVendors(vendorList)
+            setPartsData(partsTable)
+            setVendorsData(vendorsList)
         }
         fetchData()
     }, [refresh])
 
-    const handlePartCreated = () => {
+    const handleRefresh = () => {
         setRefresh(prev => prev + 1)
     }
 
@@ -64,7 +62,7 @@ export default function Page() {
         >
             <AppSidebar variant="inset" />
             <SidebarInset>
-                <SiteHeader title="Parts" children={<Button onClick={() => setSheetOpen(true)}>Create a Part</Button>}/>
+                <SiteHeader title="Parts" children={<Button onClick={() => setPartSheetOpen(true)}>Create a Part</Button>}/>
                 <div className="flex flex-1 flex-col">
                     <div className="@container/main flex flex-1 flex-col gap-2">
                         <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">                            
@@ -105,7 +103,7 @@ export default function Page() {
                                             <SelectContent>
                                                 <SelectGroup>
                                                     <SelectItem value="all">All</SelectItem>
-                                                    {vendors.map((value) => (
+                                                    {vendorsData.map((value) => (
                                                         <SelectItem key={value.vendor_id} value={value.name}>{value.name}</SelectItem>
                                                     ))}
                                                 </SelectGroup>
@@ -116,7 +114,7 @@ export default function Page() {
 
                                 <DataTable 
                                     columns={columns} 
-                                    data={data}  
+                                    data={partsData}  
 
                                     globalFilter={globalFilter}
                                     onGlobalFilterChange={setGlobalFilter}
@@ -132,9 +130,9 @@ export default function Page() {
             </SidebarInset>
 
             <CreatePartSheet
-                open={sheetOpen}
-                onOpenChange={setSheetOpen} 
-                onPartCreated={handlePartCreated}
+                open={partSheetOpen}
+                onOpenChange={setPartSheetOpen} 
+                onUpdate={handleRefresh}
             />
         </SidebarProvider>
     )

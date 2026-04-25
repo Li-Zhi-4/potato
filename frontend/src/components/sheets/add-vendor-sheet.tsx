@@ -51,11 +51,11 @@ export const formSchema = z.object({
 interface FormSheetProps {
     open: boolean,
     onOpenChange: (open: boolean) => void
-    onPartCreated: () => void
+    onUpdate: () => void
     part: Part
 }
 
-export function AddVendorSheet({ open, onOpenChange, onPartCreated, part }: FormSheetProps) {
+export function AddVendorSheet({ open, onOpenChange, onUpdate, part }: FormSheetProps) {
     const [vendors, setVendors] = useState<Vendor[]>([])
 
     useEffect(() => {
@@ -92,7 +92,7 @@ export function AddVendorSheet({ open, onOpenChange, onPartCreated, part }: Form
         console.log(response2)
         form.reset()
         onOpenChange(false)
-        onPartCreated()
+        onUpdate()
     }
 
     return (
