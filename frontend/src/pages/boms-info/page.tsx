@@ -14,6 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Store, Component } from "lucide-react"
 import { type BomTable, getBomByJobNo, getBomsTable, type Bom } from "@/apis/boms"
 import { Link } from "react-router-dom"
+import { AddComponentSheet } from "@/components/sheets/add-component-sheet"
 
 export default function Page() {
     const { job_no } = useParams<{ job_no: string }>();
@@ -51,12 +52,7 @@ export default function Page() {
         >
             <AppSidebar variant="inset" />
             <SidebarInset>
-                <SiteHeader title={`BOMs / ${job_no}`} children={
-                    <Button asChild>
-                        <Link to="/components">
-                            Add a Component
-                        </Link>
-                    </Button>}/>
+                <SiteHeader title={`BOMs / ${job_no}`} children={<Button onClick={() => setSheetOpen(true)}>Add a Component</Button>}/>
                 <div className="flex flex-1 flex-col">
                     <div className="@container/main flex flex-1 flex-col gap-2">
                         <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6"> 
@@ -104,16 +100,16 @@ export default function Page() {
                 </div>
             </SidebarInset>
 
-            {/* {bomData ? (
-                <AddVendorSheet
+            {bomData ? (
+                <AddComponentSheet
                     open={sheetOpen}
                     onOpenChange={setSheetOpen} 
-                    onPartCreated={handlePartCreated}
-                    part={bomData}
+                    onUpdate={handleRefresh}
+                    bom={bomData}
                 />
             ) : (
                 <p>Loading part info...</p>
-            )} */}
+            )}
         </SidebarProvider>
     )
 }

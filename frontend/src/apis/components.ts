@@ -33,7 +33,6 @@ export async function getComponent(id: string): Promise<Component> {
 export type CreateComponentInput = {
     bom_id: string
     part_id: string
-    part_vendor_id?: string | null
     po_id?: string | null
     quantity?: number
     uom?: string
