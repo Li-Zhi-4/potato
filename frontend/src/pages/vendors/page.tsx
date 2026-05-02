@@ -7,51 +7,31 @@ import {
 } from "@/components/ui/sidebar"
 import { useState } from "react"
 import { useEffect } from "react"
-import { createVendor, type CreateVendorInput } from "@/apis/vendors"
-import {
-    Field,
-    FieldGroup,
-    FieldLabel,
-} from "@/components/ui/field"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-
 import { columns } from "./columns"
 import { API_BASE } from "@/lib/api"
 import { type Vendor } from "@/apis/vendors"
+import { CreateVendorSheet } from "@/components/sheets/create-vendor-sheet"
 
 
 export default function Page() {
-    const [vendorName, setVendorName] = useState("")
-    const [createdBy, setCreatedBy] = useState("0")
-    const [updatedBy, setUpdatedBy] = useState("0")
-    const [data, setData] = useState<Vendor[]>([])
+    const [vendorData, setVendorData] = useState<Vendor[]>([])
     const [refresh, setRefresh] = useState(0)
+    const [globalFilter, setGlobalFilter] = useState("")
+    const [vendorSheetOpen, setVendorSheetOpen] = useState(false)
 
     useEffect(() => {
         async function fetchData() {
             const res = await fetch(`${API_BASE}/vendors`)
             const result = await res.json()
-            setData(result)
+            setVendorData(result)
         }
         fetchData()
     }, [refresh])
 
-    function handleReset() {
-        setVendorName("")
-    }
-
-    const INPUT: CreateVendorInput = {
-        vendor_name: vendorName,
-
-        created_by: createdBy,
-        updated_by: updatedBy
-    }
-
-    async function handleSubmit() {
-        await createVendor(INPUT)
-        handleReset()
-        setRefresh(r => r + 1)
+    const handleRefresh = () => {
+        setRefresh(prev => prev + 1)
     }
 
     return (
@@ -63,41 +43,42 @@ export default function Page() {
                 } as React.CSSProperties
             }
         >
-        <AppSidebar variant="inset" />
-        <SidebarInset>
-            <SiteHeader title="Vendors"/>
-            <div className="flex flex-1 flex-col">
-                <div className="@container/main flex flex-1 flex-col gap-2">
-                    <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-                        <div className="px-8">
-                            <FieldGroup>
-                                <Field>
-                                    <FieldLabel htmlFor="name">Name</FieldLabel>
-                                    <Input 
-                                        id="name" 
-                                        type="text"
-                                        placeholder="" 
-                                        value={vendorName} 
-                                        onChange={(e) => setVendorName(e.target.value)}
+            <AppSidebar variant="inset" />
+            <SidebarInset>
+                <SiteHeader title="Vendors" children={<Button onClick={() => setVendorSheetOpen(true)}>Create a Vendor</Button>}/>
+                <div className="flex flex-1 flex-col">
+                    <div className="@container/main flex flex-1 flex-col gap-2">
+                        <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
+                            <div className="px-4 lg:px-6 flex flex-col gap-3">
+                                <div className="flex flex-row justify-between">
+                                    <Input
+                                        placeholder="Search parts..."
+                                        value={globalFilter}
+                                        onChange={(e) => setGlobalFilter(e.target.value)}
+                                        className="w-[30%]"
                                     />
-                                </Field>
+                                    <div className="flex flex-row gap-3">
+                                        
+                                    </div>
+                                </div>
+                                <DataTable 
+                                    columns={columns} 
+                                    data={vendorData} 
 
-                                <Field orientation="horizontal">
-                                    <Button type="reset" variant="outline" onClick={handleReset}>
-                                        Reset
-                                    </Button>
-                                    <Button type="submit" onClick={handleSubmit}>Submit</Button>
-                                </Field>
-                            </FieldGroup>
-                        </div>
-                        
-                        <div className="px-4 lg:px-6">
-                            <DataTable columns={columns} data={data} />
+                                    globalFilter={globalFilter}
+                                    onGlobalFilterChange={setGlobalFilter}
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </SidebarInset>
+            </SidebarInset>
+
+            <CreateVendorSheet 
+                open={vendorSheetOpen}
+                onOpenChange={setVendorSheetOpen} 
+                onUpdate={handleRefresh}
+            />
         </SidebarProvider>
     )
 }
