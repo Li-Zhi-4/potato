@@ -27,8 +27,8 @@ export async function getPurchaseOrder(id: string): Promise<PurchaseOrder> {
 
 export type CreatePurchaseOrderInput = {
     vendor_id: string
-    po_no?: number
-    status?: 'draft' | 'sent' | 'received' | 'cancelled'
+    po_no: string
+    status: 'draft' | 'sent' | 'received' | 'cancelled'
 
     created_by: string
     updated_by?: string | null
