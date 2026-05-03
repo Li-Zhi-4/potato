@@ -82,7 +82,7 @@ export function AddComponentSheet({ open, onOpenChange, onUpdate, bom }: FormShe
         })
 
     async function onSubmit(data: z.infer<typeof formSchema>) {
-        const res = await createComponent({
+        await createComponent({
             bom_id: bom.bom_id,
             part_id: data.part_id,
             po_id: data.po_id,
@@ -93,8 +93,6 @@ export function AddComponentSheet({ open, onOpenChange, onUpdate, bom }: FormShe
             created_by: "0",
             updated_by: "0"
         })
-        console.log("test")
-        console.log(res)
         form.reset()
         onOpenChange(false)
         onUpdate()

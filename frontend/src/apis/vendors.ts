@@ -22,7 +22,6 @@ export async function getVendor(id: string): Promise<Vendor> {
     return handle<Vendor>(res)
 }
 
-
 export type CreateVendorInput = {
     vendor_name: string
 

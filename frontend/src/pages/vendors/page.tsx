@@ -10,10 +10,9 @@ import { useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { columns } from "./columns"
-import { API_BASE } from "@/lib/api"
-import { type Vendor } from "@/apis/vendors"
-import { CreateVendorSheet } from "@/components/sheets/create-vendor-sheet"
-
+import { listVendors, type Vendor } from "@/apis/vendors"
+import { FormSheet } from "@/components/sheets/FormSheet"
+import { CreateVendorForm } from "@/components/forms/create-vendor-form"
 
 export default function Page() {
     const [vendorData, setVendorData] = useState<Vendor[]>([])
@@ -23,15 +22,15 @@ export default function Page() {
 
     useEffect(() => {
         async function fetchData() {
-            const res = await fetch(`${API_BASE}/vendors`)
-            const result = await res.json()
+            const result = await listVendors()
             setVendorData(result)
         }
         fetchData()
     }, [refresh])
 
-    const handleRefresh = () => {
-        setRefresh(prev => prev + 1)
+    const handleUpdate = () => {
+        setRefresh(prev => prev + 1)    // refresh page
+        setVendorSheetOpen(false)       // closes sheet
     }
 
     return (
@@ -74,11 +73,21 @@ export default function Page() {
                 </div>
             </SidebarInset>
 
-            <CreateVendorSheet 
+            <FormSheet
+                title="Create a Vendor" 
+                description="Create a new vendor."
                 open={vendorSheetOpen}
                 onOpenChange={setVendorSheetOpen} 
-                onUpdate={handleRefresh}
-            />
+                formId="create-vendor-form"
+            >
+                <CreateVendorForm
+                    open={vendorSheetOpen}
+                    onUpdate={handleUpdate}
+                    formId="create-vendor-form"
+                />
+            </FormSheet>
+
+            
         </SidebarProvider>
     )
 }

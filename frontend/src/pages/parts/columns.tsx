@@ -61,7 +61,7 @@ export const columns: ColumnDef<PartsTable>[] = [
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem onClick={() => navigator.clipboard.writeText(part.part_id)}>Copy part ID</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => navigator.clipboard.writeText(part.part_no)}>Copy Part No.</DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem>Update Part</DropdownMenuItem>
                         <DropdownMenuItem variant="destructive">Delete Part</DropdownMenuItem>

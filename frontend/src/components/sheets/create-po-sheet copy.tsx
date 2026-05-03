@@ -11,8 +11,6 @@ import {
 import { Button } from "../ui/button"
 import {
     Field,
-    FieldContent,
-    FieldDescription,
     FieldError,
     FieldGroup,
     FieldLabel,
@@ -28,15 +26,11 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { Input } from "../ui/input"
-import { Textarea } from "../ui/textarea"
-import { Checkbox } from "../ui/checkbox"
 import { useState, useEffect } from "react"
 import { type Vendor, listVendors } from "@/apis/vendors"
 import { Controller, type ControllerRenderProps, type ControllerFieldState, useForm } from "react-hook-form"
 import * as z from "zod"
-import { createPart } from "@/apis/parts"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { createVendorPart } from "@/apis/vendorParts"
 import { createPurchaseOrder } from "@/apis/purchaseOrders"
 
 export const formSchema = z.object({

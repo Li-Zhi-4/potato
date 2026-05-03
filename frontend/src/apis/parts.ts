@@ -79,16 +79,16 @@ export async function deletePart(id: string): Promise<void> {
 // -- tables --
 
 export type PartsTable = {
-    part_id: string
+    // part_id: string
     part_no: string
     description: string | null
     is_assembly: 'part' | 'assembly'
     vendor_name: string | null
 
-    created_at: string
-    updated_at: string
-    created_by: string
-    updated_by: string | null
+    // created_at: string
+    // updated_at: string
+    // created_by: string
+    // updated_by: string | null
 }
 
 // GET /parts/table
