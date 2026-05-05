@@ -2,7 +2,7 @@ import { API_BASE, handle } from "../lib/api"
 
 export type Bom = {
     bom_id: string
-    job_no: number | null
+    job_no: string | null
     description: string | null
 
     created_at: string
@@ -33,7 +33,7 @@ export async function getBom(id: string): Promise<Bom> {
 
 export type CreateBomInput = {
     title?: string | null
-    job_no?: number | null
+    job_no?: string | null
     description?: string | null
 
     created_by: string

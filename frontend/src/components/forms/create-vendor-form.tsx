@@ -13,24 +13,23 @@ import { useForm } from "react-hook-form"
 import * as z from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useEffect } from "react"
-import { type CreateVendorInput } from "@/apis/vendors"
 
-// Matches type CreateVendorInput
+
 export const formSchema = z.object({
     vendor_name: z.string().min(1, "required"),
     created_by: z.string(),
     updated_by: z.string().nullable(), 
 })
 
-interface FormSheetProps {
+interface FormProps {
     open: boolean,
     onUpdate: () => void
     formId: string
 }
 
-export function CreateVendorForm({ open, onUpdate, formId }: FormSheetProps) {
+export function CreateVendorForm({ open, onUpdate, formId }: FormProps) {
 
-    const form = useForm<CreateVendorInput>({
+    const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
             vendor_name: "",
@@ -43,7 +42,7 @@ export function CreateVendorForm({ open, onUpdate, formId }: FormSheetProps) {
         if (!open) { form.reset() }
     }, [open])
 
-    async function onSubmit(data: CreateVendorInput) {
+    async function onSubmit(data: z.infer<typeof formSchema>) {
         await createVendor(data)
         onUpdate()  
     }
@@ -52,23 +51,19 @@ export function CreateVendorForm({ open, onUpdate, formId }: FormSheetProps) {
 
     return (
         <form id={formId} onSubmit={form.handleSubmit(onSubmit)}>
-            <FieldGroup className="p-6">
-                <FieldSet>
-                    <FieldGroup>                              
-                        
-                        <Field data-invalid={!!errors.vendor_name} >
-                            <FieldLabel htmlFor="vendor_name">Vendor Name</FieldLabel>
-                            <Input 
-                                id="vendor_name" 
-                                aria-invalid={!!errors.vendor_name}
-                                {...form.register("vendor_name")} 
-                            />
-                            {errors.vendor_name && <FieldError errors={[errors.vendor_name]} />}
-                        </Field>
-
-                    </FieldGroup>
-                </FieldSet>
-            </FieldGroup>
+            <FieldSet className="p-6">
+                <FieldGroup>                               
+                    <Field data-invalid={!!errors.vendor_name} >
+                        <FieldLabel htmlFor="vendor_name">Vendor Name</FieldLabel>
+                        <Input 
+                            id="vendor_name" 
+                            aria-invalid={!!errors.vendor_name}
+                            {...form.register("vendor_name")} 
+                        />
+                        {errors.vendor_name && <FieldError errors={[errors.vendor_name]} />}
+                    </Field>
+                </FieldGroup>
+            </FieldSet>
         </form>
     )
 }

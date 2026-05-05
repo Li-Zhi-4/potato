@@ -11,7 +11,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { columns } from "./columns"
 import { listBoms, type Bom } from "@/apis/boms"
-import { CreateBomSheet } from "@/components/sheets/create-bom-sheet"
+import { FormSheet } from "@/components/sheets/FormSheet"
+import { CreateBomForm } from "@/components/forms/create-bom-form"
 
 
 export default function Page() {
@@ -29,8 +30,9 @@ export default function Page() {
     }, [refresh])
 
 
-    const handleRefresh = () => {
-        setRefresh(prev => prev + 1)
+    const handleUpdate = () => {
+        setRefresh(prev => prev + 1)    // refresh page
+        setBomSheetOpen(false)          // closes sheet
     }
 
     return (
@@ -42,7 +44,7 @@ export default function Page() {
                 } as React.CSSProperties
             }
         >
-        <AppSidebar variant="inset" />
+            <AppSidebar variant="inset" />
             <SidebarInset>
                 <SiteHeader title="BOMs" children={<Button onClick={() => setBomSheetOpen(true)}>Create a BOM</Button>}/>
                 <div className="flex flex-1 flex-col">
@@ -73,11 +75,19 @@ export default function Page() {
                 </div>
             </SidebarInset>
 
-            <CreateBomSheet
+            <FormSheet
+                title="Create a Bill of Materials" 
+                description="Create a new Bill of Materials."
                 open={bomSheetOpen}
                 onOpenChange={setBomSheetOpen} 
-                onUpdate={handleRefresh}
-            />
+                formId="create-bom-form"
+            >
+                <CreateBomForm
+                    open={bomSheetOpen}
+                    onUpdate={handleUpdate}
+                    formId="create-bom-form"
+                />
+            </FormSheet>
         </SidebarProvider>
     )
 }

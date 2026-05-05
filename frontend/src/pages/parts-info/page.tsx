@@ -14,8 +14,9 @@ import { useParams } from "react-router-dom"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Store, Component } from "lucide-react"
-import { AddVendorSheet } from "@/components/sheets/add-vendor-sheet"
-import { AddSubpartSheet } from "@/components/sheets/add-subpart-sheet"
+import { FormSheet } from "@/components/sheets/FormSheet"
+import { AddVendorForm } from "@/components/forms/add-vendor-form"
+import { AddSubpartForm } from "@/components/forms/add-subpart-form"
 
 
 export default function Page() {
@@ -41,8 +42,10 @@ export default function Page() {
         fetchData()
     }, [refresh])
 
-    const handleRefresh = () => {
-        setRefresh(prev => prev + 1)
+    const handleUpdate = () => {
+        setRefresh(prev => prev + 1)    // refresh page
+        setVendorSheetOpen(false)       // closes sheet
+        setSubpartSheetOpen(false)
     }
 
     return (
@@ -116,23 +119,39 @@ export default function Page() {
             </SidebarInset>
 
             {partData ? (
-                <AddVendorSheet
+                <FormSheet
+                    title="Add a Vendor" 
+                    description="Add a vendor for this part."
                     open={vendorSheetOpen}
                     onOpenChange={setVendorSheetOpen} 
-                    onUpdate={handleRefresh}
-                    part={partData}
-                />
+                    formId="add-vendor-form"
+                >
+                    <AddVendorForm
+                        open={vendorSheetOpen}
+                        onUpdate={handleUpdate}
+                        formId="add-vendor-form"
+                        part={partData}
+                    />
+                </FormSheet>
             ) : (
                 <p>Loading part info...</p>
             )}
 
             {partData ? (
-                <AddSubpartSheet
+                <FormSheet
+                    title="Add a Subpart" 
+                    description="Attach a subpart to this assembly."
                     open={subpartSheetOpen}
                     onOpenChange={setSubpartSheetOpen} 
-                    onUpdate={handleRefresh}
-                    part={partData}
-                />
+                    formId="add-subpart-form"
+                >
+                    <AddSubpartForm
+                        open={subpartSheetOpen}
+                        onUpdate={handleUpdate}
+                        formId="add-subpart-form"
+                        part={partData}
+                    />
+                </FormSheet>
             ) : (
                 <p>Loading part info...</p>
             )}

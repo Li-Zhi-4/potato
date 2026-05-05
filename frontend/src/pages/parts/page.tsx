@@ -23,8 +23,9 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { listVendors, type Vendor } from "@/apis/vendors"
-import { CreatePartSheet } from "@/components/sheets/create-part-sheet"
 import { type PartsTable } from "@/apis/parts"
+import { FormSheet } from "@/components/sheets/FormSheet"
+import { CreatePartForm } from "@/components/forms/create-part-form"
 
 
 export default function Page() {
@@ -47,8 +48,9 @@ export default function Page() {
         fetchData()
     }, [refresh])
 
-    const handleRefresh = () => {
-        setRefresh(prev => prev + 1)
+    const handleUpdate = () => {
+        setRefresh(prev => prev + 1)    // refresh page
+        setPartSheetOpen(false)         // closes sheet
     }
 
     return (
@@ -129,11 +131,19 @@ export default function Page() {
                 </div>
             </SidebarInset>
 
-            <CreatePartSheet
+            <FormSheet
+                title="Create a Part" 
+                description="Create a new part with a unique part number."
                 open={partSheetOpen}
                 onOpenChange={setPartSheetOpen} 
-                onUpdate={handleRefresh}
-            />
+                formId="create-part-form"
+            >
+                <CreatePartForm
+                    open={partSheetOpen}
+                    onUpdate={handleUpdate}
+                    formId="create-part-form"
+                />
+            </FormSheet>
         </SidebarProvider>
     )
 }
