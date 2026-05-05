@@ -13,8 +13,8 @@ import { useParams } from "react-router-dom"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Store, Component } from "lucide-react"
 import { type BomTable, getBomByJobNo, getBomsTable, type Bom } from "@/apis/boms"
-import { Link } from "react-router-dom"
-import { AddComponentSheet } from "@/components/sheets/add-component-sheet"
+import { AddComponentForm } from "@/components/forms/add-component-form"
+import { FormSheet } from "@/components/sheets/FormSheet"
 
 export default function Page() {
     const { job_no } = useParams<{ job_no: string }>();
@@ -28,17 +28,35 @@ export default function Page() {
 
     useEffect(() => {
         async function fetchData() {
-            if (!job_no) return
-            const bom = await getBomByJobNo(job_no)
-            const bomsTable = await getBomsTable(bom.bom_id)
-            setBomData(bom)
-            setBomTableData(bomsTable)
-        }
-        fetchData()
-    }, [job_no, refresh])
+            if (!job_no) return;
 
-    const handleRefresh = () => {
-        setRefresh(prev => prev + 1)
+            try {
+                const bom = await getBomByJobNo(job_no);
+                
+                if (!bom || !bom.bom_id) {
+                    console.warn("No BOM found for this job number");
+                    return; 
+                }
+
+                setBomData(bom);
+
+                try {
+                    const bomsTable = await getBomsTable(bom.bom_id);
+                    setBomTableData(bomsTable || []); // Default to empty array if null
+                } catch (tableErr) {
+                    console.error("Failed to fetch BOM table data:", tableErr);
+                }
+
+            } catch (bomErr) {
+                console.error("Failed to fetch BOM record:", bomErr);
+            }
+        }
+        fetchData();
+    }, [job_no, refresh]);
+
+    const handleUpdate = () => {
+        setRefresh(prev => prev + 1)    // refresh page
+        setSheetOpen(false)             // closes sheet
     }
 
     return (
@@ -102,12 +120,20 @@ export default function Page() {
             </SidebarInset>
 
             {bomData ? (
-                <AddComponentSheet
+                <FormSheet
+                    title="Create a Part" 
+                    description="Create a new part with a unique part number."
                     open={sheetOpen}
                     onOpenChange={setSheetOpen} 
-                    onUpdate={handleRefresh}
-                    bom={bomData}
-                />
+                    formId="add-component-form"
+                >
+                    <AddComponentForm
+                        open={sheetOpen}
+                        onUpdate={handleUpdate}
+                        formId="add-component-form"
+                        bom={bomData}
+                    />
+                </FormSheet>
             ) : (
                 <p>Loading part info...</p>
             )}
