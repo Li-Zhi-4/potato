@@ -145,7 +145,7 @@ def delete_part(part_id: str):
 def get_parts_table():
     db = get_db()
     rows = db.execute("""
-        SELECT parts.part_no, parts.description, parts.is_assembly, vendors.vendor_name AS vendor_name
+        SELECT parts.part_id, parts.part_no, parts.description, parts.is_assembly, vendors.vendor_name AS vendor_name
         FROM parts
         LEFT JOIN vendor_parts ON parts.part_id = vendor_parts.part_id AND vendor_parts.is_primary = 1
         LEFT JOIN vendors ON vendor_parts.vendor_id = vendors.vendor_id

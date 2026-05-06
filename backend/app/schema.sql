@@ -43,7 +43,9 @@ CREATE TABLE IF NOT EXISTS vendors (
     created_at      TEXT NOT NULL DEFAULT (datetime('now')),
     updated_at      TEXT NOT NULL DEFAULT (datetime('now')),
     created_by      TEXT NOT NULL REFERENCES users(uid),
-    updated_by      TEXT NOT NULL REFERENCES users(uid)
+    updated_by      TEXT NOT NULL REFERENCES users(uid),
+
+    archived_at     TEXT
 );
 
 CREATE TABLE IF NOT EXISTS purchase_orders (
@@ -77,8 +79,8 @@ CREATE TABLE IF NOT EXISTS boms (
 
 CREATE TABLE IF NOT EXISTS vendor_parts (
     vendor_part_id      TEXT PRIMARY KEY,
-    part_id             TEXT NOT NULL REFERENCES parts(part_id),
-    vendor_id           TEXT NOT NULL REFERENCES vendors(vendor_id),
+    part_id             TEXT NOT NULL REFERENCES parts(part_id) ON DELETE CASCADE,
+    vendor_id           TEXT NOT NULL REFERENCES vendors(vendor_id) ON DELETE CASCADE,
     part_no             TEXT,
     description         TEXT,
     is_primary          INTEGER NOT NULL DEFAULT 0 CHECK (is_primary IN (0, 1)),
@@ -92,8 +94,8 @@ CREATE TABLE IF NOT EXISTS vendor_parts (
 
 CREATE TABLE IF NOT EXISTS assembly_parts (
     assembly_part_id    TEXT PRIMARY KEY,
-    part_id             TEXT NOT NULL REFERENCES parts(part_id),
-    subpart_id          TEXT NOT NULL REFERENCES parts(part_id),
+    part_id             TEXT NOT NULL REFERENCES parts(part_id) ON DELETE CASCADE,
+    subpart_id          TEXT NOT NULL REFERENCES parts(part_id) ON DELETE CASCADE,
     quantity            REAL NOT NULL DEFAULT 1,
     uom                 TEXT NOT NULL DEFAULT 'each',
 
@@ -112,9 +114,9 @@ CREATE TABLE IF NOT EXISTS assembly_parts (
 
 CREATE TABLE IF NOT EXISTS components (
     component_id        TEXT PRIMARY KEY,
-    bom_id              TEXT NOT NULL REFERENCES boms(bom_id),
-    part_id             TEXT NOT NULL REFERENCES parts(part_id),
-    po_id               TEXT REFERENCES purchase_orders(po_id),
+    bom_id              TEXT NOT NULL REFERENCES boms(bom_id) ON DELETE CASCADE,
+    part_id             TEXT NOT NULL REFERENCES parts(part_id) ON DELETE CASCADE,
+    po_id               TEXT REFERENCES purchase_orders(po_id) ON DELETE SET NULL,
     quantity            REAL NOT NULL DEFAULT 1,
     uom                 TEXT NOT NULL DEFAULT 'each',
     status              TEXT,

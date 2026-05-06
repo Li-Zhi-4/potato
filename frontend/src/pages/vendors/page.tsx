@@ -9,8 +9,8 @@ import { useState } from "react"
 import { useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { columns } from "./columns"
-import { listVendors, type Vendor } from "@/apis/vendors"
+import { createColumns } from "./columns"
+import { listVendors, updateVendor, type Vendor } from "@/apis/vendors"
 import { FormSheet } from "@/components/sheets/FormSheet"
 import { CreateVendorForm } from "@/components/forms/create-vendor-form"
 
@@ -32,6 +32,13 @@ export default function Page() {
         setRefresh(prev => prev + 1)    // refresh page
         setVendorSheetOpen(false)       // closes sheet
     }
+
+    async function handleDelete(vendorId: string) {
+        await updateVendor(vendorId, { "archived_at": "archived" })
+        setRefresh(prev => prev + 1) 
+    }
+    
+    const columns = createColumns(handleDelete)
 
     return (
         <SidebarProvider

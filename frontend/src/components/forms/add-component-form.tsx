@@ -1,15 +1,6 @@
 "use client"
 
 import {
-    Sheet,
-    SheetContent,
-    SheetDescription,
-    SheetFooter,
-    SheetHeader,
-    SheetTitle,
-} from "@/components/ui/sheet"
-import { Button } from "../ui/button"
-import {
     Field,
     FieldError,
     FieldGroup,
@@ -30,7 +21,7 @@ import { useState, useEffect } from "react"
 import { Controller, type ControllerRenderProps, type ControllerFieldState, useForm } from "react-hook-form"
 import * as z from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { getBom, type Bom } from "@/apis/boms"
+import { type Bom } from "@/apis/boms"
 import { createComponent } from "@/apis/components"
 import { listParts } from "@/apis/parts"
 import { type Part } from "@/apis/parts"

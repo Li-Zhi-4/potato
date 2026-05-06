@@ -79,7 +79,7 @@ export async function deletePart(id: string): Promise<void> {
 // -- tables --
 
 export type PartsTable = {
-    // part_id: string
+    part_id: string
     part_no: string
     description: string | null
     is_assembly: 'part' | 'assembly'

@@ -7,13 +7,13 @@ import {
 } from "@/components/ui/sidebar"
 import { useState } from "react"
 import { useEffect } from "react"
-import { getPartsTable } from "@/apis/parts"
+import { deletePart, getPartsTable } from "@/apis/parts"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
     type ColumnFiltersState,
 } from "@tanstack/react-table"
-import { columns } from "./columns"
+import { createColumns } from "./columns"
 import {
     Select,
     SelectContent,
@@ -52,6 +52,13 @@ export default function Page() {
         setRefresh(prev => prev + 1)    // refresh page
         setPartSheetOpen(false)         // closes sheet
     }
+
+    async function handleDelete(partId: string) {
+        await deletePart(partId)
+        setRefresh(prev => prev + 1) 
+    }
+    
+    const columns = createColumns(handleDelete)
 
     return (
         <SidebarProvider

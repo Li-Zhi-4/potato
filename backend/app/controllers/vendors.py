@@ -17,7 +17,13 @@ def row_to_dict(row) -> dict:
 @bp.get("")
 def list_vendors():
     db = get_db()
-    rows = db.execute("SELECT * FROM vendors ORDER BY vendor_name").fetchall()
+    include_archived = request.args.get("archived", "false").lower() == "true"
+
+    if include_archived:
+        rows = db.execute("SELECT * FROM vendors ORDER BY vendor_name").fetchall()
+    else:
+        rows = db.execute("SELECT * FROM vendors WHERE archived_at IS NULL ORDER BY vendor_name").fetchall()
+
     return jsonify([row_to_dict(r) for r in rows])
 
 
@@ -91,6 +97,9 @@ def update_vendor(vendor_id: str):
             return jsonify({"error": "vendor_name cannot be empty"}), 400
         fields.append("vendor_name = ?")
         values.append(vendor_name)
+    if "archived_at" in data:
+        fields.append("archived_at = ?")
+        values.append(data.get("archived_at"))
     if "updated_by" in data:
         fields.append("updated_by = ?")
         values.append(data.get("updated_by"))

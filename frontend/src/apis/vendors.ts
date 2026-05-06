@@ -8,6 +8,8 @@ export type Vendor = {
     updated_at: string
     created_by: string
     updated_by: string | null
+
+    archived_at: string | null
 }
 
 // GET /vendors
@@ -41,9 +43,10 @@ export async function createVendor(input: CreateVendorInput): Promise<Vendor> {
 
 
 export type UpdateVendorInput = {
-    vendor_name: string
+    vendor_name?: string
 
-    updated_by: string | null
+    updated_by?: string | null
+    archived_at?: string | null
 }
 
 // PUT /vendor/:id
