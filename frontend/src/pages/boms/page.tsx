@@ -9,8 +9,8 @@ import { useState } from "react"
 import { useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { columns } from "./columns"
-import { listBoms, type Bom } from "@/apis/boms"
+import { createColumns } from "./columns"
+import { listBoms, deleteBom, type Bom } from "@/apis/boms"
 import { FormSheet } from "@/components/sheets/FormSheet"
 import { CreateBomForm } from "@/components/forms/create-bom-form"
 
@@ -34,6 +34,13 @@ export default function Page() {
         setRefresh(prev => prev + 1)    // refresh page
         setBomSheetOpen(false)          // closes sheet
     }
+
+    async function handleDelete(bomId: string) {
+        await deleteBom(bomId)
+        setRefresh(prev => prev + 1)
+    }
+
+    const columns = createColumns(handleDelete)
 
     return (
         <SidebarProvider

@@ -80,6 +80,7 @@ export async function deleteBom(id: string): Promise<void> {
 
 
 export type BomTable = {
+    component_id: string
     part_no: string
     description?: string | null
     status?: string | null

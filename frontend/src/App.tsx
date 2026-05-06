@@ -6,7 +6,6 @@ import PurchaseOrders from "./pages/purchase order/page"
 import BOMs from "./pages/boms/page"
 import VendorPart from "./pages/vendor_parts/pages"
 import AssemblyPart from "./pages/assembly_parts/pages"
-import Components from "./pages/components/pages"
 import PartsInfo from "./pages/parts-info/page"
 import BOMsInfo from "./pages/boms-info/page"
 
@@ -25,7 +24,6 @@ export function App() {
 
         <Route path="/part-vendors" element={<VendorPart />} />
         <Route path="/part-subparts" element={<AssemblyPart />} />
-        <Route path="/components" element={<Components />} />
       </Routes>
     </>
   )

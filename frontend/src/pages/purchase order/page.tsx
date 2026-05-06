@@ -17,8 +17,8 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import { columns } from "./columns"
-import { type PurchaseOrder, listPurchaseOrders } from "@/apis/purchaseOrders"
+import { createColumns } from "./columns"
+import { type PurchaseOrder, listPurchaseOrders, deletePurchaseOrder } from "@/apis/purchaseOrders"
 import { type ColumnFiltersState } from "@tanstack/react-table"
 import { CreatePurchaseOrderForm } from "@/components/forms/create-purchase-order-form"
 import { FormSheet } from "@/components/sheets/FormSheet"
@@ -44,6 +44,13 @@ export default function Page() {
         setRefresh(prev => prev + 1)        // refresh page
         setPurchaseOrderSheetOpen(false)    // closes sheet
     }
+
+    async function handleDelete(poId: string) {
+        await deletePurchaseOrder(poId)
+        setRefresh(prev => prev + 1)
+    }
+
+    const columns = createColumns(handleDelete)
 
     return (
         <SidebarProvider

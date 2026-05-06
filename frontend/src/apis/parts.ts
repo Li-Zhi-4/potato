@@ -100,7 +100,7 @@ export async function getPartsTable(): Promise<PartsTable[]> {
 
 
 export type VendorTable = {
-    part_vendor_id: string
+    vendor_part_id: string
     part_id: string
     vendor_id: string
 
@@ -125,6 +125,7 @@ export async function getVendorsTable(id: string): Promise<VendorTable[]> {
 
 
 export type SubpartTable = {
+    assembly_part_id: string
     subpart_id: string
     subpart_part_no: string
     subpart_description: string

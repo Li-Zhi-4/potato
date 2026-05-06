@@ -8,8 +8,10 @@ import {
 import { useState } from "react"
 import { useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { vendorsTableColumns, subpartsTableColumns } from "./columns"
+import { createVendorColumns, createSubpartColumns } from "./columns"
 import { getPartByPartNo, type Part, type VendorTable, getVendorsTable, type SubpartTable, getSubpartsTable } from "@/apis/parts"
+import { deleteVendorPart } from "@/apis/vendorParts"
+import { deleteAssemblyPart } from "@/apis/assembly_parts"
 import { useParams } from "react-router-dom"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -47,6 +49,19 @@ export default function Page() {
         setVendorSheetOpen(false)       // closes sheet
         setSubpartSheetOpen(false)
     }
+
+    async function handleDeleteVendorPart(vendorPartId: string) {
+        await deleteVendorPart(vendorPartId)
+        setRefresh(prev => prev + 1)
+    }
+
+    async function handleDeleteSubpart(assemblyPartId: string) {
+        await deleteAssemblyPart(assemblyPartId)
+        setRefresh(prev => prev + 1)
+    }
+
+    const vendorColumns = createVendorColumns(handleDeleteVendorPart)
+    const subpartColumns = createSubpartColumns(handleDeleteSubpart)
 
     return (
         <SidebarProvider
@@ -99,15 +114,15 @@ export default function Page() {
                                         </div>
                                     </div>
                                     <TabsContent value="vendors" className="flex flex-col gap-3">
-                                        <DataTable 
-                                            columns={vendorsTableColumns} 
-                                            data={vendorTableData}  
+                                        <DataTable
+                                            columns={vendorColumns}
+                                            data={vendorTableData}
                                         />
                                     </TabsContent>
                                     <TabsContent value="subparts" className="flex flex-col gap-3">
-                                        <DataTable 
-                                            columns={subpartsTableColumns} 
-                                            data={subpartTableData}  
+                                        <DataTable
+                                            columns={subpartColumns}
+                                            data={subpartTableData}
                                         />
                                     </TabsContent>
                                 </Tabs>

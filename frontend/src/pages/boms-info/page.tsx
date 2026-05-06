@@ -8,11 +8,12 @@ import {
 import { useState } from "react"
 import { useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { columns } from "./columns"
+import { createColumns } from "./columns"
 import { useParams } from "react-router-dom"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Store, Component } from "lucide-react"
 import { type BomTable, getBomByJobNo, getBomsTable, type Bom } from "@/apis/boms"
+import { deleteComponent } from "@/apis/components"
 import { AddComponentForm } from "@/components/forms/add-component-form"
 import { FormSheet } from "@/components/sheets/FormSheet"
 
@@ -58,6 +59,13 @@ export default function Page() {
         setRefresh(prev => prev + 1)    // refresh page
         setSheetOpen(false)             // closes sheet
     }
+
+    async function handleDelete(componentId: string) {
+        await deleteComponent(componentId)
+        setRefresh(prev => prev + 1)
+    }
+
+    const columns = createColumns(handleDelete)
 
     return (
         <SidebarProvider

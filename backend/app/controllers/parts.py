@@ -157,7 +157,7 @@ def get_parts_table():
 def get_vendors_table(part_id: str):
     db = get_db()
     rows = db.execute("""
-        SELECT vp.part_no, vp.description, vp.is_primary, v.vendor_name AS vendor_name
+        SELECT vp.vendor_part_id, vp.part_no, vp.description, vp.is_primary, v.vendor_name AS vendor_name
         FROM vendor_parts vp
         LEFT JOIN vendors v ON vp.vendor_id = v.vendor_id
         WHERE vp.part_id = ?
@@ -169,8 +169,9 @@ def get_vendors_table(part_id: str):
 def get_subparts_table(part_id: str):
     db = get_db()
     rows = db.execute("""
-        SELECT 
-            sp.quantity, 
+        SELECT
+            sp.assembly_part_id,
+            sp.quantity,
             sp.uom,
             p.part_id as subpart_id,
             p.part_no as subpart_part_no,

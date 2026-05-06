@@ -133,12 +133,13 @@ def get_boms_table(bom_id: str):
     db = get_db()
     row = db.execute(
         """
-        SELECT 
-            c.quantity, 
-            c.status, 
-            c.uom, 
-            p.part_no, 
-            p.description, 
+        SELECT
+            c.component_id,
+            c.quantity,
+            c.status,
+            c.uom,
+            p.part_no,
+            p.description,
             po.po_no
         FROM components c
         LEFT JOIN parts p ON c.part_id = p.part_id

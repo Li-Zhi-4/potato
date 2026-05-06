@@ -15,115 +15,113 @@ import {
 import { EllipsisVertical } from "lucide-react"
 import { type SubpartTable, type VendorTable } from "@/apis/parts"
 
-export const vendorsTableColumns: ColumnDef<VendorTable>[] = [
-    {
-        accessorKey: "vendor_name",
-        header: () => <div className="text-center">Vendor</div>,
-        cell: ({ row }) => <div className="text-center">{row.getValue("vendor_name")}</div>
-    },
-    {
-        accessorKey: "part_no",
-        header: () => <div className="text-center">Vendor Part No.</div>,
-        cell: ({ row }) => <div className="text-center">{row.getValue("part_no")}</div>
-    },
-    {
-        accessorKey: "description",
-        header: "Description"
-    },
-    {
-        accessorKey: "is_primary",
-        header: () => <div className="text-center">Primary</div>,
-        cell: ({ row }) => {
-            return (
-                <div className="flex justify-center">
-                    <Badge variant="outline" >
-                        {row.getValue("is_primary") ? (
-                            "true"
-                        ) : (
-                            "false"
-                        )}
-                    </Badge>
-                </div>
-            )
+export function createVendorColumns(onDelete: (vendorPartId: string) => void): ColumnDef<VendorTable>[] {
+    return [
+        {
+            accessorKey: "vendor_name",
+            header: () => <div className="text-center">Vendor</div>,
+            cell: ({ row }) => <div className="text-center">{row.getValue("vendor_name")}</div>
+        },
+        {
+            accessorKey: "part_no",
+            header: () => <div className="text-center">Vendor Part No.</div>,
+            cell: ({ row }) => <div className="text-center">{row.getValue("part_no")}</div>
+        },
+        {
+            accessorKey: "description",
+            header: "Description"
+        },
+        {
+            accessorKey: "is_primary",
+            header: () => <div className="text-center">Primary</div>,
+            cell: ({ row }) => {
+                return (
+                    <div className="flex justify-center">
+                        <Badge variant="outline">
+                            {row.getValue("is_primary") ? "true" : "false"}
+                        </Badge>
+                    </div>
+                )
+            }
+        },
+        {
+            id: "actions",
+            cell: ({ row }) => {
+                const vendor = row.original
+
+                return (
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="h-8 w-8 p-0">
+                                <span className="sr-only">Open menu</span>
+                                <EllipsisVertical className="h-4 w-4" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                            <DropdownMenuItem onClick={() => navigator.clipboard.writeText(vendor.vendor_part_id)}>Copy vendor part ID</DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem>Update Part</DropdownMenuItem>
+                            <DropdownMenuItem variant="destructive" onClick={() => onDelete(vendor.vendor_part_id)}>Delete Vendor Part</DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                )
+            }
         }
-    },
-    {
-        id: "actions",
-        cell: ({ row }) => {
-            const part = row.original
+    ]
+}
 
-            return (
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Open menu</span>
-                            <EllipsisVertical className="h-4 w-4" />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem onClick={() => navigator.clipboard.writeText(part.part_id)}>Copy part ID</DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem>Update Part</DropdownMenuItem>
-                        <DropdownMenuItem variant="destructive">Delete Part</DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            )
+
+export function createSubpartColumns(onDelete: (assemblyPartId: string) => void): ColumnDef<SubpartTable>[] {
+    return [
+        {
+            accessorKey: "subpart_part_no",
+            header: () => <div className="text-center">Subpart Part No.</div>,
+            cell: ({ row }) => <div className="text-center">{row.getValue("subpart_part_no")}</div>
+        },
+        {
+            accessorKey: "subpart_description",
+            header: "Description"
+        },
+        {
+            accessorKey: "quantity",
+            header: () => <div className="text-center">Quantity</div>,
+            cell: ({ row }) => <div className="text-center">{row.getValue("quantity")}</div>
+        },
+        {
+            accessorKey: "uom",
+            header: () => <div className="text-center">UOM</div>,
+            cell: ({ row }) => {
+                return (
+                    <div className="flex justify-center">
+                        <Badge variant="outline">{row.getValue("uom")}</Badge>
+                    </div>
+                )
+            }
+        },
+        {
+            id: "actions",
+            cell: ({ row }) => {
+                const subpart = row.original
+
+                return (
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="h-8 w-8 p-0">
+                                <span className="sr-only">Open menu</span>
+                                <EllipsisVertical className="h-4 w-4" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                            <DropdownMenuItem onClick={() => navigator.clipboard.writeText(subpart.subpart_id)}>Copy part ID</DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem>Update Part</DropdownMenuItem>
+                            <DropdownMenuItem variant="destructive" onClick={() => onDelete(subpart.assembly_part_id)}>Delete Subpart</DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                )
+            }
         }
-    }
-]
-
-
-export const subpartsTableColumns: ColumnDef<SubpartTable>[] = [
-    {
-        accessorKey: "subpart_part_no",
-        header: () => <div className="text-center">Subpart Part No.</div>,
-        cell: ({ row }) => <div className="text-center">{row.getValue("subpart_part_no")}</div>
-    },
-    {
-        accessorKey: "subpart_description",
-        header: "Description"
-    },
-    {
-        accessorKey: "quantity",
-        header: () => <div className="text-center">Quantity</div>,
-        cell: ({ row }) => <div className="text-center">{row.getValue("quantity")}</div>
-    },
-    {
-        accessorKey: "uom",
-        header: () => <div className="text-center">UOM</div>,
-        cell: ({ row }) => {
-            return (
-                <div className="flex justify-center">
-                    <Badge variant="outline" >{row.getValue("uom")}</Badge>
-                </div>
-            )
-        }
-    },
-    {
-        id: "actions",
-        cell: ({ row }) => {
-            const part = row.original
-
-            return (
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Open menu</span>
-                            <EllipsisVertical className="h-4 w-4" />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem onClick={() => navigator.clipboard.writeText(part.subpart_id)}>Copy part ID</DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem>Update Part</DropdownMenuItem>
-                        <DropdownMenuItem variant="destructive">Delete Part</DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            )
-        }
-    }
-]
-
-
+    ]
+}
