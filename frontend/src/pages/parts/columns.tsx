@@ -16,7 +16,12 @@ import { EllipsisVertical } from "lucide-react"
 import { type PartsTable } from "@/apis/parts"
 import { Link } from "react-router-dom"
 
-export function createColumns(onDelete: (partId: string) => void): ColumnDef<PartsTable>[] {
+interface createColumnsProp {
+    onDelete: (partId: string) => void
+    onEdit: (partId: string) => void
+}
+
+export function createColumns({ onDelete, onEdit}: createColumnsProp): ColumnDef<PartsTable>[] {
     return [
         {
             accessorKey: "part_no",
@@ -64,7 +69,7 @@ export function createColumns(onDelete: (partId: string) => void): ColumnDef<Par
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
                             <DropdownMenuItem onClick={() => navigator.clipboard.writeText(part.part_id)}>Copy Part No.</DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem>Update Part</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => onEdit(part.part_id)}>Update Part</DropdownMenuItem>
                             <DropdownMenuItem variant="destructive" onClick={() => onDelete(part.part_id)}>Delete Part</DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>

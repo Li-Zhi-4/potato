@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/sidebar"
 import { useState } from "react"
 import { useEffect } from "react"
-import { deletePart, getPartsTable } from "@/apis/parts"
+import { deletePart, getPart, getPartsTable, type Part } from "@/apis/parts"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -35,6 +35,7 @@ export default function Page() {
     const [globalFilter, setGlobalFilter] = useState("")
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
     const [refresh, setRefresh] = useState(0)
+    const [selectedPart, setSelectedPart] = useState<Part>()
 
     useEffect(() => {
         async function fetchData() {
@@ -57,8 +58,14 @@ export default function Page() {
         await deletePart(partId)
         setRefresh(prev => prev + 1) 
     }
+
+    async function handleEdit(partId: string) {
+        const p = await getPart(partId)
+        setSelectedPart(p)
+        setPartSheetOpen(true)
+    }
     
-    const columns = createColumns(handleDelete)
+    const columns = createColumns({ onDelete: handleDelete, onEdit: handleEdit })
 
     return (
         <SidebarProvider
@@ -139,16 +146,17 @@ export default function Page() {
             </SidebarInset>
 
             <FormSheet
-                title="Create a Part" 
+                title={selectedPart ? "Update a Part" : "Create a Part" }
                 description="Create a new part with a unique part number."
                 open={partSheetOpen}
-                onOpenChange={setPartSheetOpen} 
+                onOpenChange={(open) => { setPartSheetOpen(open); if (!open) setSelectedPart(undefined) }}
                 formId="create-part-form"
             >
                 <CreatePartForm
                     open={partSheetOpen}
                     onUpdate={handleUpdate}
                     formId="create-part-form"
+                    part={selectedPart}
                 />
             </FormSheet>
         </SidebarProvider>

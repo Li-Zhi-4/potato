@@ -25,7 +25,7 @@ import { useState, useEffect } from "react"
 import { type Vendor, listVendors } from "@/apis/vendors"
 import { Controller, type ControllerRenderProps, type ControllerFieldState, useForm } from "react-hook-form"
 import * as z from "zod"
-import { createPart } from "@/apis/parts"
+import { createPart, updatePart, type Part } from "@/apis/parts"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { createVendorPart } from "@/apis/vendorParts"
 
@@ -41,17 +41,18 @@ interface FormProps {
     open: boolean,
     onUpdate: () => void
     formId: string
+    part?: Part
 }
 
-export function CreatePartForm({ open, onUpdate, formId }: FormProps) {
+export function CreatePartForm({ open, onUpdate, formId, part }: FormProps) {
     const [vendorsData, setVendorsData] = useState<Vendor[]>([])
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            part_no: "",
-            description: "",
-            is_assembly: false,
+            part_no: part?.part_no || "",
+            description: part?.description || "",
+            is_assembly: part?.is_assembly === "assembly",
             vendor_id: "none"
         },
     })
@@ -65,25 +66,43 @@ export function CreatePartForm({ open, onUpdate, formId }: FormProps) {
     }, [])
 
     useEffect(() => {
-        if (!open) { form.reset() }
+        if (part) {
+            form.reset({
+                part_no: part.part_no,
+                description: part.description ?? "",
+                is_assembly: part.is_assembly === "assembly",
+                vendor_id: "none",
+            })
+        } else {
+            form.reset()
+        }
     }, [open])
 
     async function onSubmit(data: z.infer<typeof formSchema>) {
-        const response = await createPart({
-            part_no: data.part_no,
-            description: data.description ?? null,
-            is_assembly: data.is_assembly,
-            created_by: "0",
-            updated_by: "0",
-        })
-        if (data.vendor_id !== "none"){
-            await createVendorPart({
-                part_id: response.part_id,
-                vendor_id: data.vendor_id,
-                is_primary: true,
-                created_by: "0",
-                updated_by: "0"
+        if (part) {
+            await updatePart(part.part_id, {
+                part_no: data.part_no,
+                description: data.description ?? null,
+                is_assembly: data.is_assembly,
+                updated_by: "0",
             })
+        } else {
+            const response = await createPart({
+                part_no: data.part_no,
+                description: data.description ?? null,
+                is_assembly: data.is_assembly,
+                created_by: "0",
+                updated_by: "0",
+            })
+            if (data.vendor_id !== "none"){
+                await createVendorPart({
+                    part_id: response.part_id,
+                    vendor_id: data.vendor_id,
+                    is_primary: true,
+                    created_by: "0",
+                    updated_by: "0"
+                })
+            }
         }
         onUpdate()
     }
