@@ -2,7 +2,7 @@ import { API_BASE, handle } from "../lib/api"
 
 export type PurchaseOrder = {
     po_id: string
-    po_no: number
+    po_no: string
     vendor_id: string
     status: 'draft' | 'sent' | 'received' | 'cancelled'
 
@@ -46,7 +46,7 @@ export async function createPurchaseOrder(input: CreatePurchaseOrderInput): Prom
 
 
 export type UpdatePurchaseOrderInput = {
-    po_no?: number
+    po_no?: string
     vendor_id?: string
     status?: 'draft' | 'sent' | 'received' | 'cancelled'
 

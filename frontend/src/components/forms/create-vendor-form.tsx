@@ -8,7 +8,7 @@ import {
     FieldSet,
 } from "@/components/ui/field"
 import { Input } from "../ui/input"
-import { createVendor } from "@/apis/vendors"
+import { createVendor, updateVendor, type Vendor } from "@/apis/vendors"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -25,25 +25,41 @@ interface FormProps {
     open: boolean,
     onUpdate: () => void
     formId: string
+    vendor?: Vendor
 }
 
-export function CreateVendorForm({ open, onUpdate, formId }: FormProps) {
+export function CreateVendorForm({ open, onUpdate, formId, vendor }: FormProps) {
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            vendor_name: "",
+            vendor_name: vendor?.vendor_name || "",
             created_by: "0",
             updated_by: "0"
         },
     })
 
     useEffect(() => {
-        if (!open) { form.reset() }
+        if (vendor) { 
+            form.reset({
+                vendor_name: vendor.vendor_name,
+                created_by: "0",
+                updated_by: "0"
+            }) 
+        } else {
+            form.reset() 
+        }
     }, [open])
 
     async function onSubmit(data: z.infer<typeof formSchema>) {
-        await createVendor(data)
+        if (vendor) {
+            await updateVendor(vendor.vendor_id, {
+                vendor_name: data.vendor_name,
+                updated_by: "0"
+            })
+        } else {
+            await createVendor(data)
+        }
         onUpdate()  
     }
 

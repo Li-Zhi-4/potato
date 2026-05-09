@@ -18,6 +18,7 @@ import { CreateBomForm } from "@/components/forms/create-bom-form"
 export default function Page() {
     const [bomsData, setBomsData] = useState<Bom[]>([])
     const [bomSheetOpen, setBomSheetOpen] = useState(false)
+    const [selectedBom, setSelectedBom] = useState<Bom | undefined>()
     const [globalFilter, setGlobalFilter] = useState("")
     const [refresh, setRefresh] = useState(0)
 
@@ -33,6 +34,7 @@ export default function Page() {
     const handleUpdate = () => {
         setRefresh(prev => prev + 1)    // refresh page
         setBomSheetOpen(false)          // closes sheet
+        setSelectedBom(undefined)
     }
 
     async function handleDelete(bomId: string) {
@@ -40,7 +42,12 @@ export default function Page() {
         setRefresh(prev => prev + 1)
     }
 
-    const columns = createColumns(handleDelete)
+    function handleEdit(bom: Bom) {
+        setSelectedBom(bom)
+        setBomSheetOpen(true)
+    }
+
+    const columns = createColumns({ onDelete: handleDelete, onEdit: handleEdit })
 
     return (
         <SidebarProvider
@@ -83,16 +90,17 @@ export default function Page() {
             </SidebarInset>
 
             <FormSheet
-                title="Create a Bill of Materials" 
-                description="Create a new Bill of Materials."
+                title={selectedBom ? "Update BOM" : "Create a Bill of Materials"}
+                description={selectedBom ? "Edit this BOM's details." : "Create a new Bill of Materials."}
                 open={bomSheetOpen}
-                onOpenChange={setBomSheetOpen} 
+                onOpenChange={(open) => { setBomSheetOpen(open); if (!open) setSelectedBom(undefined) }}
                 formId="create-bom-form"
             >
                 <CreateBomForm
                     open={bomSheetOpen}
                     onUpdate={handleUpdate}
                     formId="create-bom-form"
+                    bom={selectedBom}
                 />
             </FormSheet>
         </SidebarProvider>

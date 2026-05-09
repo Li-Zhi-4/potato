@@ -13,8 +13,12 @@ import { type ColumnDef } from "@tanstack/react-table"
 import { type Vendor } from "@/apis/vendors"
 import { EllipsisVertical } from "lucide-react"
 
+interface createColumnsProp {
+    onDelete: (vendorId: string) => void
+    onEdit: (vendorId: string) => void
+}
 
-export function createColumns(onDelete: (partId: string) => void): ColumnDef<Vendor>[] {
+export function createColumns({ onDelete, onEdit}: createColumnsProp): ColumnDef<Vendor>[] {
     return [
         {
             accessorKey: "vendor_name",
@@ -27,7 +31,7 @@ export function createColumns(onDelete: (partId: string) => void): ColumnDef<Ven
         {
             id: "actions",
             cell: ({ row }) => {
-                const part = row.original
+                const vendor = row.original
 
                 return (
                     <DropdownMenu>
@@ -39,10 +43,10 @@ export function createColumns(onDelete: (partId: string) => void): ColumnDef<Ven
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                            <DropdownMenuItem onClick={() => navigator.clipboard.writeText(part.vendor_id)}>Copy Vendor Id</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => navigator.clipboard.writeText(vendor.vendor_id)}>Copy Vendor Id</DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem>Update Part</DropdownMenuItem>
-                            <DropdownMenuItem variant="destructive" onClick={() => onDelete(part.vendor_id)}>Delete Vendor</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => onEdit(vendor.vendor_id)}>Update Vendor</DropdownMenuItem>
+                            <DropdownMenuItem variant="destructive" onClick={() => onDelete(vendor.vendor_id)}>Archive Vendor</DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 )

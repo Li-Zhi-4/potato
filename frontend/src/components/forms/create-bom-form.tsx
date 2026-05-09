@@ -21,7 +21,7 @@ import { Textarea } from "../ui/textarea"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { createBom } from "@/apis/boms"
+import { createBom, updateBom, type Bom } from "@/apis/boms"
 import { useEffect } from "react"
 
 export const formSchema = z.object({
@@ -36,9 +36,10 @@ interface FormProps {
     open: boolean,
     onUpdate: () => void,
     formId: string
+    bom?: Bom
 }
 
-export function CreateBomForm({ open, onUpdate, formId }: FormProps) {
+export function CreateBomForm({ open, onUpdate, formId, bom }: FormProps) {
 
     const form = useForm({
         resolver: zodResolver(formSchema),
@@ -52,11 +53,30 @@ export function CreateBomForm({ open, onUpdate, formId }: FormProps) {
     })
 
     useEffect(() => {
-        if (!open) { form.reset() }
+        if (bom) {
+            form.reset({
+                title: bom.title ?? "",
+                job_no: bom.job_no ?? "",
+                description: bom.description ?? "",
+                created_by: "0",
+                updated_by: "0",
+            })
+        } else {
+            form.reset()
+        }
     }, [open])
 
     async function onSubmit(data: z.infer<typeof formSchema>) {
-        await createBom(data)
+        if (bom) {
+            await updateBom(bom.bom_id, {
+                title: data.title,
+                job_no: data.job_no,
+                description: data.description,
+                updated_by: "0",
+            })
+        } else {
+            await createBom(data)
+        }
         onUpdate()
     }
 

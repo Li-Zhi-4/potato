@@ -10,7 +10,7 @@ import { useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { createColumns } from "./columns"
-import { listVendors, updateVendor, type Vendor } from "@/apis/vendors"
+import { getVendor, listVendors, updateVendor, type Vendor } from "@/apis/vendors"
 import { FormSheet } from "@/components/sheets/FormSheet"
 import { CreateVendorForm } from "@/components/forms/create-vendor-form"
 
@@ -19,6 +19,7 @@ export default function Page() {
     const [refresh, setRefresh] = useState(0)
     const [globalFilter, setGlobalFilter] = useState("")
     const [vendorSheetOpen, setVendorSheetOpen] = useState(false)
+    const [selectedVendor, setSelectedVendor] = useState<Vendor>()
 
     useEffect(() => {
         async function fetchData() {
@@ -31,14 +32,21 @@ export default function Page() {
     const handleUpdate = () => {
         setRefresh(prev => prev + 1)    // refresh page
         setVendorSheetOpen(false)       // closes sheet
+        setSelectedVendor(undefined)
     }
 
     async function handleDelete(vendorId: string) {
         await updateVendor(vendorId, { "archived_at": "archived" })
         setRefresh(prev => prev + 1) 
     }
+
+    async function handleEdit(vendorId: string) {
+        const v = await getVendor(vendorId)
+        setSelectedVendor(v)
+        setVendorSheetOpen(true)
+    }
     
-    const columns = createColumns(handleDelete)
+    const columns = createColumns({ onDelete: handleDelete, onEdit: handleEdit })
 
     return (
         <SidebarProvider
@@ -84,13 +92,14 @@ export default function Page() {
                 title="Create a Vendor" 
                 description="Create a new vendor."
                 open={vendorSheetOpen}
-                onOpenChange={setVendorSheetOpen} 
+                onOpenChange={(open) => { setVendorSheetOpen(open); if (!open) setSelectedVendor(undefined) }} 
                 formId="create-vendor-form"
             >
                 <CreateVendorForm
                     open={vendorSheetOpen}
                     onUpdate={handleUpdate}
                     formId="create-vendor-form"
+                    vendor={selectedVendor}
                 />
             </FormSheet>
 

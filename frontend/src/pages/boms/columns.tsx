@@ -15,7 +15,12 @@ import { Link } from "react-router-dom"
 import { EllipsisVertical } from "lucide-react"
 
 
-export function createColumns(onDelete: (bomId: string) => void): ColumnDef<Bom>[] {
+interface CreateColumnsProps {
+    onDelete: (bomId: string) => void
+    onEdit: (bom: Bom) => void
+}
+
+export function createColumns({ onDelete, onEdit }: CreateColumnsProps): ColumnDef<Bom>[] {
     return [
         {
             accessorKey: "title",
@@ -54,6 +59,7 @@ export function createColumns(onDelete: (bomId: string) => void): ColumnDef<Bom>
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
                             <DropdownMenuItem onClick={() => navigator.clipboard.writeText(bom.bom_id)}>Copy BOM Id</DropdownMenuItem>
                             <DropdownMenuSeparator />
+                            <DropdownMenuItem onClick={() => onEdit(bom)}>Update BOM</DropdownMenuItem>
                             <DropdownMenuItem variant="destructive" onClick={() => onDelete(bom.bom_id)}>Delete BOM</DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>

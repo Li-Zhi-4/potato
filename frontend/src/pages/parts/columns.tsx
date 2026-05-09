@@ -67,7 +67,7 @@ export function createColumns({ onDelete, onEdit}: createColumnsProp): ColumnDef
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                            <DropdownMenuItem onClick={() => navigator.clipboard.writeText(part.part_id)}>Copy Part No.</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => navigator.clipboard.writeText(part.part_id)}>Copy Part Id</DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem onClick={() => onEdit(part.part_id)}>Update Part</DropdownMenuItem>
                             <DropdownMenuItem variant="destructive" onClick={() => onDelete(part.part_id)}>Delete Part</DropdownMenuItem>

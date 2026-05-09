@@ -85,6 +85,9 @@ def update_bom(bom_id: str):
     values = []
 
     # field mapping
+    if "title" in data:
+        fields.append("title = ?")
+        values.append(data["title"])
     if "job_no" in data:
         fields.append("job_no = ?")
         values.append(data["job_no"])

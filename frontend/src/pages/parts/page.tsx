@@ -49,9 +49,11 @@ export default function Page() {
         fetchData()
     }, [refresh])
 
+    // refreshes page when user creates/updates a part
     const handleUpdate = () => {
         setRefresh(prev => prev + 1)    // refresh page
         setPartSheetOpen(false)         // closes sheet
+        setSelectedPart(undefined)
     }
 
     async function handleDelete(partId: string) {
@@ -59,6 +61,7 @@ export default function Page() {
         setRefresh(prev => prev + 1) 
     }
 
+    // triggers necessary setup for editing a part
     async function handleEdit(partId: string) {
         const p = await getPart(partId)
         setSelectedPart(p)
@@ -149,7 +152,10 @@ export default function Page() {
                 title={selectedPart ? "Update a Part" : "Create a Part" }
                 description="Create a new part with a unique part number."
                 open={partSheetOpen}
-                onOpenChange={(open) => { setPartSheetOpen(open); if (!open) setSelectedPart(undefined) }}
+                onOpenChange={(open) => { 
+                    setPartSheetOpen(open); 
+                    if (!open) setSelectedPart(undefined) 
+                }}
                 formId="create-part-form"
             >
                 <CreatePartForm

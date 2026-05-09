@@ -2,6 +2,7 @@ import { API_BASE, handle } from "../lib/api"
 
 export type Bom = {
     bom_id: string
+    title: string | null
     job_no: string | null
     description: string | null
 
@@ -52,7 +53,8 @@ export async function createBom(input: CreateBomInput): Promise<Bom> {
 
 
 export type UpdateBomInput = {
-    job_no?: number | null
+    title?: string | null
+    job_no?: string | null
     description?: string | null
 
     updated_by?: string | null

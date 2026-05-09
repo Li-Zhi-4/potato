@@ -22,7 +22,7 @@ import { type Vendor, listVendors } from "@/apis/vendors"
 import { Controller, type ControllerRenderProps, type ControllerFieldState, useForm } from "react-hook-form"
 import * as z from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { createPurchaseOrder } from "@/apis/purchaseOrders"
+import { createPurchaseOrder, updatePurchaseOrder, type PurchaseOrder } from "@/apis/purchaseOrders"
 
 export const formSchema = z.object({
     po_no: z.string().min(1, "Purchase order number is required"),
@@ -36,9 +36,10 @@ interface FormProps {
     open: boolean,
     onUpdate: () => void
     formId: string
+    purchaseOrder?: PurchaseOrder
 }
 
-export function CreatePurchaseOrderForm({ open, onUpdate, formId }: FormProps) {
+export function CreatePurchaseOrderForm({ open, onUpdate, formId, purchaseOrder }: FormProps) {
     const [vendorsData, setVendorsData] = useState<Vendor[]>([])
 
     useEffect(() => {
@@ -50,7 +51,17 @@ export function CreatePurchaseOrderForm({ open, onUpdate, formId }: FormProps) {
     }, [])
 
     useEffect(() => {
-        if (!open) { form.reset() }
+        if (purchaseOrder) {
+            form.reset({
+                po_no: purchaseOrder.po_no ?? "",
+                vendor_id: purchaseOrder.vendor_id,
+                status: purchaseOrder.status,
+                created_by: "0",
+                updated_by: "0",
+            })
+        } else {
+            form.reset()
+        }
     }, [open])
 
     const form = useForm<z.infer<typeof formSchema>>({
@@ -65,7 +76,16 @@ export function CreatePurchaseOrderForm({ open, onUpdate, formId }: FormProps) {
         })
 
     async function onSubmit(data: z.infer<typeof formSchema>) {
-        await createPurchaseOrder(data)
+        if (purchaseOrder) {
+            await updatePurchaseOrder(purchaseOrder.po_id, {
+                po_no: data.po_no,
+                vendor_id: data.vendor_id,
+                status: data.status,
+                updated_by: "0",
+            })
+        } else {
+            await createPurchaseOrder(data)
+        }
         onUpdate()
     }
 

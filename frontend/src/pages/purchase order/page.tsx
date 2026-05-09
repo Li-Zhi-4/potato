@@ -31,6 +31,7 @@ export default function Page() {
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
 
     const [purchaseOrderSheetOpen, setPurchaseOrderSheetOpen] = useState(false)
+    const [selectedPO, setSelectedPO] = useState<PurchaseOrder | undefined>()
 
     useEffect(() => {
         async function fetchData() {
@@ -43,6 +44,7 @@ export default function Page() {
     const handleUpdate = () => {
         setRefresh(prev => prev + 1)        // refresh page
         setPurchaseOrderSheetOpen(false)    // closes sheet
+        setSelectedPO(undefined)
     }
 
     async function handleDelete(poId: string) {
@@ -50,7 +52,12 @@ export default function Page() {
         setRefresh(prev => prev + 1)
     }
 
-    const columns = createColumns(handleDelete)
+    function handleEdit(po: PurchaseOrder) {
+        setSelectedPO(po)
+        setPurchaseOrderSheetOpen(true)
+    }
+
+    const columns = createColumns({ onDelete: handleDelete, onEdit: handleEdit })
 
     return (
         <SidebarProvider
@@ -88,7 +95,7 @@ export default function Page() {
                                                 <SelectGroup>
                                                     <SelectItem value="all">All</SelectItem>
                                                     <SelectItem value="draft">Draft</SelectItem>
-                                                    <SelectItem value="part">Sent</SelectItem>
+                                                    <SelectItem value="sent">Sent</SelectItem>
                                                     <SelectItem value="received">Received</SelectItem>
                                                     <SelectItem value="cancelled">Cancelled</SelectItem>
                                                 </SelectGroup>
@@ -112,16 +119,17 @@ export default function Page() {
                 </div>
 
                 <FormSheet
-                    title="Create a Purchase Order" 
-                    description="Create a new purchase order."
+                    title={selectedPO ? "Update Purchase Order" : "Create a Purchase Order"}
+                    description={selectedPO ? "Edit this purchase order's details." : "Create a new purchase order."}
                     open={purchaseOrderSheetOpen}
-                    onOpenChange={setPurchaseOrderSheetOpen} 
+                    onOpenChange={(open) => { setPurchaseOrderSheetOpen(open); if (!open) setSelectedPO(undefined) }}
                     formId="create-purchase-order-form"
                 >
                     <CreatePurchaseOrderForm
                         open={purchaseOrderSheetOpen}
                         onUpdate={handleUpdate}
                         formId="create-purchase-order-form"
+                        purchaseOrder={selectedPO}
                     />
                 </FormSheet>
             </SidebarInset>

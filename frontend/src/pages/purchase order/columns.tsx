@@ -14,7 +14,12 @@ import { type PurchaseOrder } from "@/apis/purchaseOrders"
 import { EllipsisVertical } from "lucide-react"
 
 
-export function createColumns(onDelete: (poId: string) => void): ColumnDef<PurchaseOrder>[] {
+interface CreateColumnProps {
+    onDelete: (poId: string) => void
+    onEdit: (po: PurchaseOrder) => void
+}
+
+export function createColumns({ onDelete, onEdit }: CreateColumnProps): ColumnDef<PurchaseOrder>[] {
     return [
         {
             accessorKey: "po_no",
@@ -45,6 +50,7 @@ export function createColumns(onDelete: (poId: string) => void): ColumnDef<Purch
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
                             <DropdownMenuItem onClick={() => navigator.clipboard.writeText(po.po_id)}>Copy Purchase Order Id</DropdownMenuItem>
                             <DropdownMenuSeparator />
+                            <DropdownMenuItem onClick={() => onEdit(po)}>Update Purchase Order</DropdownMenuItem>
                             <DropdownMenuItem variant="destructive" onClick={() => onDelete(po.po_id)}>Delete Purchase Order</DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
