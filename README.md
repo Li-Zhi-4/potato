@@ -29,3 +29,5 @@ Request body:
     "updated_by": "0"
 }
 ```
+
+Noting checkpoint
