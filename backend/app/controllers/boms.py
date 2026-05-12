@@ -1,9 +1,9 @@
-import sqlite3
 from flask import Blueprint, jsonify, request
 from app.db import get_db
 import uuid
 from datetime import datetime
 from app.utils.helpers import row_to_dict
+from psycopg2 import errors as pg_errors
 
 bp = Blueprint('boms', __name__, url_prefix='/api/boms')
 
@@ -16,7 +16,7 @@ def get_bom():
     job_no = request.args.get("job_no")
 
     if job_no:
-        row = db.execute("SELECT * FROM boms WHERE job_no = ?", (job_no,)).fetchone()
+        row = db.execute("SELECT * FROM boms WHERE job_no = %s", (job_no,)).fetchone()
         return jsonify(row_to_dict(row)) if row else (jsonify({"error": "not found"}), 404)
 
     rows = db.execute("SELECT * FROM boms").fetchall()
@@ -26,7 +26,7 @@ def get_bom():
 @bp.get("/<string:bom_id>")
 def get_bom_by_id(bom_id: str):
     db = get_db()
-    row = db.execute("SELECT * FROM boms WHERE bom_id = ?", (bom_id,)).fetchone()
+    row = db.execute("SELECT * FROM boms WHERE bom_id = %s", (bom_id,)).fetchone()
     if not row:
         return jsonify({"error": "not found"}), 404
     return jsonify(row_to_dict(row))
@@ -48,7 +48,7 @@ def create_bom():
             INSERT INTO boms (
                 bom_id, title, job_no, description,
                 created_at, updated_at, created_by, updated_by
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
             """,
             (
                 bom_id,
@@ -62,11 +62,11 @@ def create_bom():
             ),
         )
         db.commit()
-    except sqlite3.IntegrityError:
+    except pg_errors.UniqueViolation:
         return jsonify({"error": "could not create bom"}), 409
 
     # retrieve
-    row = db.execute("SELECT * FROM boms WHERE bom_id = ?", (bom_id,)).fetchone()
+    row = db.execute("SELECT * FROM boms WHERE bom_id = %s", (bom_id,)).fetchone()
     return jsonify(row_to_dict(row)), 201
 
 
@@ -77,7 +77,7 @@ def update_bom(bom_id: str):
     db = get_db()
 
     # validation
-    id = db.execute("SELECT bom_id FROM boms WHERE bom_id = ?", (bom_id,)).fetchone()
+    id = db.execute("SELECT bom_id FROM boms WHERE bom_id = %s", (bom_id,)).fetchone()
     if not id:
         return jsonify({"error": "not found"}), 404
 
@@ -86,42 +86,42 @@ def update_bom(bom_id: str):
 
     # field mapping
     if "title" in data:
-        fields.append("title = ?")
+        fields.append("title = %s")
         values.append(data["title"])
     if "job_no" in data:
-        fields.append("job_no = ?")
+        fields.append("job_no = %s")
         values.append(data["job_no"])
     if "description" in data:
-        fields.append("description = ?")
+        fields.append("description = %s")
         values.append(data["description"])
     if "updated_by" in data:
-        fields.append("updated_by = ?")
+        fields.append("updated_by = %s")
         values.append(data["updated_by"])
     if not fields:
-        row = db.execute("SELECT * FROM boms WHERE bom_id = ?", (bom_id,)).fetchone()
+        row = db.execute("SELECT * FROM boms WHERE bom_id = %s", (bom_id,)).fetchone()
         return jsonify(row_to_dict(row))
 
     # timestamp
-    fields.append("updated_at = ?")
+    fields.append("updated_at = %s")
     values.append(datetime.now().isoformat())
     values.append(bom_id)
 
     # execute
-    db.execute(f"UPDATE boms SET {', '.join(fields)} WHERE bom_id = ?", values)
+    db.execute(f"UPDATE boms SET {', '.join(fields)} WHERE bom_id = %s", values)
     db.commit()
 
     # retrieve
-    row = db.execute("SELECT * FROM boms WHERE bom_id = ?", (bom_id,)).fetchone()
+    row = db.execute("SELECT * FROM boms WHERE bom_id = %s", (bom_id,)).fetchone()
     return jsonify(row_to_dict(row))
 
 
 @bp.delete("/<string:bom_id>")
 def delete_bom(bom_id: str):
     db = get_db()
-    id = db.execute("SELECT bom_id FROM boms WHERE bom_id = ?", (bom_id,)).fetchone()
+    id = db.execute("SELECT bom_id FROM boms WHERE bom_id = %s", (bom_id,)).fetchone()
     if not id:
         return jsonify({"error": "not found"}), 404
-    db.execute("DELETE FROM boms WHERE bom_id = ?", (bom_id,))
+    db.execute("DELETE FROM boms WHERE bom_id = %s", (bom_id,))
     db.commit()
     return "", 204
 
@@ -147,7 +147,7 @@ def get_boms_table(bom_id: str):
         FROM components c
         LEFT JOIN parts p ON c.part_id = p.part_id
         LEFT JOIN purchase_orders po ON c.po_id = po.po_id
-        WHERE c.bom_id = ?;
+        WHERE c.bom_id = %s;
         """, (bom_id,)).fetchall()
     if not row:
         return jsonify({"error": "not found"}), 404
