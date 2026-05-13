@@ -56,8 +56,8 @@ export function CreatePurchaseOrderForm({ open, onUpdate, formId, purchaseOrder 
                 po_no: purchaseOrder.po_no ?? "",
                 vendor_id: purchaseOrder.vendor_id,
                 status: purchaseOrder.status,
-                created_by: "0",
-                updated_by: "0",
+                created_by: '00000000-0000-0000-0000-000000000000',
+                updated_by: '00000000-0000-0000-0000-000000000000',
             })
         } else {
             form.reset()
@@ -70,8 +70,8 @@ export function CreatePurchaseOrderForm({ open, onUpdate, formId, purchaseOrder 
                 po_no: "",
                 vendor_id: "",
                 status: "draft",
-                created_by: "0",
-                updated_by: "0",
+                created_by: '00000000-0000-0000-0000-000000000000',
+                updated_by: '00000000-0000-0000-0000-000000000000',
             },
         })
 
@@ -81,7 +81,7 @@ export function CreatePurchaseOrderForm({ open, onUpdate, formId, purchaseOrder 
                 po_no: data.po_no,
                 vendor_id: data.vendor_id,
                 status: data.status,
-                updated_by: "0",
+                updated_by: '00000000-0000-0000-0000-000000000000',
             })
         } else {
             await createPurchaseOrder(data)

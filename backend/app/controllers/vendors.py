@@ -1,6 +1,5 @@
 from flask import Blueprint, jsonify, request
 from app.db import get_db
-from datetime import datetime
 from app.utils.helpers import row_to_dict
 from psycopg2 import errors as pg_errors
 
@@ -99,8 +98,7 @@ def update_vendor(vendor_id: str):
         return jsonify(row_to_dict(row))
 
     # timestamp
-    fields.append("updated_at = %s")
-    values.append(datetime.now().isoformat())
+    fields.append("updated_at = NOW()")
     values.append(vendor_id)
 
     # execute

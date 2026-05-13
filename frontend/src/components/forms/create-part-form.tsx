@@ -84,23 +84,23 @@ export function CreatePartForm({ open, onUpdate, formId, part }: FormProps) {
                 part_no: data.part_no,
                 description: data.description ?? null,
                 is_assembly: data.is_assembly,
-                updated_by: "0",
+                updated_by: '00000000-0000-0000-0000-000000000000',
             })
         } else {
             const response = await createPart({
                 part_no: data.part_no,
                 description: data.description ?? null,
                 is_assembly: data.is_assembly,
-                created_by: "0",
-                updated_by: "0",
+                created_by: '00000000-0000-0000-0000-000000000000',
+                updated_by: '00000000-0000-0000-0000-000000000000',
             })
             if (data.vendor_id !== "none"){
                 await createVendorPart({
                     part_id: response.part_id,
                     vendor_id: data.vendor_id,
                     is_primary: true,
-                    created_by: "0",
-                    updated_by: "0"
+                    created_by: '00000000-0000-0000-0000-000000000000',
+                    updated_by: '00000000-0000-0000-0000-000000000000'
                 })
             }
         }

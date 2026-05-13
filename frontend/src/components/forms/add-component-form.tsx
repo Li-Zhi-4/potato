@@ -72,8 +72,8 @@ export function AddComponentForm({ open, onUpdate, bom, formId }: FormProps) {
                 quantity: 1,
                 uom: "",
                 status: "",
-                created_by: "0",
-                updated_by: "0"
+                created_by: '00000000-0000-0000-0000-000000000000',
+                updated_by: '00000000-0000-0000-0000-000000000000'
             },
         })
 
@@ -86,8 +86,8 @@ export function AddComponentForm({ open, onUpdate, bom, formId }: FormProps) {
             uom: data.uom,
             status: data.status,
 
-            created_by: "0",
-            updated_by: "0"
+            created_by: '00000000-0000-0000-0000-000000000000',
+            updated_by: '00000000-0000-0000-0000-000000000000'
         })
         onUpdate()
     }
