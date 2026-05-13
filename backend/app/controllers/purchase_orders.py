@@ -38,47 +38,38 @@ def create_purchase_order():
     vendor_id = (data.get("vendor_id") or "").strip()
     if not vendor_id:
         return jsonify({"error": "vendor_id is required"}), 400
-
+   
+    # prep
     db = get_db()
 
     vendor = db.execute("SELECT vendor_id FROM vendors WHERE vendor_id = %s", (vendor_id,)).fetchone()
     if not vendor:
         return jsonify({"error": "vendor not found"}), 404
-
-    # prep
-    po_id = str(uuid.uuid4())
-    now = datetime.now().isoformat()
-
-    # auto-increment po_no
-    row = db.execute("SELECT COALESCE(MAX(po_no), 0) + 1 AS next_no FROM purchase_orders").fetchone()
-    auto_po_no = row["next_no"]
+ 
 
     # execute
     try:
-        db.execute(
+        row = db.execute(
             """
             INSERT INTO purchase_orders (
-                po_id, po_no, vendor_id, status,
-                created_at, updated_at, created_by, updated_by
-            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                po_no, vendor_id, status,
+                created_by, updated_by
+            ) VALUES (%s, %s, %s, %s, %s)
+            RETURNING *
             """,
             (
-                po_id,
-                data.get("po_no", auto_po_no),
+                data.get("po_no"),
                 vendor_id,
                 data.get("status", "draft"),
-                now,
-                now,
                 data.get("created_by"),
                 data.get("updated_by"),
             ),
-        )
+        ).fetchone()
         db.commit()
     except pg_errors.UniqueViolation:
-        return jsonify({"error": f"po_no {data.get("po_no", auto_po_no)} already exists"}), 409
+        return jsonify({"error": f"po_no {data.get("po_no")} already exists"}), 409
 
     # retrieve
-    row = db.execute("SELECT * FROM purchase_orders WHERE po_id = %s", (po_id,)).fetchone()
     return jsonify(row_to_dict(row)), 201
 
 

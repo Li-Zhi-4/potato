@@ -38,35 +38,30 @@ def create_bom():
 
     # prep
     db = get_db()
-    bom_id = str(uuid.uuid4())
-    now = datetime.now().isoformat()
 
     # execute
     try:
-        db.execute(
+        row = db.execute(
             """
             INSERT INTO boms (
-                bom_id, title, job_no, description,
-                created_at, updated_at, created_by, updated_by
-            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                title, job_no, description,
+                created_by, updated_by
+            ) VALUES (%s, %s, %s, %s, %s)
+            RETURNING *
             """,
             (
-                bom_id,
                 data.get("title"),
                 data.get("job_no"),
                 data.get("description"),
-                now,
-                now,
                 data.get("created_by"),
                 data.get("updated_by"),
             ),
-        )
+        ).fetchone()
         db.commit()
     except pg_errors.UniqueViolation:
         return jsonify({"error": "could not create bom"}), 409
 
     # retrieve
-    row = db.execute("SELECT * FROM boms WHERE bom_id = %s", (bom_id,)).fetchone()
     return jsonify(row_to_dict(row)), 201
 
 

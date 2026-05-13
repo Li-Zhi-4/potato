@@ -34,36 +34,30 @@ def create_part():
     
     # prep
     db = get_db()
-    part_id = str(uuid.uuid4())
-    is_assembly = 'assembly' if data.get("is_assembly") else 'part'
-    now = datetime.now().isoformat()
 
     # execute
     try:
-        db.execute(
+        row = db.execute(
             """
             INSERT INTO parts (
-                part_id, part_no, description, is_assembly, 
-                created_at, updated_at, created_by, updated_by
-            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                part_no, description, is_assembly, 
+                created_by, updated_by
+            ) VALUES (%s, %s, %s, %s, %s)
+            RETURNING *
             """,
             (
-                part_id,
                 part_no,
                 data.get("description"),
-                is_assembly,
-                now,
-                now,
+                data.get("is_assembly"),
                 data.get("created_by"),
                 data.get("updated_by")
             ),
-        )
+        ).fetchone()
         db.commit()
     except pg_errors.UniqueViolation:
         return jsonify({"error": f"part number {part_no} already exists"}), 409
     
     # retrieve
-    row = db.execute("SELECT * FROM parts WHERE part_id = %s", (part_id,)).fetchone()
     return jsonify(row_to_dict(row)), 201
 
 

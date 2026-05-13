@@ -33,7 +33,7 @@ import { createVendorPart } from "@/apis/vendorParts"
 export const formSchema = z.object({
     part_no: z.string().min(1, "Part number is required"),
     description: z.string().optional(),
-    is_assembly: z.boolean(),
+    is_assembly: z.enum(['part', 'assembly']),
     vendor_id: z.string()
 })
 
@@ -52,7 +52,7 @@ export function CreatePartForm({ open, onUpdate, formId, part }: FormProps) {
         defaultValues: {
             part_no: part?.part_no || "",
             description: part?.description || "",
-            is_assembly: part?.is_assembly === "assembly",
+            is_assembly: part?.is_assembly || 'part',
             vendor_id: "none"
         },
     })
@@ -70,7 +70,7 @@ export function CreatePartForm({ open, onUpdate, formId, part }: FormProps) {
             form.reset({
                 part_no: part.part_no,
                 description: part.description ?? "",
-                is_assembly: part.is_assembly === "assembly",
+                is_assembly: part.is_assembly || 'part',
                 vendor_id: "none",
             })
         } else {
@@ -178,8 +178,8 @@ export function CreatePartForm({ open, onUpdate, formId, part }: FormProps) {
                                 <Field orientation={"horizontal"} data-invalid={fieldState.invalid}>
                                     <Checkbox 
                                         id="is-assembly" 
-                                        checked={field.value}
-                                        onCheckedChange={field.onChange}
+                                        checked={field.value === 'assembly'}
+                                        onCheckedChange={(checked) => field.onChange(checked ? 'assembly' : 'part')}
                                         onBlur={field.onBlur}
                                         ref={field.ref}
                                     />
