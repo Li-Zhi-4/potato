@@ -71,8 +71,8 @@ export function AddVendorForm({ open, onUpdate, part, formId }: FormProps) {
                 part_no: "",
                 description: "",
                 is_primary: false,
-                created_by: "0",
-                updated_by: "0"
+                created_by: '00000000-0000-0000-0000-000000000000',
+                updated_by: '00000000-0000-0000-0000-000000000000'
             },
         })
 

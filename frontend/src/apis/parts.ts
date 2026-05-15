@@ -35,7 +35,7 @@ export async function getPartByPartNo(part_no: string): Promise<Part> {
 export type CreatePartInput = {
     part_no: string
     description: string | null
-    is_assembly: boolean
+    is_assembly: 'part' | 'assembly'
 
     created_by: string
     updated_by: string | null
@@ -55,7 +55,7 @@ export async function createPart(input: CreatePartInput): Promise<Part> {
 export type UpdatePartInput = {
     part_no?: string | null
     description?: string | null
-    is_assembly?: boolean | null
+    is_assembly?: 'part' | 'assembly'
 
     updated_by: string
 }

@@ -34,8 +34,8 @@ export function CreateVendorForm({ open, onUpdate, formId, vendor }: FormProps) 
         resolver: zodResolver(formSchema),
         defaultValues: {
             vendor_name: vendor?.vendor_name || "",
-            created_by: "0",
-            updated_by: "0"
+            created_by: '00000000-0000-0000-0000-000000000000',
+            updated_by: '00000000-0000-0000-0000-000000000000'
         },
     })
 
@@ -43,8 +43,8 @@ export function CreateVendorForm({ open, onUpdate, formId, vendor }: FormProps) 
         if (vendor) { 
             form.reset({
                 vendor_name: vendor.vendor_name,
-                created_by: "0",
-                updated_by: "0"
+                created_by: '00000000-0000-0000-0000-000000000000',
+                updated_by: '00000000-0000-0000-0000-000000000000'
             }) 
         } else {
             form.reset() 
@@ -55,7 +55,7 @@ export function CreateVendorForm({ open, onUpdate, formId, vendor }: FormProps) 
         if (vendor) {
             await updateVendor(vendor.vendor_id, {
                 vendor_name: data.vendor_name,
-                updated_by: "0"
+                updated_by: '00000000-0000-0000-0000-000000000000'
             })
         } else {
             await createVendor(data)

@@ -1,9 +1,9 @@
-import sqlite3
 from flask import Blueprint, jsonify, request
 from app.db import get_db
 import uuid
 from datetime import datetime
 from app.utils.helpers import row_to_dict
+from psycopg2 import errors as pg_errors
 
 
 bp = Blueprint('components', __name__, url_prefix='/api/components')
@@ -24,7 +24,7 @@ def list_components():
 @bp.get("/<string:component_id>")
 def get_component(component_id: str):
     db = get_db()
-    row = db.execute("SELECT * FROM components WHERE component_id = ?", (component_id,)).fetchone()
+    row = db.execute("SELECT * FROM components WHERE component_id = %s", (component_id,)).fetchone()
     if not row:
         return jsonify({"error": "not found"}), 404
     return jsonify(row_to_dict(row))
@@ -42,57 +42,51 @@ def create_component():
     if not part_id:
         return jsonify({"error": "part_id is required"}), 400
 
+    # prep
     db = get_db()
 
-    bom = db.execute("SELECT bom_id FROM boms WHERE bom_id = ?", (bom_id,)).fetchone()
+    bom = db.execute("SELECT bom_id FROM boms WHERE bom_id = %s", (bom_id,)).fetchone()
     if not bom:
         return jsonify({"error": "bom not found"}), 404
-    part = db.execute("SELECT part_id FROM parts WHERE part_id = ?", (part_id,)).fetchone()
+    part = db.execute("SELECT part_id FROM parts WHERE part_id = %s", (part_id,)).fetchone()
     if not part:
         return jsonify({"error": "part not found"}), 404
 
     po_id = (data.get("po_id") or "").strip()
     if po_id:
-        purchase_order = db.execute("SELECT po_id FROM purchase_orders WHERE po_id = ?", (po_id,)).fetchone()
+        purchase_order = db.execute("SELECT po_id FROM purchase_orders WHERE po_id = %s", (po_id,)).fetchone()
         if not purchase_order:
             return jsonify({"error": "purchase order not found"}), 404
     else:
         po_id = None
 
-    # prep
-    component_id = str(uuid.uuid4())
-    now = datetime.now().isoformat()
-
     # execute
     try:
-        db.execute(
+        row = db.execute(
             """
             INSERT INTO components (
-                component_id, bom_id, part_id, po_id,
+                bom_id, part_id, po_id,
                 quantity, uom, status,
-                created_at, updated_at, created_by, updated_by
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                created_by, updated_by
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            RETURNING *
             """,
             (
-                component_id,
                 bom_id,
                 part_id,
                 po_id,
                 data.get("quantity", 1),
                 data.get("uom", "each"),
                 data.get("status"),
-                now,
-                now,
                 data.get("created_by"),
                 data.get("updated_by"),
             ),
-        )
+        ).fetchone()
         db.commit()
-    except sqlite3.IntegrityError:
+    except pg_errors.UniqueViolation:
         return jsonify({"error": "could not create component"}), 409
 
     # retrieve
-    row = db.execute("SELECT * FROM components WHERE component_id = ?", (component_id,)).fetchone()
     return jsonify(row_to_dict(row)), 201
 
 
@@ -102,7 +96,7 @@ def update_component(component_id: str):
     db = get_db()
 
     # validation
-    id = db.execute("SELECT component_id FROM components WHERE component_id = ?", (component_id,)).fetchone()
+    id = db.execute("SELECT component_id FROM components WHERE component_id = %s", (component_id,)).fetchone()
     if not id:
         return jsonify({"error": "not found"}), 404
 
@@ -114,79 +108,78 @@ def update_component(component_id: str):
         bom_id = (data["bom_id"] or "").strip()
         if not bom_id:
             return jsonify({"error": "bom_id cannot be empty"}), 400
-        bom = db.execute("SELECT bom_id FROM boms WHERE bom_id = ?", (bom_id,)).fetchone()
+        bom = db.execute("SELECT bom_id FROM boms WHERE bom_id = %s", (bom_id,)).fetchone()
         if not bom:
             return jsonify({"error": "bom not found"}), 404
-        fields.append("bom_id = ?")
+        fields.append("bom_id = %s")
         values.append(bom_id)
     if "part_id" in data:
         part_id = (data["part_id"] or "").strip()
         if not part_id:
             return jsonify({"error": "part_id cannot be empty"}), 400
-        part = db.execute("SELECT part_id FROM parts WHERE part_id = ?", (part_id,)).fetchone()
+        part = db.execute("SELECT part_id FROM parts WHERE part_id = %s", (part_id,)).fetchone()
         if not part:
             return jsonify({"error": "part not found"}), 404
-        fields.append("part_id = ?")
+        fields.append("part_id = %s")
         values.append(part_id)
     if "part_vendor_id" in data:
         part_vendor_id = (data["part_vendor_id"] or "").strip()
         if part_vendor_id:
-            part_vendor = db.execute("SELECT part_vendor_id FROM part_vendor WHERE part_vendor_id = ?", (part_vendor_id,)).fetchone()
+            part_vendor = db.execute("SELECT part_vendor_id FROM part_vendor WHERE part_vendor_id = %s", (part_vendor_id,)).fetchone()
             if not part_vendor:
                 return jsonify({"error": "part_vendor not found"}), 404
         else:
             part_vendor_id = None
-        fields.append("part_vendor_id = ?")
+        fields.append("part_vendor_id = %s")
         values.append(part_vendor_id)
     if "po_id" in data:
         po_id = (data["po_id"] or "").strip()
         if po_id:
-            purchase_order = db.execute("SELECT po_id FROM purchase_orders WHERE po_id = ?", (po_id,)).fetchone()
+            purchase_order = db.execute("SELECT po_id FROM purchase_orders WHERE po_id = %s", (po_id,)).fetchone()
             if not purchase_order:
                 return jsonify({"error": "purchase order not found"}), 404
         else:
             po_id = None
-        fields.append("po_id = ?")
+        fields.append("po_id = %s")
         values.append(po_id)
     if "quantity" in data:
-        fields.append("quantity = ?")
+        fields.append("quantity = %s")
         values.append(data["quantity"])
     if "uom" in data:
-        fields.append("uom = ?")
+        fields.append("uom = %s")
         values.append(data["uom"])
     if "status" in data:
-        fields.append("status = ?")
+        fields.append("status = %s")
         values.append(data["status"])
     if "updated_by" in data:
-        fields.append("updated_by = ?")
+        fields.append("updated_by = %s")
         values.append(data["updated_by"])
     if not fields:
-        row = db.execute("SELECT * FROM components WHERE component_id = ?", (component_id,)).fetchone()
+        row = db.execute("SELECT * FROM components WHERE component_id = %s", (component_id,)).fetchone()
         return jsonify(row_to_dict(row))
 
     # timestamp
-    fields.append("updated_at = ?")
-    values.append(datetime.now().isoformat())
+    fields.append("updated_at = NOW()")
     values.append(component_id)
 
     # execute
     try:
-        db.execute(f"UPDATE components SET {', '.join(fields)} WHERE component_id = ?", values)
+        db.execute(f"UPDATE components SET {', '.join(fields)} WHERE component_id = %s", values)
         db.commit()
-    except sqlite3.IntegrityError:
+    except pg_errors.UniqueViolation:
         return jsonify({"error": "could not update component"}), 409
 
     # retrieve
-    row = db.execute("SELECT * FROM components WHERE component_id = ?", (component_id,)).fetchone()
+    row = db.execute("SELECT * FROM components WHERE component_id = %s", (component_id,)).fetchone()
     return jsonify(row_to_dict(row))
 
 
 @bp.delete("/<string:component_id>")
 def delete_component(component_id: str):
     db = get_db()
-    id = db.execute("SELECT component_id FROM components WHERE component_id = ?", (component_id,)).fetchone()
+    id = db.execute("SELECT component_id FROM components WHERE component_id = %s", (component_id,)).fetchone()
     if not id:
         return jsonify({"error": "not found"}), 404
-    db.execute("DELETE FROM components WHERE component_id = ?", (component_id,))
+    db.execute("DELETE FROM components WHERE component_id = %s", (component_id,))
     db.commit()
     return "", 204

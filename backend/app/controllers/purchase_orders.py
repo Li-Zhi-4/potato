@@ -1,9 +1,9 @@
-import sqlite3
 from flask import Blueprint, jsonify, request
 from app.db import get_db
 import uuid
 from datetime import datetime
 from app.utils.helpers import row_to_dict
+from psycopg2 import errors as pg_errors
 
 
 bp = Blueprint('purchase_orders', __name__, url_prefix='/api/purchase_orders')
@@ -24,7 +24,7 @@ def list_purchase_orders():
 @bp.get("/<string:po_id>")
 def get_purchase_order(po_id: str):
     db = get_db()
-    row = db.execute("SELECT * FROM purchase_orders WHERE po_id = ?", (po_id,)).fetchone()
+    row = db.execute("SELECT * FROM purchase_orders WHERE po_id = %s", (po_id,)).fetchone()
     if not row:
         return jsonify({"error": "not found"}), 404
     return jsonify(row_to_dict(row))
@@ -38,47 +38,38 @@ def create_purchase_order():
     vendor_id = (data.get("vendor_id") or "").strip()
     if not vendor_id:
         return jsonify({"error": "vendor_id is required"}), 400
-
+   
+    # prep
     db = get_db()
 
-    vendor = db.execute("SELECT vendor_id FROM vendors WHERE vendor_id = ?", (vendor_id,)).fetchone()
+    vendor = db.execute("SELECT vendor_id FROM vendors WHERE vendor_id = %s", (vendor_id,)).fetchone()
     if not vendor:
         return jsonify({"error": "vendor not found"}), 404
-
-    # prep
-    po_id = str(uuid.uuid4())
-    now = datetime.now().isoformat()
-
-    # auto-increment po_no
-    row = db.execute("SELECT COALESCE(MAX(po_no), 0) + 1 AS next_no FROM purchase_orders").fetchone()
-    auto_po_no = row["next_no"]
+ 
 
     # execute
     try:
-        db.execute(
+        row = db.execute(
             """
             INSERT INTO purchase_orders (
-                po_id, po_no, vendor_id, status,
-                created_at, updated_at, created_by, updated_by
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                po_no, vendor_id, status,
+                created_by, updated_by
+            ) VALUES (%s, %s, %s, %s, %s)
+            RETURNING *
             """,
             (
-                po_id,
-                data.get("po_no", auto_po_no),
+                data.get("po_no"),
                 vendor_id,
                 data.get("status", "draft"),
-                now,
-                now,
                 data.get("created_by"),
                 data.get("updated_by"),
             ),
-        )
+        ).fetchone()
         db.commit()
-    except sqlite3.IntegrityError:
-        return jsonify({"error": f"po_no {data.get("po_no", auto_po_no)} already exists"}), 409
+    except pg_errors.UniqueViolation:
+        return jsonify({"error": f"po_no {data.get("po_no")} already exists"}), 409
 
     # retrieve
-    row = db.execute("SELECT * FROM purchase_orders WHERE po_id = ?", (po_id,)).fetchone()
     return jsonify(row_to_dict(row)), 201
 
 
@@ -88,7 +79,7 @@ def update_purchase_order(po_id: str):
     db = get_db()
 
     # validation
-    id = db.execute("SELECT po_id FROM purchase_orders WHERE po_id = ?", (po_id,)).fetchone()
+    id = db.execute("SELECT po_id FROM purchase_orders WHERE po_id = %s", (po_id,)).fetchone()
     if not id:
         return jsonify({"error": "not found"}), 404
 
@@ -100,53 +91,52 @@ def update_purchase_order(po_id: str):
         po_no = data["po_no"]
         if not po_no:
             return jsonify({"error": "purchase order no cannot be empty"}), 400
-        check = db.execute("SELECT po_no FROM purchase_orders WHERE po_no = ?", (po_no,)).fetchone()
+        check = db.execute("SELECT po_no FROM purchase_orders WHERE po_no = %s", (po_no,)).fetchone()
         if check:
             return jsonify({"error": "purchase order no already exists"}), 409
-        fields.append("po_no = ?")
+        fields.append("po_no = %s")
         values.append(po_no)
     if "vendor_id" in data:
         vendor_id = (data["vendor_id"] or "").strip()
         if not vendor_id:
             return jsonify({"error": "vendor_id cannot be empty"}), 400
-        vendor = db.execute("SELECT vendor_id FROM vendors WHERE vendor_id = ?", (vendor_id,)).fetchone()
+        vendor = db.execute("SELECT vendor_id FROM vendors WHERE vendor_id = %s", (vendor_id,)).fetchone()
         if not vendor:
             return jsonify({"error": "vendor not found"}), 404
-        fields.append("vendor_id = ?")
+        fields.append("vendor_id = %s")
         values.append(vendor_id)
     if "status" in data:
         status = (data["status"] or "").strip()
         if status not in ("draft", "sent", "received", "cancelled"):
             return jsonify({"error": "status must be one of: draft, sent, received, cancelled"}), 400
-        fields.append("status = ?")
+        fields.append("status = %s")
         values.append(status)
     if "updated_by" in data:
-        fields.append("updated_by = ?")
+        fields.append("updated_by = %s")
         values.append(data.get("updated_by"))
     if not fields:
-        row = db.execute("SELECT * FROM purchase_orders WHERE po_id = ?", (po_id,)).fetchone()
+        row = db.execute("SELECT * FROM purchase_orders WHERE po_id = %s", (po_id,)).fetchone()
         return jsonify(row_to_dict(row))
 
     # timestamp
-    fields.append("updated_at = ?")
-    values.append(datetime.now().isoformat())
+    fields.append("updated_at = NOW()")
     values.append(po_id)
 
     # execute
-    db.execute(f"UPDATE purchase_orders SET {', '.join(fields)} WHERE po_id = ?", values)
+    db.execute(f"UPDATE purchase_orders SET {', '.join(fields)} WHERE po_id = %s", values)
     db.commit()
 
     # retrieve
-    row = db.execute("SELECT * FROM purchase_orders WHERE po_id = ?", (po_id,)).fetchone()
+    row = db.execute("SELECT * FROM purchase_orders WHERE po_id = %s", (po_id,)).fetchone()
     return jsonify(row_to_dict(row))
 
 
 @bp.delete("/<string:po_id>")
 def delete_purchase_order(po_id: str):
     db = get_db()
-    id = db.execute("SELECT po_id FROM purchase_orders WHERE po_id = ?", (po_id,)).fetchone()
+    id = db.execute("SELECT po_id FROM purchase_orders WHERE po_id = %s", (po_id,)).fetchone()
     if not id:
         return jsonify({"error": "not found"}), 404
-    db.execute("DELETE FROM purchase_orders WHERE po_id = ?", (po_id,))
+    db.execute("DELETE FROM purchase_orders WHERE po_id = %s", (po_id,))
     db.commit()
     return "", 204

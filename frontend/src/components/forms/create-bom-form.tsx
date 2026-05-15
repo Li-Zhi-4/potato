@@ -47,8 +47,8 @@ export function CreateBomForm({ open, onUpdate, formId, bom }: FormProps) {
             title: "",
             job_no: "",
             description: "",
-            created_by: "0",
-            updated_by: "0"
+            created_by: '00000000-0000-0000-0000-000000000000',
+            updated_by: '00000000-0000-0000-0000-000000000000'
         },
     })
 
@@ -58,8 +58,8 @@ export function CreateBomForm({ open, onUpdate, formId, bom }: FormProps) {
                 title: bom.title ?? "",
                 job_no: bom.job_no ?? "",
                 description: bom.description ?? "",
-                created_by: "0",
-                updated_by: "0",
+                created_by: '00000000-0000-0000-0000-000000000000',
+                updated_by: '00000000-0000-0000-0000-000000000000',
             })
         } else {
             form.reset()
@@ -72,7 +72,7 @@ export function CreateBomForm({ open, onUpdate, formId, bom }: FormProps) {
                 title: data.title,
                 job_no: data.job_no,
                 description: data.description,
-                updated_by: "0",
+                updated_by: '00000000-0000-0000-0000-000000000000',
             })
         } else {
             await createBom(data)

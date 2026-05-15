@@ -1,17 +1,36 @@
-import sqlite3
-from pathlib import Path
+import psycopg2
+import psycopg2.extras
 from flask import g, current_app
 import click
-from datetime import datetime
 
-def get_db() -> sqlite3.Connection:
+
+class DB:
+    """Wraps a psycopg2 connection + cursor to match the sqlite3 interface
+    used throughout the controllers (db.execute(...).fetchone(), db.commit())."""
+
+    def __init__(self, conn):
+        self._conn = conn
+        self._cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+    def execute(self, query, params=None):
+        self._cursor.execute(query, params)
+        return self._cursor
+
+    def commit(self):
+        self._conn.commit()
+
+    def rollback(self):
+        self._conn.rollback()
+
+    def close(self):
+        self._cursor.close()
+        self._conn.close()
+
+
+def get_db() -> DB:
     if "db" not in g:
-        g.db = sqlite3.connect(
-            current_app.config["DATABASE"],
-            detect_types=sqlite3.PARSE_DECLTYPES
-        )
-        g.db.row_factory = sqlite3.Row
-        g.db.execute("PRAGMA foreign_keys = ON")
+        conn = psycopg2.connect(current_app.config["DATABASE_URL"])
+        g.db = DB(conn)
     return g.db
 
 
@@ -22,15 +41,13 @@ def close_db(_e=None) -> None:
 
 
 def init_db() -> None:
-    db = sqlite3.connect(
-        current_app.config["DATABASE"],
-        detect_types=sqlite3.PARSE_DECLTYPES
-    )
-    db.execute("PRAGMA foreign_keys = ON")
-    with current_app.open_resource('schema.sql') as f:
-        db.executescript(f.read().decode('utf8'))
-    db.commit()
-    db.close()
+    conn = psycopg2.connect(current_app.config["DATABASE_URL"])
+    cursor = conn.cursor()
+    with current_app.open_resource('postgres_schema.sql') as f:
+        cursor.execute(f.read().decode('utf8'))
+    conn.commit()
+    cursor.close()
+    conn.close()
 
 
 @click.command('init-db')
@@ -40,9 +57,6 @@ def init_db_command():
     click.echo('Initialized the database.')
 
 
-sqlite3.register_converter("timestamp", lambda v: datetime.fromisoformat(v.decode()))
-
 def init_app(app):
     app.teardown_appcontext(close_db)
     app.cli.add_command(init_db_command)
-

@@ -62,8 +62,8 @@ export function AddSubpartForm({ open, onUpdate, part, formId }: FormProps) {
                 subpart_id: "",
                 quantity: 1,
                 uom: "",
-                created_by: "0",
-                updated_by: "0"
+                created_by: '00000000-0000-0000-0000-000000000000',
+                updated_by: '00000000-0000-0000-0000-000000000000'
             },
         })
 
@@ -74,8 +74,8 @@ export function AddSubpartForm({ open, onUpdate, part, formId }: FormProps) {
             quantity: Number(data.quantity),
             uom: data.uom,
 
-            created_by: "0",
-            updated_by: "0"
+            created_by: '00000000-0000-0000-0000-000000000000',
+            updated_by: '00000000-0000-0000-0000-000000000000'
         })
         onUpdate()
     }

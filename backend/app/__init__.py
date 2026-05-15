@@ -8,7 +8,7 @@ def create_app(test_config=None) -> Flask:
     app = Flask(__name__)
     app.config.from_mapping(
         SECRET_KEY='dev',
-        DATABASE=str(Path(__file__).resolve().parent.parent / "data.db")
+        DATABASE_URL='postgresql://admin:password@localhost:5432/bom_dev'
     )
     if test_config:
         app.config.update(test_config)
