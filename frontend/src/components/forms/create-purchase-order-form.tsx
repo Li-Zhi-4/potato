@@ -65,15 +65,15 @@ export function CreatePurchaseOrderForm({ open, onUpdate, formId, purchaseOrder 
     }, [open])
 
     const form = useForm<z.infer<typeof formSchema>>({
-            resolver: zodResolver(formSchema),
-            defaultValues: {
-                po_no: "",
-                vendor_id: "",
-                status: "draft",
-                created_by: '00000000-0000-0000-0000-000000000000',
-                updated_by: '00000000-0000-0000-0000-000000000000',
-            },
-        })
+        resolver: zodResolver(formSchema),
+        defaultValues: {
+            po_no: purchaseOrder?.po_no ?? "",
+            vendor_id: purchaseOrder?.vendor_id ?? "",
+            status: purchaseOrder?.status ?? "draft",
+            created_by: '00000000-0000-0000-0000-000000000000',
+            updated_by: '00000000-0000-0000-0000-000000000000',
+        },
+    })
 
     async function onSubmit(data: z.infer<typeof formSchema>) {
         if (purchaseOrder) {

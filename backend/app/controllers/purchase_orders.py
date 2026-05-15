@@ -119,8 +119,7 @@ def update_purchase_order(po_id: str):
         return jsonify(row_to_dict(row))
 
     # timestamp
-    fields.append("updated_at = %s")
-    values.append(datetime.now().isoformat())
+    fields.append("updated_at = NOW()")
     values.append(po_id)
 
     # execute

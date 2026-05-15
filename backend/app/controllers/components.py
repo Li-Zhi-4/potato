@@ -42,6 +42,7 @@ def create_component():
     if not part_id:
         return jsonify({"error": "part_id is required"}), 400
 
+    # prep
     db = get_db()
 
     bom = db.execute("SELECT bom_id FROM boms WHERE bom_id = %s", (bom_id,)).fetchone()
@@ -59,40 +60,33 @@ def create_component():
     else:
         po_id = None
 
-    # prep
-    component_id = str(uuid.uuid4())
-    now = datetime.now().isoformat()
-
     # execute
     try:
-        db.execute(
+        row = db.execute(
             """
             INSERT INTO components (
-                component_id, bom_id, part_id, po_id,
+                bom_id, part_id, po_id,
                 quantity, uom, status,
-                created_at, updated_at, created_by, updated_by
-            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                created_by, updated_by
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            RETURNING *
             """,
             (
-                component_id,
                 bom_id,
                 part_id,
                 po_id,
                 data.get("quantity", 1),
                 data.get("uom", "each"),
                 data.get("status"),
-                now,
-                now,
                 data.get("created_by"),
                 data.get("updated_by"),
             ),
-        )
+        ).fetchone()
         db.commit()
     except pg_errors.UniqueViolation:
         return jsonify({"error": "could not create component"}), 409
 
     # retrieve
-    row = db.execute("SELECT * FROM components WHERE component_id = %s", (component_id,)).fetchone()
     return jsonify(row_to_dict(row)), 201
 
 
@@ -165,8 +159,7 @@ def update_component(component_id: str):
         return jsonify(row_to_dict(row))
 
     # timestamp
-    fields.append("updated_at = %s")
-    values.append(datetime.now().isoformat())
+    fields.append("updated_at = NOW()")
     values.append(component_id)
 
     # execute
