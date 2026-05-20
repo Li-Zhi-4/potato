@@ -2,13 +2,17 @@ from pathlib import Path
 from flask import Flask
 from flask_cors import CORS
 from app.db import close_db, init_db
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 
 def create_app(test_config=None) -> Flask:
     app = Flask(__name__)
     app.config.from_mapping(
-        SECRET_KEY='dev',
-        DATABASE_URL='postgresql://admin:password@localhost:5432/bom_dev'
+        SECRET_KEY=os.getenv('SECRET_KEY'),
+        DATABASE_URL=os.getenv('DATABASE_URL')
     )
     if test_config:
         app.config.update(test_config)
