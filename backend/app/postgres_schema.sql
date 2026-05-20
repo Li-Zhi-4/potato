@@ -9,11 +9,12 @@
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 
--- Entities --
+-- Users, Workspaces, Permissions --
 
 CREATE TABLE IF NOT EXISTS users (
     uid             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     username        TEXT NOT NULL UNIQUE,
+    email           TEXT NOT NULL UNIQUE,
     password_hash   TEXT NOT NULL,
     first_name      TEXT,
     last_name       TEXT,
@@ -22,8 +23,43 @@ CREATE TABLE IF NOT EXISTS users (
     updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-INSERT INTO users (uid, username, password_hash, first_name, last_name)
-    VALUES ('00000000-0000-0000-0000-000000000000', 'admin', 'password', 'John', 'Doe');
+INSERT INTO users (uid, username, email, password_hash, first_name, last_name)
+    VALUES ('00000000-0000-0000-0000-000000000000', 'admin', 'admin@gmail.com', 'password', 'John', 'Doe');
+
+CREATE TABLE workspaces (
+    workspace_id        UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    workspace_name      TEXT NOT NULL UNIQUE,
+
+    created_at          TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at          TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    created_by          UUID NOT NULL REFERENCES users(uid),
+    updated_by          UUID NOT NULL REFERENCES users(uid)
+);
+
+CREATE TABLE workspace_users (
+    workspace_user_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    workspace_id        UUID NOT NULL REFERENCES workspaces(workspace_id) ON DELETE CASCADE,
+    uid                 UUID NOT NULL REFERENCES users(uid) ON DELETE CASCADE,
+
+    created_at          TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    UNIQUE(workspace_id, uid)
+);
+
+
+CREATE TABLE permissions (
+    permission_id       UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    uid                 UUID NOT NULL REFERENCES users(uid) ON DELETE CASCADE,
+    workspace_id        UUID NOT NULL REFERENCES workspaces(workspace_id) ON DELETE CASCADE,
+    entity              TEXT NOT NULL,
+    action              TEXT NOT NULL,
+
+    created_at          TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    created_by          UUID NOT NULL REFERENCES users(uid),
+    UNIQUE(uid, workspace_id, entity, action)
+);
+
+
+--- Entities ---
 
 CREATE TYPE part_type AS ENUM ('part', 'assembly');
 CREATE TABLE IF NOT EXISTS parts (
@@ -131,3 +167,5 @@ CREATE TABLE IF NOT EXISTS components (
     created_by          UUID NOT NULL REFERENCES users(uid),
     updated_by          UUID NOT NULL REFERENCES users(uid)
 );
+
+
