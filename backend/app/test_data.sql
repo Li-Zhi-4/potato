@@ -5,7 +5,7 @@
 -- Users --
 
 INSERT INTO users (uid, username, email, password_hash, first_name, last_name) VALUES
-    ('00000000-0000-0000-0000-000000000001', 'sara',  'sara@example.com',  'password', 'Sara',  'Thompson'),
+    ('00000000-0000-0000-0000-000000000001', 'jane',  'sara@example.com',  'password', 'Jane',  'Doe'),
     ('00000000-0000-0000-0000-000000000002', 'james', 'james@example.com', 'password', 'James', 'Lee');
 
 

@@ -23,6 +23,8 @@ def create_app(test_config=None) -> Flask:
 
     from app.controllers import users
     from app.controllers import workspaces
+    from app.controllers import workspace_users
+    from app.controllers import permissions
     from app.controllers import parts
     from app.controllers import vendors
     from app.controllers import purchase_orders
@@ -32,6 +34,8 @@ def create_app(test_config=None) -> Flask:
     from app.controllers import components
     app.register_blueprint(users.bp)
     app.register_blueprint(workspaces.bp)
+    app.register_blueprint(workspace_users.bp)
+    app.register_blueprint(permissions.bp)
     app.register_blueprint(parts.bp)
     app.register_blueprint(vendors.bp)
     app.register_blueprint(purchase_orders.bp)
