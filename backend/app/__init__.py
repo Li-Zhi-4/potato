@@ -4,6 +4,7 @@ from app.db import close_db
 from dotenv import load_dotenv
 import os
 from flask_jwt_extended import JWTManager
+from datetime import timedelta
 
 load_dotenv()
 
@@ -12,7 +13,8 @@ def create_app(test_config=None) -> Flask:
     app = Flask(__name__)
     app.config.from_mapping(
         SECRET_KEY=os.getenv('SECRET_KEY'),
-        DATABASE_URL=os.getenv('DATABASE_URL')
+        DATABASE_URL=os.getenv('DATABASE_URL'),
+        JWT_ACCESS_TOKEN_EXPIRES=timedelta(hours=1)
     )
     if test_config:
         app.config.update(test_config)

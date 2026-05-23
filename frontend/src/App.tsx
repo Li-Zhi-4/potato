@@ -8,12 +8,15 @@ import VendorPart from "./pages/vendor_parts/pages"
 import AssemblyPart from "./pages/assembly_parts/pages"
 import PartsInfo from "./pages/parts-info/page"
 import BOMsInfo from "./pages/boms-info/page"
+import Signup from "./pages/sign-up/page"
 
 export function App() {
 
   return (
     <>
       <Routes>
+        <Route path="/register" element={<Signup />} />
+
         <Route path="/" element={<Page />} />
         <Route path="/parts" element={<Parts />} />
         <Route path="/parts/:part_no/info" element={<PartsInfo />} />
