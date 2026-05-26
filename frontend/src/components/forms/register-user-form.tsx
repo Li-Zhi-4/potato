@@ -11,8 +11,8 @@ import { Input } from "../ui/input"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useEffect } from "react"
-import { registerUser } from "@/apis/auth"
+import { useAuth } from "@/context/authContext"
+import { useNavigate } from "react-router-dom"
 
 
 export const formSchema = z.object({
@@ -30,6 +30,9 @@ export const formSchema = z.object({
 
 export function RegisterUserForm() {
 
+    const { register: registerAccount } = useAuth()
+    const navigate = useNavigate()
+
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -42,14 +45,10 @@ export function RegisterUserForm() {
         },
     })
 
-    useEffect(() => {
-        if (!open) { form.reset() }
-    }, [open])
-
     async function onSubmit(data: z.infer<typeof formSchema>) {
         const { confirm_password, ...input } = data
-        await registerUser(input)
-        console.log("submitted user")
+        await registerAccount(input)
+        navigate("/")
     }
 
     const { errors } = form.formState   // error object
