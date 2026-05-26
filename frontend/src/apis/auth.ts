@@ -4,8 +4,8 @@ export interface User {
     uid: string
     username: string
     email: string
-    first_name: string | null
-    last_name: string | null
+    first_name?: string | null
+    last_name?: string | null
 
     created_at: string
     updated_at: string
@@ -20,8 +20,8 @@ export interface RegisterUserInput {
     username: string
     email: string
     password: string
-    first_name: string | null
-    last_name: string | null
+    first_name?: string | null
+    last_name?: string | null
 }
 
 // POST /auth/register
