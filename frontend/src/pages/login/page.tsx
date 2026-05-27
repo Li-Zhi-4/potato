@@ -1,5 +1,6 @@
 import { GalleryVerticalEnd } from "lucide-react"
 import { SignupCard } from "@/components/signup-card"
+import { LoginCard } from "@/components/login-card"
 
 export default function Page() {
     return (
@@ -11,7 +12,7 @@ export default function Page() {
                     </div>
                     Acme Inc.
                 </a>
-                <SignupCard />
+                <LoginCard />
             </div>
         </div>
     )

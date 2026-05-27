@@ -9,11 +9,11 @@ import {
 import {
   FieldDescription,
 } from "@/components/ui/field"
-import { RegisterUserForm } from "./forms/register-user-form"
 import { Button } from "./ui/button"
 import { Link } from "react-router-dom"
+import { LoginForm } from "./forms/login-form"
 
-export function SignupForm({className, ...props}: React.ComponentProps<"div">) {
+export function LoginCard({className, ...props}: React.ComponentProps<"div">) {
 
 
     return (
@@ -26,10 +26,10 @@ export function SignupForm({className, ...props}: React.ComponentProps<"div">) {
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="px-6">
-                    <RegisterUserForm />
-                    <Button type="submit" form="register-user-form" className="w-full" size="lg">Create Account</Button>
+                    <LoginForm />
+                    <Button type="submit" form="login-form" className="w-full" size="lg">Login</Button>
                     <CardDescription className="pt-4 text-center">
-                        Already have an account? <Link to="#" className="underline">Sign in</Link>
+                        Don't have an account? <Link to="/register" className="underline">Sign up</Link>
                     </CardDescription>
                 </CardContent>
             </Card>
