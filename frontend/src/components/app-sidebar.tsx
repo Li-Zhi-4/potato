@@ -1,4 +1,5 @@
 import * as React from "react"
+import { useAuth } from "@/context/authContext"
 
 import { NavDocuments } from "@/components/nav-entities"
 import { NavRelationships } from "./nav-relationships"
@@ -164,6 +165,14 @@ const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { user } = useAuth()
+
+  const navUser = {
+    name: user ? `${user.first_name ?? ""} ${user.last_name ?? ""}`.trim() || user.username : "",
+    email: user?.email ?? "",
+    avatar: "",
+  }
+
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -188,7 +197,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={navUser} />
       </SidebarFooter>
     </Sidebar>
   )

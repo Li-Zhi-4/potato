@@ -22,7 +22,7 @@ export function SignupCard({className, ...props}: React.ComponentProps<"div">) {
                 <CardHeader className="text-center">
                     <CardTitle className="text-xl">Create your account</CardTitle>
                     <CardDescription>
-                        Enter your email below to create your account
+                        Enter your information below to create your account
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="px-6">
