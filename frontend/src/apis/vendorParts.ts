@@ -1,4 +1,4 @@
-import { API_BASE, handle } from "../lib/api"
+import { API_BASE, handle, authFetch } from "../lib/api"
 
 export type VendorPart = {
     part_vendor_id: string
@@ -17,14 +17,14 @@ export type VendorPart = {
 
 
 // GET /vendor_parts
-export async function listVendorParts(): Promise<VendorPart[]> {
-    const res = await fetch(`${API_BASE}/vendor_parts`)
+export async function listVendorParts(token: string): Promise<VendorPart[]> {
+    const res = await authFetch(`${API_BASE}/vendor_parts`, token)
     return handle<VendorPart[]>(res)
 }
 
 // GET /vendor_parts/:id
-export async function getVendorPart(id: string): Promise<VendorPart> {
-    const res = await fetch(`${API_BASE}/vendor_parts/${id}`)
+export async function getVendorPart(id: string, token: string): Promise<VendorPart> {
+    const res = await authFetch(`${API_BASE}/vendor_parts/${id}`, token)
     return handle<VendorPart>(res)
 }
 
@@ -42,10 +42,9 @@ export type CreateVendorPartInput = {
 }
 
 // POST /vendor_parts
-export async function createVendorPart(input: CreateVendorPartInput): Promise<VendorPart> {
-    const res = await fetch(`${API_BASE}/vendor_parts`, {
+export async function createVendorPart(input: CreateVendorPartInput, token: string): Promise<VendorPart> {
+    const res = await authFetch(`${API_BASE}/vendor_parts`, token, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(input)
     })
     return handle<VendorPart>(res)
@@ -64,10 +63,9 @@ export type UpdateVendorPartInput = {
 }
 
 // PUT /vendor_parts/:id
-export async function updateVendorPart(id: string, input: UpdateVendorPartInput): Promise<VendorPart> {
-    const res = await fetch(`${API_BASE}/vendor_parts/${id}`, {
+export async function updateVendorPart(id: string, input: UpdateVendorPartInput, token: string): Promise<VendorPart> {
+    const res = await authFetch(`${API_BASE}/vendor_parts/${id}`, token, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(input)
     })
     return handle<VendorPart>(res)
@@ -75,7 +73,7 @@ export async function updateVendorPart(id: string, input: UpdateVendorPartInput)
 
 
 // DELETE /vendor_parts/:id
-export async function deleteVendorPart(id: string): Promise<void> {
-    const res = await fetch(`${API_BASE}/vendor_parts/${id}`, { method: 'DELETE' })
+export async function deleteVendorPart(id: string, token: string): Promise<void> {
+    const res = await authFetch(`${API_BASE}/vendor_parts/${id}`, token, { method: 'DELETE' })
     return handle<void>(res)
 }

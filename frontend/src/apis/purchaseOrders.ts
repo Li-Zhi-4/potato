@@ -1,4 +1,4 @@
-import { API_BASE, handle } from "../lib/api"
+import { API_BASE, handle, authFetch } from "../lib/api"
 
 export type PurchaseOrder = {
     po_id: string
@@ -13,14 +13,14 @@ export type PurchaseOrder = {
 }
 
 // GET /purchase_orders
-export async function listPurchaseOrders(): Promise<PurchaseOrder[]> {
-    const res = await fetch(`${API_BASE}/purchase_orders`)
+export async function listPurchaseOrders(token: string): Promise<PurchaseOrder[]> {
+    const res = await authFetch(`${API_BASE}/purchase_orders`, token)
     return handle<PurchaseOrder[]>(res)
 }
 
 // GET /purchase_orders/:id
-export async function getPurchaseOrder(id: string): Promise<PurchaseOrder> {
-    const res = await fetch(`${API_BASE}/purchase_orders/${id}`)
+export async function getPurchaseOrder(id: string, token: string): Promise<PurchaseOrder> {
+    const res = await authFetch(`${API_BASE}/purchase_orders/${id}`, token)
     return handle<PurchaseOrder>(res)
 }
 
@@ -35,10 +35,9 @@ export type CreatePurchaseOrderInput = {
 }
 
 // POST /purchase_orders
-export async function createPurchaseOrder(input: CreatePurchaseOrderInput): Promise<PurchaseOrder> {
-    const res = await fetch(`${API_BASE}/purchase_orders`, {
+export async function createPurchaseOrder(input: CreatePurchaseOrderInput, token: string): Promise<PurchaseOrder> {
+    const res = await authFetch(`${API_BASE}/purchase_orders`, token, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(input)
     })
     return handle<PurchaseOrder>(res)
@@ -54,10 +53,9 @@ export type UpdatePurchaseOrderInput = {
 }
 
 // PUT /purchase_orders/:id
-export async function updatePurchaseOrder(id: string, input: UpdatePurchaseOrderInput): Promise<PurchaseOrder> {
-    const res = await fetch(`${API_BASE}/purchase_orders/${id}`, {
+export async function updatePurchaseOrder(id: string, input: UpdatePurchaseOrderInput, token: string): Promise<PurchaseOrder> {
+    const res = await authFetch(`${API_BASE}/purchase_orders/${id}`, token, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(input)
     })
     return handle<PurchaseOrder>(res)
@@ -65,7 +63,7 @@ export async function updatePurchaseOrder(id: string, input: UpdatePurchaseOrder
 
 
 // DELETE /purchase_orders/:id
-export async function deletePurchaseOrder(id: string): Promise<void> {
-    const res = await fetch(`${API_BASE}/purchase_orders/${id}`, { method: 'DELETE' })
+export async function deletePurchaseOrder(id: string, token: string): Promise<void> {
+    const res = await authFetch(`${API_BASE}/purchase_orders/${id}`, token, { method: 'DELETE' })
     return handle<void>(res)
 }

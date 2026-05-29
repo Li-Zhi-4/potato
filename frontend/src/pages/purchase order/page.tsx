@@ -22,6 +22,7 @@ import { type PurchaseOrder, listPurchaseOrders, deletePurchaseOrder } from "@/a
 import { type ColumnFiltersState } from "@tanstack/react-table"
 import { CreatePurchaseOrderForm } from "@/components/forms/create-purchase-order-form"
 import { FormSheet } from "@/components/sheets/FormSheet"
+import { useAuth } from "@/context/authContext"
 
 
 export default function Page() {
@@ -32,14 +33,16 @@ export default function Page() {
 
     const [purchaseOrderSheetOpen, setPurchaseOrderSheetOpen] = useState(false)
     const [selectedPO, setSelectedPO] = useState<PurchaseOrder | undefined>()
+    const { token } = useAuth()
 
     useEffect(() => {
+        if (!token) return
         async function fetchData() {
-            const result = await listPurchaseOrders()
+            const result = await listPurchaseOrders(token!)
             setPurchaseOrderData(result)
         }
         fetchData()
-    }, [refresh])
+    }, [refresh, token])
 
     const handleUpdate = () => {
         setRefresh(prev => prev + 1)        // refresh page
@@ -48,7 +51,7 @@ export default function Page() {
     }
 
     async function handleDelete(poId: string) {
-        await deletePurchaseOrder(poId)
+        await deletePurchaseOrder(poId, token!)
         setRefresh(prev => prev + 1)
     }
 

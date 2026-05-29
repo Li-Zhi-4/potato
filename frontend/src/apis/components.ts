@@ -1,4 +1,4 @@
-import { API_BASE, handle } from "../lib/api"
+import { API_BASE, handle, authFetch } from "../lib/api"
 
 export type Component = {
     component_id: string
@@ -18,14 +18,14 @@ export type Component = {
 
 
 // GET /components
-export async function listComponents(): Promise<Component[]> {
-    const res = await fetch(`${API_BASE}/components`)
+export async function listComponents(token: string): Promise<Component[]> {
+    const res = await authFetch(`${API_BASE}/components`, token)
     return handle<Component[]>(res)
 }
 
 // GET /components/:id
-export async function getComponent(id: string): Promise<Component> {
-    const res = await fetch(`${API_BASE}/components/${id}`)
+export async function getComponent(id: string, token: string): Promise<Component> {
+    const res = await authFetch(`${API_BASE}/components/${id}`, token)
     return handle<Component>(res)
 }
 
@@ -43,10 +43,9 @@ export type CreateComponentInput = {
 }
 
 // POST /components
-export async function createComponent(input: CreateComponentInput): Promise<Component> {
-    const res = await fetch(`${API_BASE}/components`, {
+export async function createComponent(input: CreateComponentInput, token: string): Promise<Component> {
+    const res = await authFetch(`${API_BASE}/components`, token, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(input)
     })
     return handle<Component>(res)
@@ -66,10 +65,9 @@ export type UpdateComponentInput = {
 }
 
 // PUT /components/:id
-export async function updateComponent(id: string, input: UpdateComponentInput): Promise<Component> {
-    const res = await fetch(`${API_BASE}/components/${id}`, {
+export async function updateComponent(id: string, input: UpdateComponentInput, token: string): Promise<Component> {
+    const res = await authFetch(`${API_BASE}/components/${id}`, token, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(input)
     })
     return handle<Component>(res)
@@ -77,7 +75,7 @@ export async function updateComponent(id: string, input: UpdateComponentInput): 
 
 
 // DELETE /components/:id
-export async function deleteComponent(id: string): Promise<void> {
-    const res = await fetch(`${API_BASE}/components/${id}`, { method: 'DELETE' })
+export async function deleteComponent(id: string, token: string): Promise<void> {
+    const res = await authFetch(`${API_BASE}/components/${id}`, token, { method: 'DELETE' })
     return handle<void>(res)
 }

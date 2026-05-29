@@ -23,6 +23,7 @@ import * as z from "zod"
 import { listParts, type Part } from "@/apis/parts"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { createAssemblyPart } from "@/apis/assembly_parts"
+import { useAuth } from "@/context/authContext"
 
 export const formSchema = z.object({
     part_id: z.string().optional(),
@@ -42,14 +43,16 @@ interface FormProps {
 
 export function AddSubpartForm({ open, onUpdate, part, formId }: FormProps) {
     const [parts, setParts] = useState<Part[]>([])
+    const { token } = useAuth()
 
     useEffect(() => {
+        if (!token) return
         async function fetchData() {
-            const partsList = await listParts()
+            const partsList = await listParts(token!)
             setParts(partsList)
         }
         fetchData()
-    }, [])
+    }, [token])
 
     useEffect(() => {
         if (!open) { form.reset() }
@@ -76,7 +79,7 @@ export function AddSubpartForm({ open, onUpdate, part, formId }: FormProps) {
 
             created_by: '00000000-0000-0000-0000-000000000000',
             updated_by: '00000000-0000-0000-0000-000000000000'
-        })
+        }, token!)
         onUpdate()
     }
 

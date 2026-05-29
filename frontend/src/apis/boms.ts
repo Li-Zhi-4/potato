@@ -1,4 +1,4 @@
-import { API_BASE, handle } from "../lib/api"
+import { API_BASE, handle, authFetch } from "../lib/api"
 
 export type Bom = {
     bom_id: string
@@ -14,20 +14,20 @@ export type Bom = {
 
 
 // GET /boms
-export async function listBoms(): Promise<Bom[]> {
-    const res = await fetch(`${API_BASE}/boms`)
+export async function listBoms(token: string): Promise<Bom[]> {
+    const res = await authFetch(`${API_BASE}/boms`, token)
     return handle<Bom[]>(res)
 }
 
 // GET /boms?job_no
-export async function getBomByJobNo(job_no: string): Promise<Bom> {
-    const res = await fetch(`${API_BASE}/boms?job_no=${job_no}`)
+export async function getBomByJobNo(job_no: string, token: string): Promise<Bom> {
+    const res = await authFetch(`${API_BASE}/boms?job_no=${job_no}`, token)
     return handle<Bom>(res)
 }
 
 // GET /boms/:id
-export async function getBom(id: string): Promise<Bom> {
-    const res = await fetch(`${API_BASE}/boms/${id}`)
+export async function getBom(id: string, token: string): Promise<Bom> {
+    const res = await authFetch(`${API_BASE}/boms/${id}`, token)
     return handle<Bom>(res)
 }
 
@@ -42,10 +42,9 @@ export type CreateBomInput = {
 }
 
 // POST /boms
-export async function createBom(input: CreateBomInput): Promise<Bom> {
-    const res = await fetch(`${API_BASE}/boms`, {
+export async function createBom(input: CreateBomInput, token: string): Promise<Bom> {
+    const res = await authFetch(`${API_BASE}/boms`, token, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(input)
     })
     return handle<Bom>(res)
@@ -61,10 +60,9 @@ export type UpdateBomInput = {
 }
 
 // PUT /boms/:id
-export async function updateBom(id: string, input: UpdateBomInput): Promise<Bom> {
-    const res = await fetch(`${API_BASE}/boms/${id}`, {
+export async function updateBom(id: string, input: UpdateBomInput, token: string): Promise<Bom> {
+    const res = await authFetch(`${API_BASE}/boms/${id}`, token, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(input)
     })
     return handle<Bom>(res)
@@ -72,8 +70,8 @@ export async function updateBom(id: string, input: UpdateBomInput): Promise<Bom>
 
 
 // DELETE /boms/:id
-export async function deleteBom(id: string): Promise<void> {
-    const res = await fetch(`${API_BASE}/boms/${id}`, { method: 'DELETE' })
+export async function deleteBom(id: string, token: string): Promise<void> {
+    const res = await authFetch(`${API_BASE}/boms/${id}`, token, { method: 'DELETE' })
     return handle<void>(res)
 }
 
@@ -92,7 +90,7 @@ export type BomTable = {
 }
 
 // GET /boms/boms-table/:bom_id
-export async function getBomsTable(bom_id: string): Promise<BomTable[]> {
-    const res = await fetch(`${API_BASE}/boms/boms-table/${bom_id}`)
+export async function getBomsTable(bom_id: string, token: string): Promise<BomTable[]> {
+    const res = await authFetch(`${API_BASE}/boms/boms-table/${bom_id}`, token)
     return handle<BomTable[]>(res)
 }

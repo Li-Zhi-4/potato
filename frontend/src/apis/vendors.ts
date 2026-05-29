@@ -1,4 +1,5 @@
-import { API_BASE, handle } from "../lib/api"
+import { API_BASE, handle, authFetch } from "../lib/api"
+
 
 export type Vendor = {
     vendor_id: string
@@ -13,14 +14,14 @@ export type Vendor = {
 }
 
 // GET /vendors
-export async function listVendors(): Promise<Vendor[]> {
-    const res = await fetch(`${API_BASE}/vendors`)
+export async function listVendors(token: string): Promise<Vendor[]> {
+    const res = await authFetch(`${API_BASE}/vendors`, token)
     return handle<Vendor[]>(res)
 }
 
 // GET /vendors/:id
-export async function getVendor(id: string): Promise<Vendor> {
-    const res = await fetch(`${API_BASE}/vendors/${id}`)
+export async function getVendor(id: string, token: string): Promise<Vendor> {
+    const res = await authFetch(`${API_BASE}/vendors/${id}`, token)
     return handle<Vendor>(res)
 }
 
@@ -32,10 +33,9 @@ export type CreateVendorInput = {
 }
 
 // POST /vendor
-export async function createVendor(input: CreateVendorInput): Promise<Vendor> {
-    const res = await fetch(`${API_BASE}/vendors`, {
+export async function createVendor(input: CreateVendorInput, token: string): Promise<Vendor> {
+    const res = await authFetch(`${API_BASE}/vendors`, token, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(input)
     })
     return handle<Vendor>(res)
@@ -50,10 +50,9 @@ export type UpdateVendorInput = {
 }
 
 // PUT /vendor/:id
-export async function updateVendor(id: string, input: UpdateVendorInput): Promise<Vendor> {
-    const res = await fetch(`${API_BASE}/vendors/${id}`, {
+export async function updateVendor(id: string, input: UpdateVendorInput, token: string): Promise<Vendor> {
+    const res = await authFetch(`${API_BASE}/vendors/${id}`, token, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(input)
     })
     return handle<Vendor>(res)
@@ -61,7 +60,7 @@ export async function updateVendor(id: string, input: UpdateVendorInput): Promis
 
 
 // DELETE /vendor/:id
-export async function deleteVendor(id: string): Promise<void> {
-    const res = await fetch(`${API_BASE}/vendors/${id}`, { method: 'DELETE' })
+export async function deleteVendor(id: string, token: string): Promise<void> {
+    const res = await authFetch(`${API_BASE}/vendors/${id}`, token, { method: 'DELETE' })
     return handle<void>(res)
 }

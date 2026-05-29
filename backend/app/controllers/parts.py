@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
+from flask_jwt_extended import jwt_required
 from app.db import get_db
-import uuid
 from datetime import datetime
 from app.utils.helpers import row_to_dict
 from psycopg2 import errors as pg_errors
@@ -11,6 +11,7 @@ bp = Blueprint('parts', __name__, url_prefix='/api/parts')
 # -- crud api --
 
 @bp.get("")
+@jwt_required()
 def list_parts():
     db = get_db()
     part_no = request.args.get("part_no")
@@ -24,6 +25,7 @@ def list_parts():
 
 
 @bp.post("")
+@jwt_required()
 def create_part():
     data = request.get_json(silent=True) or {}
 
@@ -62,6 +64,7 @@ def create_part():
 
 
 @bp.get("/<string:part_id>")
+@jwt_required()
 def get_part(part_id: str):
     db = get_db()
     row = db.execute("SELECT * FROM parts WHERE part_id = %s", (part_id,)).fetchone()
@@ -71,6 +74,7 @@ def get_part(part_id: str):
 
 
 @bp.put("/<string:part_id>")
+@jwt_required()
 def update_part(part_id: str):
     data = request.get_json(silent=True) or {}
     db = get_db()
@@ -123,6 +127,7 @@ def update_part(part_id: str):
 
 
 @bp.delete("/<string:part_id>")
+@jwt_required()
 def delete_part(part_id: str):
     db = get_db()
     id = db.execute("SELECT part_id FROM parts WHERE part_id = %s", (part_id,)).fetchone()
@@ -136,6 +141,7 @@ def delete_part(part_id: str):
 # -- tables --
 
 @bp.get("/parts-table")
+@jwt_required()
 def get_parts_table():
     db = get_db()
     rows = db.execute("""
@@ -148,6 +154,7 @@ def get_parts_table():
 
 
 @bp.get("/vendors-table/<string:part_id>")
+@jwt_required()
 def get_vendors_table(part_id: str):
     db = get_db()
     rows = db.execute("""
@@ -160,6 +167,7 @@ def get_vendors_table(part_id: str):
 
 
 @bp.get("/subparts-table/<string:part_id>")
+@jwt_required()
 def get_subparts_table(part_id: str):
     db = get_db()
     rows = db.execute("""

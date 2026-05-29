@@ -23,6 +23,7 @@ import * as z from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { createBom, updateBom, type Bom } from "@/apis/boms"
 import { useEffect } from "react"
+import { useAuth } from "@/context/authContext"
 
 export const formSchema = z.object({
     title: z.string().optional(),
@@ -40,6 +41,7 @@ interface FormProps {
 }
 
 export function CreateBomForm({ open, onUpdate, formId, bom }: FormProps) {
+    const { token } = useAuth()
 
     const form = useForm({
         resolver: zodResolver(formSchema),
@@ -73,9 +75,9 @@ export function CreateBomForm({ open, onUpdate, formId, bom }: FormProps) {
                 job_no: data.job_no,
                 description: data.description,
                 updated_by: '00000000-0000-0000-0000-000000000000',
-            })
+            }, token!)
         } else {
-            await createBom(data)
+            await createBom(data, token!)
         }
         onUpdate()
     }

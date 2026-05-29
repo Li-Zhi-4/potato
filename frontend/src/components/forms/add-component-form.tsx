@@ -26,6 +26,7 @@ import { createComponent } from "@/apis/components"
 import { listParts } from "@/apis/parts"
 import { type Part } from "@/apis/parts"
 import { listPurchaseOrders, type PurchaseOrder } from "@/apis/purchaseOrders"
+import { useAuth } from "@/context/authContext"
 
 export const formSchema = z.object({
     bom_id: z.string(),
@@ -48,16 +49,18 @@ interface FormProps {
 export function AddComponentForm({ open, onUpdate, bom, formId }: FormProps) {
     const [partsData, setPartsData] = useState<Part[]>([])
     const [poData, setPoData] = useState<PurchaseOrder[]>([])
+    const { token } = useAuth()
 
     useEffect(() => {
+        if (!token) return
         async function fetchData() {
-            const p = await listParts()
-            const pos = await listPurchaseOrders()
+            const p = await listParts(token!)
+            const pos = await listPurchaseOrders(token!)
             setPartsData(p)
             setPoData(pos)
         }
         fetchData()
-    }, [])
+    }, [token])
 
     useEffect(() => {
         if (!open) { form.reset() }

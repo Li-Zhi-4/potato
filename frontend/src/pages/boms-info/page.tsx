@@ -16,9 +16,11 @@ import { type BomTable, getBomByJobNo, getBomsTable, type Bom } from "@/apis/bom
 import { deleteComponent } from "@/apis/components"
 import { AddComponentForm } from "@/components/forms/add-component-form"
 import { FormSheet } from "@/components/sheets/FormSheet"
+import { useAuth } from "@/context/authContext"
 
 export default function Page() {
     const { job_no } = useParams<{ job_no: string }>();
+    const { token } = useAuth()
     const [bomData, setBomData] = useState<Bom>()
     const [bomTableData, setBomTableData] = useState<BomTable[]>([])
     const [tabValue, setTabValue] = useState("flattened")
@@ -28,22 +30,23 @@ export default function Page() {
     const [subpartSheetOpen, setSubpartSheetOpen] = useState(false)
 
     useEffect(() => {
+        if (!token) return
         async function fetchData() {
             if (!job_no) return;
 
             try {
-                const bom = await getBomByJobNo(job_no);
-                
+                const bom = await getBomByJobNo(job_no, token!);
+
                 if (!bom || !bom.bom_id) {
                     console.warn("No BOM found for this job number");
-                    return; 
+                    return;
                 }
 
                 setBomData(bom);
 
                 try {
-                    const bomsTable = await getBomsTable(bom.bom_id);
-                    setBomTableData(bomsTable || []); // Default to empty array if null
+                    const bomsTable = await getBomsTable(bom.bom_id, token!);
+                    setBomTableData(bomsTable || []);
                 } catch (tableErr) {
                     console.error("Failed to fetch BOM table data:", tableErr);
                 }
@@ -53,7 +56,7 @@ export default function Page() {
             }
         }
         fetchData();
-    }, [job_no, refresh]);
+    }, [job_no, refresh, token]);
 
     const handleUpdate = () => {
         setRefresh(prev => prev + 1)    // refresh page
@@ -61,7 +64,7 @@ export default function Page() {
     }
 
     async function handleDelete(componentId: string) {
-        await deleteComponent(componentId)
+        await deleteComponent(componentId, token!)
         setRefresh(prev => prev + 1)
     }
 

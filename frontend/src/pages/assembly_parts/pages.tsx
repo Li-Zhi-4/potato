@@ -16,8 +16,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 
 import { columns } from "./columns"
-import { API_BASE } from "@/lib/api"
-import { type CreateAssemblyPartInput, createAssemblyPart, type AssemblyPart } from "@/apis/assembly_parts"
+import { type CreateAssemblyPartInput, createAssemblyPart, listAssemblyParts, type AssemblyPart } from "@/apis/assembly_parts"
+import { useAuth } from "@/context/authContext"
 
 
 export default function Page() {
@@ -29,15 +29,16 @@ export default function Page() {
     const [updatedBy, setUpdatedBy] = useState("0")
     const [data, setData] = useState<AssemblyPart[]>([])
     const [refresh, setRefresh] = useState(0)
+    const { token } = useAuth()
 
     useEffect(() => {
+        if (!token) return
         async function fetchData() {
-            const res = await fetch(`${API_BASE}/assembly_parts`)
-            const result = await res.json()
+            const result = await listAssemblyParts(token!)
             setData(result)
         }
         fetchData()
-    }, [refresh])
+    }, [refresh, token])
 
     function handleReset() {
         setPartId("")
@@ -59,7 +60,7 @@ export default function Page() {
     }
 
     async function handleSubmit() {
-        await createAssemblyPart(INPUT)
+        await createAssemblyPart(INPUT, token!)
         handleReset()
         setRefresh(r => r + 1)
     }
