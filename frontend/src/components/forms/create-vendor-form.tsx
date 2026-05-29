@@ -13,6 +13,7 @@ import { useForm } from "react-hook-form"
 import * as z from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useEffect } from "react"
+import { useAuth } from "@/context/authContext"
 
 
 export const formSchema = z.object({
@@ -29,6 +30,8 @@ interface FormProps {
 }
 
 export function CreateVendorForm({ open, onUpdate, formId, vendor }: FormProps) {
+
+    const { token } = useAuth()
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -56,9 +59,9 @@ export function CreateVendorForm({ open, onUpdate, formId, vendor }: FormProps) 
             await updateVendor(vendor.vendor_id, {
                 vendor_name: data.vendor_name,
                 updated_by: '00000000-0000-0000-0000-000000000000'
-            })
+            }, token!)
         } else {
-            await createVendor(data)
+            await createVendor(data, token!)
         }
         onUpdate()  
     }

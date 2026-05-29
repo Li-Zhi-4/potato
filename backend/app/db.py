@@ -43,7 +43,11 @@ def close_db(_e=None) -> None:
 def init_db() -> None:
     conn = psycopg2.connect(current_app.config["DATABASE_URL"])
     cursor = conn.cursor()
+    # load database schema
     with current_app.open_resource('postgres_schema.sql') as f:
+        cursor.execute(f.read().decode('utf8'))
+    # load test data
+    with current_app.open_resource('test_data.sql') as f:
         cursor.execute(f.read().decode('utf8'))
     conn.commit()
     cursor.close()

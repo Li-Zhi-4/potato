@@ -13,6 +13,7 @@ import { getPartByPartNo, type Part, type VendorTable, getVendorsTable, type Sub
 import { deleteVendorPart } from "@/apis/vendorParts"
 import { deleteAssemblyPart } from "@/apis/assembly_parts"
 import { useParams } from "react-router-dom"
+import { useAuth } from "@/context/authContext"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Store, Component } from "lucide-react"
@@ -23,6 +24,7 @@ import { AddSubpartForm } from "@/components/forms/add-subpart-form"
 
 export default function Page() {
     const { part_no } = useParams<{ part_no: string }>();
+    const { token } = useAuth()
     const [vendorTableData, setVendorTableData] = useState<VendorTable[]>([])
     const [subpartTableData, setSubpartTableData] = useState<SubpartTable[]>([])
     const [partData, setPartData] = useState<Part>()
@@ -32,17 +34,18 @@ export default function Page() {
     const [refresh, setRefresh] = useState(0)
 
     useEffect(() => {
+        if (!token) return
         async function fetchData() {
             if (!part_no) return
-            const part = await getPartByPartNo(part_no)
-            const vendorsTable = await getVendorsTable(part.part_id)
-            const subpartsTable = await getSubpartsTable(part.part_id)
+            const part = await getPartByPartNo(part_no, token!)
+            const vendorsTable = await getVendorsTable(part.part_id, token!)
+            const subpartsTable = await getSubpartsTable(part.part_id, token!)
             setPartData(part)
             setVendorTableData(vendorsTable)
             setSubpartTableData(subpartsTable)
         }
         fetchData()
-    }, [refresh])
+    }, [refresh, token])
 
     const handleUpdate = () => {
         setRefresh(prev => prev + 1)    // refresh page
@@ -51,12 +54,12 @@ export default function Page() {
     }
 
     async function handleDeleteVendorPart(vendorPartId: string) {
-        await deleteVendorPart(vendorPartId)
+        await deleteVendorPart(vendorPartId, token!)
         setRefresh(prev => prev + 1)
     }
 
     async function handleDeleteSubpart(assemblyPartId: string) {
-        await deleteAssemblyPart(assemblyPartId)
+        await deleteAssemblyPart(assemblyPartId, token!)
         setRefresh(prev => prev + 1)
     }
 

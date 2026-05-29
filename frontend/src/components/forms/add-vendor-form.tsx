@@ -25,6 +25,7 @@ import { Textarea } from "../ui/textarea"
 import { Checkbox } from "../ui/checkbox"
 import { useState, useEffect } from "react"
 import { type Vendor, listVendors } from "@/apis/vendors"
+import { useAuth } from "@/context/authContext"
 import { Controller, type ControllerRenderProps, type ControllerFieldState, useForm } from "react-hook-form"
 import * as z from "zod"
 import { type Part } from "@/apis/parts"
@@ -50,14 +51,16 @@ interface FormProps {
 
 export function AddVendorForm({ open, onUpdate, part, formId }: FormProps) {
     const [vendors, setVendors] = useState<Vendor[]>([])
+    const { token } = useAuth()
 
     useEffect(() => {
+        if (!token) return
         async function fetchData() {
-            const vendorList = await listVendors()
+            const vendorList = await listVendors(token!)
             setVendors(vendorList)
         }
         fetchData()
-    }, [])
+    }, [token])
 
     useEffect(() => {
         if (!open) { form.reset() }
@@ -77,7 +80,7 @@ export function AddVendorForm({ open, onUpdate, part, formId }: FormProps) {
         })
 
     async function onSubmit(data: z.infer<typeof formSchema>) {
-        await createVendorPart(data)
+        await createVendorPart(data, token!)
         onUpdate()
     }
 

@@ -35,6 +35,7 @@ import { createComponent } from "@/apis/components"
 import { listParts } from "@/apis/parts"
 import { type Part } from "@/apis/parts"
 import { listPurchaseOrders, type PurchaseOrder } from "@/apis/purchaseOrders"
+import { useAuth } from "@/context/authContext"
 
 export const formSchema = z.object({
     bom_id: z.string(),
@@ -56,18 +57,20 @@ export function AddComponentSheet({ open, onOpenChange, onUpdate, bom }: FormShe
     const [bomData, setBomData] = useState<Bom>()
     const [partsData, setPartsData] = useState<Part[]>([])
     const [poData, setPoData] = useState<PurchaseOrder[]>([])
+    const { token } = useAuth()
 
     useEffect(() => {
+        if (!token) return
         async function fetchData() {
-            const b = await getBom(bom.bom_id)
-            const p = await listParts()
-            const pos = await listPurchaseOrders()
+            const b = await getBom(bom.bom_id, token!)
+            const p = await listParts(token!)
+            const pos = await listPurchaseOrders(token!)
             setBomData(b)
             setPartsData(p)
             setPoData(pos)
         }
         fetchData()
-    }, [])
+    }, [token])
 
     const form = useForm<z.infer<typeof formSchema>>({
             resolver: zodResolver(formSchema),
@@ -92,7 +95,7 @@ export function AddComponentSheet({ open, onOpenChange, onUpdate, bom }: FormShe
 
             created_by: "0",
             updated_by: "0"
-        })
+        }, token!)
         form.reset()
         onOpenChange(false)
         onUpdate()

@@ -13,6 +13,7 @@ import { createColumns } from "./columns"
 import { listBoms, deleteBom, type Bom } from "@/apis/boms"
 import { FormSheet } from "@/components/sheets/FormSheet"
 import { CreateBomForm } from "@/components/forms/create-bom-form"
+import { useAuth } from "@/context/authContext"
 
 
 export default function Page() {
@@ -21,14 +22,16 @@ export default function Page() {
     const [selectedBom, setSelectedBom] = useState<Bom | undefined>()
     const [globalFilter, setGlobalFilter] = useState("")
     const [refresh, setRefresh] = useState(0)
+    const { token } = useAuth()
 
     useEffect(() => {
+        if (!token) return
         async function fetchData() {
-            const boms = await listBoms()
+            const boms = await listBoms(token!)
             setBomsData(boms)
         }
         fetchData()
-    }, [refresh])
+    }, [refresh, token])
 
 
     const handleUpdate = () => {
@@ -38,7 +41,7 @@ export default function Page() {
     }
 
     async function handleDelete(bomId: string) {
-        await deleteBom(bomId)
+        await deleteBom(bomId, token!)
         setRefresh(prev => prev + 1)
     }
 

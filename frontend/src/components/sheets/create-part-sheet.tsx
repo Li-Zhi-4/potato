@@ -32,6 +32,7 @@ import { Textarea } from "../ui/textarea"
 import { Checkbox } from "../ui/checkbox"
 import { useState, useEffect } from "react"
 import { type Vendor, listVendors } from "@/apis/vendors"
+import { useAuth } from "@/context/authContext"
 import { Controller, type ControllerRenderProps, type ControllerFieldState, useForm } from "react-hook-form"
 import * as z from "zod"
 import { createPart } from "@/apis/parts"
@@ -53,14 +54,16 @@ interface FormSheetProps {
 
 export function CreatePartSheet({ open, onOpenChange, onUpdate }: FormSheetProps) {
     const [vendorsData, setVendorsData] = useState<Vendor[]>([])
+    const { token } = useAuth()
 
     useEffect(() => {
+        if (!token) return
         async function fetchData() {
-            const vendorList = await listVendors()
+            const vendorList = await listVendors(token!)
             setVendorsData(vendorList)
         }
         fetchData()
-    }, [])
+    }, [token])
 
     const form = useForm<z.infer<typeof formSchema>>({
             resolver: zodResolver(formSchema),
@@ -76,10 +79,10 @@ export function CreatePartSheet({ open, onOpenChange, onUpdate }: FormSheetProps
         const response = await createPart({
             part_no: data.part_no,
             description: data.description ?? null,
-            is_assembly: data.is_assembly,
+            is_assembly: data.is_assembly ? 'assembly' : 'part',
             created_by: "0",
             updated_by: "0",
-        })
+        }, token!)
         await createVendorPart({
             part_id: response.part_id,
             vendor_id: data.vendor_id,
@@ -87,7 +90,7 @@ export function CreatePartSheet({ open, onOpenChange, onUpdate }: FormSheetProps
 
             created_by: "0",
             updated_by: "0"
-        })
+        }, token!)
         form.reset()
         onOpenChange(false)
         onUpdate()

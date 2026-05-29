@@ -34,6 +34,7 @@ import { Textarea } from "../ui/textarea"
 import { Checkbox } from "../ui/checkbox"
 import { useState, useEffect } from "react"
 import { type Vendor, listVendors } from "@/apis/vendors"
+import { useAuth } from "@/context/authContext"
 import { Controller, type ControllerRenderProps, type ControllerFieldState, useForm } from "react-hook-form"
 import * as z from "zod"
 import { type Part } from "@/apis/parts"
@@ -57,14 +58,16 @@ interface FormSheetProps {
 
 export function AddVendorSheet({ open, onOpenChange, onUpdate, part }: FormSheetProps) {
     const [vendors, setVendors] = useState<Vendor[]>([])
+    const { token } = useAuth()
 
     useEffect(() => {
+        if (!token) return
         async function fetchData() {
-            const vendorList = await listVendors()
+            const vendorList = await listVendors(token!)
             setVendors(vendorList)
         }
         fetchData()
-    }, [])
+    }, [token])
 
     const form = useForm<z.infer<typeof formSchema>>({
             resolver: zodResolver(formSchema),
@@ -88,7 +91,7 @@ export function AddVendorSheet({ open, onOpenChange, onUpdate, part }: FormSheet
 
             created_by: "0",
             updated_by: "0"
-        })
+        }, token!)
         console.log(response2)
         form.reset()
         onOpenChange(false)

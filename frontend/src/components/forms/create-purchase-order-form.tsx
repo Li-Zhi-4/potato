@@ -19,6 +19,7 @@ import {
 import { Input } from "../ui/input"
 import { useState, useEffect } from "react"
 import { type Vendor, listVendors } from "@/apis/vendors"
+import { useAuth } from "@/context/authContext"
 import { Controller, type ControllerRenderProps, type ControllerFieldState, useForm } from "react-hook-form"
 import * as z from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -41,14 +42,16 @@ interface FormProps {
 
 export function CreatePurchaseOrderForm({ open, onUpdate, formId, purchaseOrder }: FormProps) {
     const [vendorsData, setVendorsData] = useState<Vendor[]>([])
+    const { token } = useAuth()
 
     useEffect(() => {
+        if (!token) return
         async function fetchData() {
-            const vendorList = await listVendors()
+            const vendorList = await listVendors(token!)
             setVendorsData(vendorList)
         }
         fetchData()
-    }, [])
+    }, [token])
 
     useEffect(() => {
         if (purchaseOrder) {
@@ -82,9 +85,9 @@ export function CreatePurchaseOrderForm({ open, onUpdate, formId, purchaseOrder 
                 vendor_id: data.vendor_id,
                 status: data.status,
                 updated_by: '00000000-0000-0000-0000-000000000000',
-            })
+            }, token!)
         } else {
-            await createPurchaseOrder(data)
+            await createPurchaseOrder(data, token!)
         }
         onUpdate()
     }

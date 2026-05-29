@@ -1,4 +1,4 @@
-import { API_BASE, handle } from "../lib/api"
+import { API_BASE, handle, authFetch } from "../lib/api"
 
 export type AssemblyPart = {
     assembly_part_id: string
@@ -15,14 +15,14 @@ export type AssemblyPart = {
 
 
 // GET /assembly_parts
-export async function listAssemblyParts(): Promise<AssemblyPart[]> {
-    const res = await fetch(`${API_BASE}/assembly_parts`)
+export async function listAssemblyParts(token: string): Promise<AssemblyPart[]> {
+    const res = await authFetch(`${API_BASE}/assembly_parts`, token)
     return handle<AssemblyPart[]>(res)
 }
 
 // GET /assembly_parts/:id
-export async function getAssemblyPart(id: string): Promise<AssemblyPart> {
-    const res = await fetch(`${API_BASE}/assembly_parts/${id}`)
+export async function getAssemblyPart(id: string, token: string): Promise<AssemblyPart> {
+    const res = await authFetch(`${API_BASE}/assembly_parts/${id}`, token)
     return handle<AssemblyPart>(res)
 }
 
@@ -38,10 +38,9 @@ export type CreateAssemblyPartInput = {
 }
 
 // POST /assembly_parts
-export async function createAssemblyPart(input: CreateAssemblyPartInput): Promise<AssemblyPart> {
-    const res = await fetch(`${API_BASE}/assembly_parts`, {
+export async function createAssemblyPart(input: CreateAssemblyPartInput, token: string): Promise<AssemblyPart> {
+    const res = await authFetch(`${API_BASE}/assembly_parts`, token, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(input)
     })
     return handle<AssemblyPart>(res)
@@ -58,10 +57,9 @@ export type UpdateAssemblyPartInput = {
 }
 
 // PUT /assembly_parts/:id
-export async function updateAssemblyPart(id: string, input: UpdateAssemblyPartInput): Promise<AssemblyPart> {
-    const res = await fetch(`${API_BASE}/assembly_parts/${id}`, {
+export async function updateAssemblyPart(id: string, input: UpdateAssemblyPartInput, token: string): Promise<AssemblyPart> {
+    const res = await authFetch(`${API_BASE}/assembly_parts/${id}`, token, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(input)
     })
     return handle<AssemblyPart>(res)
@@ -69,7 +67,7 @@ export async function updateAssemblyPart(id: string, input: UpdateAssemblyPartIn
 
 
 // DELETE /assembly_parts/:id
-export async function deleteAssemblyPart(id: string): Promise<void> {
-    const res = await fetch(`${API_BASE}/assembly_parts/${id}`, { method: 'DELETE' })
+export async function deleteAssemblyPart(id: string, token: string): Promise<void> {
+    const res = await authFetch(`${API_BASE}/assembly_parts/${id}`, token, { method: 'DELETE' })
     return handle<void>(res)
 }

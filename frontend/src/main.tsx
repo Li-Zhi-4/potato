@@ -6,15 +6,18 @@ import App from "./App.tsx"
 import { ThemeProvider } from "./components/theme-provider.tsx"
 import { TooltipProvider } from "./components/ui/tooltip.tsx"
 import { BrowserRouter } from "react-router-dom"
+import { AuthProvider } from "./context/authContext.tsx"
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
-      <ThemeProvider>
-        <TooltipProvider>
-          <App />
-        </TooltipProvider>
-      </ThemeProvider>
+      <AuthProvider>
+        <ThemeProvider>
+          <TooltipProvider>
+            <App />
+          </TooltipProvider>
+        </ThemeProvider>
+      </AuthProvider>
     </BrowserRouter>
   </StrictMode>
 )

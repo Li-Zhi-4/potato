@@ -23,6 +23,7 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { listVendors, type Vendor } from "@/apis/vendors"
+import { useAuth } from "@/context/authContext"
 import { type PartsTable } from "@/apis/parts"
 import { FormSheet } from "@/components/sheets/FormSheet"
 import { CreatePartForm } from "@/components/forms/create-part-form"
@@ -37,17 +38,20 @@ export default function Page() {
     const [refresh, setRefresh] = useState(0)
     const [selectedPart, setSelectedPart] = useState<Part>()
 
+    const { token } = useAuth()
+
     useEffect(() => {
+        if (!token) return
         async function fetchData() {
             const [partsTable, vendorsList] = await Promise.all([
-                getPartsTable(),
-                listVendors()
+                getPartsTable(token!),
+                listVendors(token!)
             ])
             setPartsData(partsTable)
             setVendorsData(vendorsList)
         }
         fetchData()
-    }, [refresh])
+    }, [refresh, token])
 
     // refreshes page when user creates/updates a part
     const handleUpdate = () => {
@@ -57,13 +61,13 @@ export default function Page() {
     }
 
     async function handleDelete(partId: string) {
-        await deletePart(partId)
-        setRefresh(prev => prev + 1) 
+        await deletePart(partId, token!)
+        setRefresh(prev => prev + 1)
     }
 
     // triggers necessary setup for editing a part
     async function handleEdit(partId: string) {
-        const p = await getPart(partId)
+        const p = await getPart(partId, token!)
         setSelectedPart(p)
         setPartSheetOpen(true)
     }

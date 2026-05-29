@@ -28,6 +28,7 @@ import {
 import { Input } from "../ui/input"
 import { useState, useEffect } from "react"
 import { type Vendor, listVendors } from "@/apis/vendors"
+import { useAuth } from "@/context/authContext"
 import { Controller, type ControllerRenderProps, type ControllerFieldState, useForm } from "react-hook-form"
 import * as z from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -47,14 +48,16 @@ interface FormSheetProps {
 
 export function CreatePurchaseOrderSheet({ open, onOpenChange, onUpdate }: FormSheetProps) {
     const [vendorsData, setVendorsData] = useState<Vendor[]>([])
+    const { token } = useAuth()
 
     useEffect(() => {
+        if (!token) return
         async function fetchData() {
-            const vendorList = await listVendors()
+            const vendorList = await listVendors(token!)
             setVendorsData(vendorList)
         }
         fetchData()
-    }, [])
+    }, [token])
 
     const form = useForm<z.infer<typeof formSchema>>({
             resolver: zodResolver(formSchema),

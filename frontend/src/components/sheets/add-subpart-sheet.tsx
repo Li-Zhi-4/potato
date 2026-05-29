@@ -32,6 +32,7 @@ import * as z from "zod"
 import { listParts, type Part } from "@/apis/parts"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { createAssemblyPart } from "@/apis/assembly_parts"
+import { useAuth } from "@/context/authContext"
 
 export const formSchema = z.object({
     part_id: z.string().optional(),
@@ -49,14 +50,16 @@ interface FormSheetProps {
 
 export function AddSubpartSheet({ open, onOpenChange, onUpdate, part }: FormSheetProps) {
     const [parts, setParts] = useState<Part[]>([])
+    const { token } = useAuth()
 
     useEffect(() => {
+        if (!token) return
         async function fetchData() {
-            const partsList = await listParts()
+            const partsList = await listParts(token!)
             setParts(partsList)
         }
         fetchData()
-    }, [])
+    }, [token])
 
     const form = useForm<z.infer<typeof formSchema>>({
             resolver: zodResolver(formSchema),
@@ -77,7 +80,7 @@ export function AddSubpartSheet({ open, onOpenChange, onUpdate, part }: FormShee
 
             created_by: "0",
             updated_by: "0"
-        })
+        }, token!)
         console.log(response)
         form.reset()
         onOpenChange(false)

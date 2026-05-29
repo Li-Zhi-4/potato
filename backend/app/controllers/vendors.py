@@ -2,6 +2,7 @@ from flask import Blueprint, jsonify, request
 from app.db import get_db
 from app.utils.helpers import row_to_dict
 from psycopg2 import errors as pg_errors
+from flask_jwt_extended import jwt_required
 
 
 bp = Blueprint('vendors', __name__, url_prefix='/api/vendors')
@@ -10,6 +11,7 @@ bp = Blueprint('vendors', __name__, url_prefix='/api/vendors')
 # -- api --
 
 @bp.get("")
+@jwt_required()
 def list_vendors():
     db = get_db()
     include_archived = request.args.get("archived", "false").lower() == "true"
@@ -23,6 +25,7 @@ def list_vendors():
 
 
 @bp.get("/<string:vendor_id>")
+@jwt_required()
 def get_vendor(vendor_id: str):
     db = get_db()
     row = db.execute("SELECT * FROM vendors WHERE vendor_id = %s", (vendor_id,)).fetchone()
@@ -32,6 +35,7 @@ def get_vendor(vendor_id: str):
 
 
 @bp.post("")
+@jwt_required()
 def create_vendor():
     data = request.get_json(silent=True) or {}
 
@@ -68,6 +72,7 @@ def create_vendor():
 
 
 @bp.put("/<string:vendor_id>")
+@jwt_required()
 def update_vendor(vendor_id: str):
     data = request.get_json(silent=True) or {}
     db = get_db()
@@ -114,6 +119,7 @@ def update_vendor(vendor_id: str):
 
 
 @bp.delete("/<string:vendor_id>")
+@jwt_required()
 def delete_vendor(vendor_id: str):
     db = get_db()
     id = db.execute("SELECT vendor_id FROM vendors WHERE vendor_id = %s", (vendor_id,)).fetchone()

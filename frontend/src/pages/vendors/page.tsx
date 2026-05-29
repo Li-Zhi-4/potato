@@ -13,6 +13,7 @@ import { createColumns } from "./columns"
 import { getVendor, listVendors, updateVendor, type Vendor } from "@/apis/vendors"
 import { FormSheet } from "@/components/sheets/FormSheet"
 import { CreateVendorForm } from "@/components/forms/create-vendor-form"
+import { useAuth } from "@/context/authContext"
 
 export default function Page() {
     const [vendorData, setVendorData] = useState<Vendor[]>([])
@@ -20,14 +21,17 @@ export default function Page() {
     const [globalFilter, setGlobalFilter] = useState("")
     const [vendorSheetOpen, setVendorSheetOpen] = useState(false)
     const [selectedVendor, setSelectedVendor] = useState<Vendor>()
+    
+    const { token } = useAuth()
 
     useEffect(() => {
+        if (!token) return
         async function fetchData() {
-            const result = await listVendors()
+            const result = await listVendors(token!)
             setVendorData(result)
         }
         fetchData()
-    }, [refresh])
+    }, [refresh, token])
 
     const handleUpdate = () => {
         setRefresh(prev => prev + 1)    // refresh page
@@ -36,12 +40,12 @@ export default function Page() {
     }
 
     async function handleDelete(vendorId: string) {
-        await updateVendor(vendorId, { "archived_at": "archived" })
+        await updateVendor(vendorId, { "archived_at": "archived" }, token!)
         setRefresh(prev => prev + 1) 
     }
 
     async function handleEdit(vendorId: string) {
-        const v = await getVendor(vendorId)
+        const v = await getVendor(vendorId, token!)
         setSelectedVendor(v)
         setVendorSheetOpen(true)
     }

@@ -13,3 +13,14 @@ export async function handle<T>(res: Response): Promise<T> {
 export function getHealth(): Promise<{ status: string }> {
     return fetch(`${API_BASE}/health`).then((r) => handle<{ status: string }>(r))
 }
+
+export function authFetch(url: string, token: string, options: RequestInit = {}) {
+    return fetch(url, {
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+            ...options.headers
+        }
+    })
+}

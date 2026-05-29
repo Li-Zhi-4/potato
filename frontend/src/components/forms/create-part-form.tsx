@@ -23,6 +23,7 @@ import { Textarea } from "../ui/textarea"
 import { Checkbox } from "../ui/checkbox"
 import { useState, useEffect } from "react"
 import { type Vendor, listVendors } from "@/apis/vendors"
+import { useAuth } from "@/context/authContext"
 import { Controller, type ControllerRenderProps, type ControllerFieldState, useForm } from "react-hook-form"
 import * as z from "zod"
 import { createPart, updatePart, type Part } from "@/apis/parts"
@@ -46,6 +47,7 @@ interface FormProps {
 
 export function CreatePartForm({ open, onUpdate, formId, part }: FormProps) {
     const [vendorsData, setVendorsData] = useState<Vendor[]>([])
+    const { token } = useAuth()
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -58,12 +60,13 @@ export function CreatePartForm({ open, onUpdate, formId, part }: FormProps) {
     })
 
     useEffect(() => {
+        if (!token) return
         async function fetchData() {
-            const vendorList = await listVendors()
+            const vendorList = await listVendors(token!)
             setVendorsData(vendorList)
         }
         fetchData()
-    }, [])
+    }, [token])
 
     useEffect(() => {
         if (part) {
@@ -85,7 +88,7 @@ export function CreatePartForm({ open, onUpdate, formId, part }: FormProps) {
                 description: data.description ?? null,
                 is_assembly: data.is_assembly,
                 updated_by: '00000000-0000-0000-0000-000000000000',
-            })
+            }, token!)
         } else {
             const response = await createPart({
                 part_no: data.part_no,
@@ -93,7 +96,7 @@ export function CreatePartForm({ open, onUpdate, formId, part }: FormProps) {
                 is_assembly: data.is_assembly,
                 created_by: '00000000-0000-0000-0000-000000000000',
                 updated_by: '00000000-0000-0000-0000-000000000000',
-            })
+            }, token!)
             if (data.vendor_id !== "none"){
                 await createVendorPart({
                     part_id: response.part_id,
@@ -101,7 +104,7 @@ export function CreatePartForm({ open, onUpdate, formId, part }: FormProps) {
                     is_primary: true,
                     created_by: '00000000-0000-0000-0000-000000000000',
                     updated_by: '00000000-0000-0000-0000-000000000000'
-                })
+                }, token!)
             }
         }
         onUpdate()

@@ -37,7 +37,7 @@ CREATE TABLE workspaces (
 );
 
 CREATE TABLE workspace_users (
-    workspace_user_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    workspace_user_id   UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     workspace_id        UUID NOT NULL REFERENCES workspaces(workspace_id) ON DELETE CASCADE,
     uid                 UUID NOT NULL REFERENCES users(uid) ON DELETE CASCADE,
 
