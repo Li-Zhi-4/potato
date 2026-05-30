@@ -21,7 +21,7 @@ export const formSchema = z.object({
     title: z.string().optional(),
     job_no: z.string().optional(),
     description: z.string().optional(),
-    created_by: z.string().min(1, "required"),
+    created_by: z.string().optional(),
     updated_by: z.string().optional()
 })
 

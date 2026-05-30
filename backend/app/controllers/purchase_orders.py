@@ -92,15 +92,6 @@ def update_purchase_order(po_id: str):
     values = []
 
     # field mapping
-    if "po_no" in data:
-        po_no = data["po_no"]
-        if not po_no:
-            return jsonify({"error": "purchase order no cannot be empty"}), 400
-        check = db.execute("SELECT po_no FROM purchase_orders WHERE po_no = %s", (po_no,)).fetchone()
-        if check:
-            return jsonify({"error": "purchase order no already exists"}), 409
-        fields.append("po_no = %s")
-        values.append(po_no)
     if "vendor_id" in data:
         vendor_id = (data["vendor_id"] or "").strip()
         if not vendor_id:

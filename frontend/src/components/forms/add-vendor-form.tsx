@@ -39,7 +39,7 @@ export const formSchema = z.object({
     part_no: z.string().optional(),
     description: z.string().optional(),
     is_primary: z.boolean(),
-    created_by: z.string().min(1, "required"),
+    created_by: z.string().optional(),
     updated_by: z.string().optional()
 })
 

@@ -36,7 +36,7 @@ export const formSchema = z.object({
     quantity: z.number().min(1, "required"),
     uom: z.string().min(1, "required"),
     status: z.string(),
-    created_by: z.string().min(1, "required"),
+    created_by: z.string().optional(),
     updated_by: z.string().optional()
 })
 

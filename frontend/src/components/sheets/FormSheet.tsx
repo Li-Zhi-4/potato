@@ -40,7 +40,7 @@ export function FormSheet({
                 {children}
 
                 <SheetFooter className="border-t-1 border-neutral-200">
-                    <Button type="submit" form={formId}>Save</Button>
+                    <Button type="submit" form={formId} onClick={() => console.log("clicked")}>Save</Button>
                     <Button variant="secondary" onClick={() => onOpenChange(false)}>Cancel</Button>
                 </SheetFooter>
 

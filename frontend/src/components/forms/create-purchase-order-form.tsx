@@ -30,7 +30,7 @@ export const formSchema = z.object({
     po_no: z.string().min(1, "Purchase order number is required"),
     vendor_id: z.string().min(1, "required"),
     status: z.enum(["draft", "sent", "received", "cancelled"]),
-    created_by: z.string().min(1, "required"),
+    created_by: z.string().optional(),
     updated_by: z.string().optional()
 })
 
@@ -91,7 +91,11 @@ export function CreatePurchaseOrderForm({ open, onUpdate, formId, purchaseOrder 
                 updated_by: user.uid,
             }, token!)
         } else {
-            await createPurchaseOrder({ ...data, created_by: user.uid, updated_by: user.uid }, token!)
+            await createPurchaseOrder({ 
+                ...data, 
+                created_by: user.uid, 
+                updated_by: user.uid 
+            }, token!)
         }
         onUpdate()
     }
