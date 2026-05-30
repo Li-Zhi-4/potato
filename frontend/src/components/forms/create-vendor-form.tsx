@@ -14,6 +14,7 @@ import * as z from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useEffect } from "react"
 import { useAuth } from "@/context/authContext"
+import { useNavigate } from "react-router-dom"
 
 
 export const formSchema = z.object({
@@ -30,40 +31,42 @@ interface FormProps {
 }
 
 export function CreateVendorForm({ open, onUpdate, formId, vendor }: FormProps) {
-
-    const { token } = useAuth()
+    const { token, user, loading } = useAuth()
+    const navigate = useNavigate()
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
             vendor_name: vendor?.vendor_name || "",
-            created_by: '00000000-0000-0000-0000-000000000000',
-            updated_by: '00000000-0000-0000-0000-000000000000'
+            created_by: "",
+            updated_by: ""
         },
     })
 
     useEffect(() => {
-        if (vendor) { 
+        if (vendor) {
             form.reset({
                 vendor_name: vendor.vendor_name,
-                created_by: '00000000-0000-0000-0000-000000000000',
-                updated_by: '00000000-0000-0000-0000-000000000000'
-            }) 
+                created_by: "",
+                updated_by: ""
+            })
         } else {
             form.reset() 
         }
     }, [open])
 
     async function onSubmit(data: z.infer<typeof formSchema>) {
+        if (loading) return
+        if (!user) { navigate("/login"); return }
         if (vendor) {
             await updateVendor(vendor.vendor_id, {
                 vendor_name: data.vendor_name,
-                updated_by: '00000000-0000-0000-0000-000000000000'
+                updated_by: user.uid
             }, token!)
         } else {
-            await createVendor(data, token!)
+            await createVendor({ ...data, created_by: user.uid, updated_by: user.uid }, token!)
         }
-        onUpdate()  
+        onUpdate()
     }
 
     const { errors } = form.formState   // error object

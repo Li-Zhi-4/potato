@@ -31,6 +31,7 @@ import * as z from "zod"
 import { type Part } from "@/apis/parts"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { createVendorPart } from "@/apis/vendorParts"
+import { useNavigate } from "react-router-dom"
 
 export const formSchema = z.object({
     part_id: z.string().min(1, "required"),
@@ -51,7 +52,8 @@ interface FormProps {
 
 export function AddVendorForm({ open, onUpdate, part, formId }: FormProps) {
     const [vendors, setVendors] = useState<Vendor[]>([])
-    const { token } = useAuth()
+    const { token, user, loading } = useAuth()
+    const navigate = useNavigate()
 
     useEffect(() => {
         if (!token) return
@@ -74,13 +76,19 @@ export function AddVendorForm({ open, onUpdate, part, formId }: FormProps) {
                 part_no: "",
                 description: "",
                 is_primary: false,
-                created_by: '00000000-0000-0000-0000-000000000000',
-                updated_by: '00000000-0000-0000-0000-000000000000'
+                created_by: "",
+                updated_by: ""
             },
         })
 
     async function onSubmit(data: z.infer<typeof formSchema>) {
-        await createVendorPart(data, token!)
+        if (loading) return
+        if (!user) { navigate("/login"); return }
+        await createVendorPart({ 
+            ...data, 
+            created_by: user.uid, 
+            updated_by: user.uid 
+        }, token!)
         onUpdate()
     }
 

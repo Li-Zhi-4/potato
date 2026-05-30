@@ -24,6 +24,7 @@ import { Controller, type ControllerRenderProps, type ControllerFieldState, useF
 import * as z from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { createPurchaseOrder, updatePurchaseOrder, type PurchaseOrder } from "@/apis/purchaseOrders"
+import { useNavigate } from "react-router-dom"
 
 export const formSchema = z.object({
     po_no: z.string().min(1, "Purchase order number is required"),
@@ -42,7 +43,8 @@ interface FormProps {
 
 export function CreatePurchaseOrderForm({ open, onUpdate, formId, purchaseOrder }: FormProps) {
     const [vendorsData, setVendorsData] = useState<Vendor[]>([])
-    const { token } = useAuth()
+    const { token, user, loading } = useAuth()
+    const navigate = useNavigate()
 
     useEffect(() => {
         if (!token) return
@@ -59,8 +61,8 @@ export function CreatePurchaseOrderForm({ open, onUpdate, formId, purchaseOrder 
                 po_no: purchaseOrder.po_no ?? "",
                 vendor_id: purchaseOrder.vendor_id,
                 status: purchaseOrder.status,
-                created_by: '00000000-0000-0000-0000-000000000000',
-                updated_by: '00000000-0000-0000-0000-000000000000',
+                created_by: "",
+                updated_by: "",
             })
         } else {
             form.reset()
@@ -73,21 +75,23 @@ export function CreatePurchaseOrderForm({ open, onUpdate, formId, purchaseOrder 
             po_no: purchaseOrder?.po_no ?? "",
             vendor_id: purchaseOrder?.vendor_id ?? "",
             status: purchaseOrder?.status ?? "draft",
-            created_by: '00000000-0000-0000-0000-000000000000',
-            updated_by: '00000000-0000-0000-0000-000000000000',
+            created_by: "",
+            updated_by: "",
         },
     })
 
     async function onSubmit(data: z.infer<typeof formSchema>) {
+        if (loading) return
+        if (!user) { navigate("/login"); return }
         if (purchaseOrder) {
             await updatePurchaseOrder(purchaseOrder.po_id, {
                 po_no: data.po_no,
                 vendor_id: data.vendor_id,
                 status: data.status,
-                updated_by: '00000000-0000-0000-0000-000000000000',
+                updated_by: user.uid,
             }, token!)
         } else {
-            await createPurchaseOrder(data, token!)
+            await createPurchaseOrder({ ...data, created_by: user.uid, updated_by: user.uid }, token!)
         }
         onUpdate()
     }

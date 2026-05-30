@@ -24,6 +24,7 @@ import { listParts, type Part } from "@/apis/parts"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { createAssemblyPart } from "@/apis/assembly_parts"
 import { useAuth } from "@/context/authContext"
+import { useNavigate } from "react-router-dom"
 
 export const formSchema = z.object({
     part_id: z.string().optional(),
@@ -43,7 +44,8 @@ interface FormProps {
 
 export function AddSubpartForm({ open, onUpdate, part, formId }: FormProps) {
     const [parts, setParts] = useState<Part[]>([])
-    const { token } = useAuth()
+    const { token, user, loading } = useAuth()
+    const navigate = useNavigate()
 
     useEffect(() => {
         if (!token) return
@@ -65,20 +67,25 @@ export function AddSubpartForm({ open, onUpdate, part, formId }: FormProps) {
                 subpart_id: "",
                 quantity: 1,
                 uom: "",
-                created_by: '00000000-0000-0000-0000-000000000000',
-                updated_by: '00000000-0000-0000-0000-000000000000'
+                created_by: "",
+                updated_by: ""
             },
         })
 
     async function onSubmit(data: z.infer<typeof formSchema>) {
+        if (loading) return
+        if (!user) {
+            navigate("/login")
+            return
+        }
         await createAssemblyPart({
             part_id: part.part_id,
             subpart_id: data.subpart_id,
             quantity: Number(data.quantity),
             uom: data.uom,
 
-            created_by: '00000000-0000-0000-0000-000000000000',
-            updated_by: '00000000-0000-0000-0000-000000000000'
+            created_by: user.uid,
+            updated_by: user.uid
         }, token!)
         onUpdate()
     }

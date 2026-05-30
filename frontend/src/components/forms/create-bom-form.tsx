@@ -15,6 +15,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { createBom, updateBom, type Bom } from "@/apis/boms"
 import { useEffect } from "react"
 import { useAuth } from "@/context/authContext"
+import { useNavigate } from "react-router-dom"
 
 export const formSchema = z.object({
     title: z.string().optional(),
@@ -32,7 +33,8 @@ interface FormProps {
 }
 
 export function CreateBomForm({ open, onUpdate, formId, bom }: FormProps) {
-    const { token } = useAuth()
+    const { token, user, loading } = useAuth()
+    const navigate = useNavigate()
 
     const form = useForm({
         resolver: zodResolver(formSchema),
@@ -40,8 +42,8 @@ export function CreateBomForm({ open, onUpdate, formId, bom }: FormProps) {
             title: "",
             job_no: "",
             description: "",
-            created_by: '00000000-0000-0000-0000-000000000000',
-            updated_by: '00000000-0000-0000-0000-000000000000'
+            created_by: "",
+            updated_by: ""
         },
     })
 
@@ -51,8 +53,8 @@ export function CreateBomForm({ open, onUpdate, formId, bom }: FormProps) {
                 title: bom.title ?? "",
                 job_no: bom.job_no ?? "",
                 description: bom.description ?? "",
-                created_by: '00000000-0000-0000-0000-000000000000',
-                updated_by: '00000000-0000-0000-0000-000000000000',
+                created_by: "",
+                updated_by: "",
             })
         } else {
             form.reset()
@@ -60,15 +62,21 @@ export function CreateBomForm({ open, onUpdate, formId, bom }: FormProps) {
     }, [open])
 
     async function onSubmit(data: z.infer<typeof formSchema>) {
+        if (loading) return
+        if (!user) { navigate("/login"); return }
         if (bom) {
             await updateBom(bom.bom_id, {
                 title: data.title,
                 job_no: data.job_no,
                 description: data.description,
-                updated_by: '00000000-0000-0000-0000-000000000000',
+                updated_by: user.uid,
             }, token!)
         } else {
-            await createBom(data, token!)
+            await createBom({ 
+                ...data, 
+                created_by: user.uid, 
+                updated_by: user.uid 
+            }, token!)
         }
         onUpdate()
     }

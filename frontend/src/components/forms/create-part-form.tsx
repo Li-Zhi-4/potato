@@ -29,6 +29,7 @@ import * as z from "zod"
 import { createPart, updatePart, type Part } from "@/apis/parts"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { createVendorPart } from "@/apis/vendorParts"
+import { useNavigate } from "react-router-dom"
 
 
 export const formSchema = z.object({
@@ -47,7 +48,8 @@ interface FormProps {
 
 export function CreatePartForm({ open, onUpdate, formId, part }: FormProps) {
     const [vendorsData, setVendorsData] = useState<Vendor[]>([])
-    const { token } = useAuth()
+    const { token, user, loading } = useAuth()
+    const navigate = useNavigate()
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -82,28 +84,30 @@ export function CreatePartForm({ open, onUpdate, formId, part }: FormProps) {
     }, [open])
 
     async function onSubmit(data: z.infer<typeof formSchema>) {
+        if (loading) return
+        if (!user) { navigate("/login"); return }
         if (part) {
             await updatePart(part.part_id, {
                 part_no: data.part_no,
                 description: data.description ?? null,
                 is_assembly: data.is_assembly,
-                updated_by: '00000000-0000-0000-0000-000000000000',
+                updated_by: user.uid,
             }, token!)
         } else {
             const response = await createPart({
                 part_no: data.part_no,
                 description: data.description ?? null,
                 is_assembly: data.is_assembly,
-                created_by: '00000000-0000-0000-0000-000000000000',
-                updated_by: '00000000-0000-0000-0000-000000000000',
+                created_by: user.uid,
+                updated_by: user.uid,
             }, token!)
             if (data.vendor_id !== "none"){
                 await createVendorPart({
                     part_id: response.part_id,
                     vendor_id: data.vendor_id,
                     is_primary: true,
-                    created_by: '00000000-0000-0000-0000-000000000000',
-                    updated_by: '00000000-0000-0000-0000-000000000000'
+                    created_by: user.uid,
+                    updated_by: user.uid
                 }, token!)
             }
         }

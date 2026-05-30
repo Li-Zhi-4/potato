@@ -27,6 +27,7 @@ import { listParts } from "@/apis/parts"
 import { type Part } from "@/apis/parts"
 import { listPurchaseOrders, type PurchaseOrder } from "@/apis/purchaseOrders"
 import { useAuth } from "@/context/authContext"
+import { useNavigate } from "react-router-dom"
 
 export const formSchema = z.object({
     bom_id: z.string(),
@@ -49,7 +50,8 @@ interface FormProps {
 export function AddComponentForm({ open, onUpdate, bom, formId }: FormProps) {
     const [partsData, setPartsData] = useState<Part[]>([])
     const [poData, setPoData] = useState<PurchaseOrder[]>([])
-    const { token } = useAuth()
+    const { token, user, loading } = useAuth()
+    const navigate = useNavigate()
 
     useEffect(() => {
         if (!token) return
@@ -75,12 +77,17 @@ export function AddComponentForm({ open, onUpdate, bom, formId }: FormProps) {
                 quantity: 1,
                 uom: "",
                 status: "",
-                created_by: '00000000-0000-0000-0000-000000000000',
-                updated_by: '00000000-0000-0000-0000-000000000000'
+                created_by: "",
+                updated_by: ""
             },
         })
 
     async function onSubmit(data: z.infer<typeof formSchema>) {
+        if (loading) return
+        if (!user) {
+            navigate("/login")
+            return
+        }
         await createComponent({
             bom_id: bom.bom_id,
             part_id: data.part_id,
@@ -89,8 +96,8 @@ export function AddComponentForm({ open, onUpdate, bom, formId }: FormProps) {
             uom: data.uom,
             status: data.status,
 
-            created_by: '00000000-0000-0000-0000-000000000000',
-            updated_by: '00000000-0000-0000-0000-000000000000'
+            created_by: user.uid,
+            updated_by: user.uid
         }, token!)
         onUpdate()
     }

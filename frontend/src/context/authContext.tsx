@@ -4,6 +4,7 @@ import { loginUser, registerUser, getMe, type User, type RegisterUserInput } fro
 interface AuthContextType {
     user: User | null
     token: string | null
+    loading: boolean
     login: (username: string, password: string) => Promise<void>
     register: (input: RegisterUserInput) => Promise<void>
     logout: () => void
@@ -14,6 +15,7 @@ const AuthContext = createContext<AuthContextType | null>(null)
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(null)
     const [token, setToken] = useState<string | null>(null)
+    const [loading, setLoading] = useState(true)
 
     // on page refresh, restore token from localStorage and fetch the user
     useEffect(() => {
@@ -27,6 +29,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     localStorage.removeItem("token")
                     setToken(null)
                 })
+                .finally(() => setLoading(false))
+        } else {
+            setLoading(false)
         }
     }, [])
 
@@ -51,7 +56,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     return (
-        <AuthContext.Provider value={{ user, token, login, register, logout }}>
+        <AuthContext.Provider value={{ user, token, loading, login, register, logout }}>
             {children}
         </AuthContext.Provider>
     )
