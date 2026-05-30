@@ -1,4 +1,5 @@
 from flask import Blueprint, jsonify, request
+from flask_jwt_extended import jwt_required
 from app.db import get_db
 import uuid
 from datetime import datetime
@@ -11,6 +12,7 @@ bp = Blueprint('boms', __name__, url_prefix='/api/boms')
 # -- crud api --
 
 @bp.get("")
+@jwt_required()
 def get_bom():
     db = get_db()
     job_no = request.args.get("job_no")
@@ -24,6 +26,7 @@ def get_bom():
 
 
 @bp.get("/<string:bom_id>")
+@jwt_required()
 def get_bom_by_id(bom_id: str):
     db = get_db()
     row = db.execute("SELECT * FROM boms WHERE bom_id = %s", (bom_id,)).fetchone()
@@ -33,6 +36,7 @@ def get_bom_by_id(bom_id: str):
 
 
 @bp.post("")
+@jwt_required()
 def create_bom():
     data = request.get_json(silent=True) or {}
 
@@ -67,6 +71,7 @@ def create_bom():
 
 
 @bp.put("/<string:bom_id>")
+@jwt_required()
 def update_bom(bom_id: str):
     data = request.get_json(silent=True) or {}
     db = get_db()
@@ -111,6 +116,7 @@ def update_bom(bom_id: str):
 
 
 @bp.delete("/<string:bom_id>")
+@jwt_required()
 def delete_bom(bom_id: str):
     db = get_db()
     id = db.execute("SELECT bom_id FROM boms WHERE bom_id = %s", (bom_id,)).fetchone()
@@ -127,6 +133,7 @@ def delete_bom(bom_id: str):
 
 
 @bp.get("/boms-table/<string:bom_id>")
+@jwt_required()
 def get_boms_table(bom_id: str):
     db = get_db()
     row = db.execute(

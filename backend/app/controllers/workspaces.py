@@ -1,4 +1,5 @@
 from flask import Blueprint, jsonify, request
+from flask_jwt_extended import jwt_required
 from app.db import get_db
 from app.utils.helpers import row_to_dict
 from psycopg2 import errors as pg_errors
@@ -10,6 +11,7 @@ bp = Blueprint('workspaces', __name__, url_prefix='/api/workspaces')
 # -- api --
 
 @bp.get("")
+@jwt_required()
 def list_workspaces():
     db = get_db()
     rows = db.execute("SELECT * FROM workspaces ORDER BY workspace_name").fetchall()
@@ -17,6 +19,7 @@ def list_workspaces():
 
 
 @bp.get("/<string:workspace_id>")
+@jwt_required()
 def get_workspace(workspace_id: str):
     db = get_db()
     row = db.execute("SELECT * FROM workspaces WHERE workspace_id = %s", (workspace_id,)).fetchone()
@@ -26,6 +29,7 @@ def get_workspace(workspace_id: str):
 
 
 @bp.post("")
+@jwt_required()
 def create_workspace():
     data = request.get_json(silent=True) or {}
 
@@ -58,6 +62,7 @@ def create_workspace():
 
 
 @bp.put("/<string:workspace_id>")
+@jwt_required()
 def update_workspace(workspace_id: str):
     data = request.get_json(silent=True) or {}
     db = get_db()
@@ -98,6 +103,7 @@ def update_workspace(workspace_id: str):
 
 
 @bp.delete("/<string:workspace_id>")
+@jwt_required()
 def delete_workspace(workspace_id: str):
     db = get_db()
     existing = db.execute("SELECT workspace_id FROM workspaces WHERE workspace_id = %s", (workspace_id,)).fetchone()

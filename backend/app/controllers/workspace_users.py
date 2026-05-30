@@ -1,4 +1,5 @@
 from flask import Blueprint, jsonify, request
+from flask_jwt_extended import jwt_required
 from app.db import get_db
 from app.utils.helpers import row_to_dict
 from psycopg2 import errors as pg_errors
@@ -10,6 +11,7 @@ bp = Blueprint('workspace_users', __name__, url_prefix='/api/workspace_users')
 # -- api --
 
 @bp.get("")
+@jwt_required()
 def list_workspace_users():
     db = get_db()
     workspace_id = request.args.get("workspace_id")
@@ -26,6 +28,7 @@ def list_workspace_users():
 
 
 @bp.get("/<string:workspace_user_id>")
+@jwt_required()
 def get_workspace_user(workspace_user_id: str):
     db = get_db()
     row = db.execute("SELECT * FROM workspace_users WHERE workspace_user_id = %s", (workspace_user_id,)).fetchone()
@@ -35,6 +38,7 @@ def get_workspace_user(workspace_user_id: str):
 
 
 @bp.post("")
+@jwt_required()
 def create_workspace_user():
     data = request.get_json(silent=True) or {}
 
@@ -74,6 +78,7 @@ def create_workspace_user():
 
 
 @bp.delete("/<string:workspace_user_id>")
+@jwt_required()
 def delete_workspace_user(workspace_user_id: str):
     db = get_db()
     existing = db.execute("SELECT workspace_user_id FROM workspace_users WHERE workspace_user_id = %s", (workspace_user_id,)).fetchone()

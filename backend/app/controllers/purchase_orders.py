@@ -1,4 +1,5 @@
 from flask import Blueprint, jsonify, request
+from flask_jwt_extended import jwt_required
 from app.db import get_db
 import uuid
 from datetime import datetime
@@ -15,6 +16,7 @@ def row_to_dict(row) -> dict:
 # -- api --
 
 @bp.get("")
+@jwt_required()
 def list_purchase_orders():
     db = get_db()
     rows = db.execute("SELECT * FROM purchase_orders ORDER BY po_no").fetchall()
@@ -22,6 +24,7 @@ def list_purchase_orders():
 
 
 @bp.get("/<string:po_id>")
+@jwt_required()
 def get_purchase_order(po_id: str):
     db = get_db()
     row = db.execute("SELECT * FROM purchase_orders WHERE po_id = %s", (po_id,)).fetchone()
@@ -31,6 +34,7 @@ def get_purchase_order(po_id: str):
 
 
 @bp.post("")
+@jwt_required()
 def create_purchase_order():
     data = request.get_json(silent=True) or {}
 
@@ -74,6 +78,7 @@ def create_purchase_order():
 
 
 @bp.put("/<string:po_id>")
+@jwt_required()
 def update_purchase_order(po_id: str):
     data = request.get_json(silent=True) or {}
     db = get_db()
@@ -132,6 +137,7 @@ def update_purchase_order(po_id: str):
 
 
 @bp.delete("/<string:po_id>")
+@jwt_required()
 def delete_purchase_order(po_id: str):
     db = get_db()
     id = db.execute("SELECT po_id FROM purchase_orders WHERE po_id = %s", (po_id,)).fetchone()

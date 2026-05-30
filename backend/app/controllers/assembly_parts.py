@@ -1,4 +1,5 @@
 from flask import Blueprint, jsonify, request
+from flask_jwt_extended import jwt_required
 from app.db import get_db
 import uuid
 from datetime import datetime
@@ -15,6 +16,7 @@ def row_to_dict(row) -> dict:
 # -- api --
 
 @bp.get("")
+@jwt_required()
 def list_assembly_parts():
     db = get_db()
     rows = db.execute("SELECT * FROM assembly_parts ORDER BY part_id").fetchall()
@@ -22,6 +24,7 @@ def list_assembly_parts():
 
 
 @bp.post("")
+@jwt_required()
 def create_assembly_parts():
     data = request.get_json(silent=True) or {}
 
@@ -79,6 +82,7 @@ def create_assembly_parts():
 
 
 @bp.get("/<string:assembly_part_id>")
+@jwt_required()
 def get_assembly_parts(assembly_part_id: str):
     db = get_db()
     row = db.execute("SELECT * FROM assembly_parts WHERE assembly_part_id = %s", (assembly_part_id,)).fetchone()
@@ -88,6 +92,7 @@ def get_assembly_parts(assembly_part_id: str):
 
 
 @bp.put("/<string:assembly_part_id>")
+@jwt_required()
 def update_assembly_parts(assembly_part_id: str):
     data = request.get_json(silent=True) or {}
     db = get_db()
@@ -150,6 +155,7 @@ def update_assembly_parts(assembly_part_id: str):
 
 
 @bp.delete("/<string:assembly_part_id>")
+@jwt_required()
 def delete_assembly_parts(assembly_part_id: str):
     db = get_db()
     id = db.execute("SELECT assembly_part_id FROM assembly_parts WHERE assembly_part_id = %s", (assembly_part_id,)).fetchone()

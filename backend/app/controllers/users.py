@@ -1,4 +1,5 @@
 from flask import Blueprint, jsonify, request
+from flask_jwt_extended import jwt_required
 from app.db import get_db
 from app.utils.helpers import row_to_dict
 from psycopg2 import errors as pg_errors
@@ -10,6 +11,7 @@ bp = Blueprint('users', __name__, url_prefix='/api/users')
 # -- api --
 
 @bp.get("")
+@jwt_required()
 def list_users():
     db = get_db()
     rows = db.execute("SELECT uid, username, email, first_name, last_name, created_at, updated_at FROM users ORDER BY first_name").fetchall()
@@ -17,6 +19,7 @@ def list_users():
 
 
 @bp.get("/<string:uid>")
+@jwt_required()
 def get_user(uid: str):
     db = get_db()
     row = db.execute(
@@ -29,6 +32,7 @@ def get_user(uid: str):
 
 
 @bp.post("")
+@jwt_required()
 def create_user():
     data = request.get_json(silent=True) or {}
 
@@ -71,6 +75,7 @@ def create_user():
 
 
 @bp.put("/<string:uid>")
+@jwt_required()
 def update_user(uid: str):
     data = request.get_json(silent=True) or {}
     db = get_db()
@@ -134,6 +139,7 @@ def update_user(uid: str):
 
 
 @bp.delete("/<string:uid>")
+@jwt_required()
 def delete_user(uid: str):
     db = get_db()
     existing = db.execute("SELECT uid FROM users WHERE uid = %s", (uid,)).fetchone()

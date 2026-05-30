@@ -1,4 +1,5 @@
 from flask import Blueprint, jsonify, request
+from flask_jwt_extended import jwt_required
 from app.db import get_db
 import uuid
 from datetime import datetime
@@ -15,6 +16,7 @@ def row_to_dict(row) -> dict:
 # -- api --
 
 @bp.get("")
+@jwt_required()
 def list_components():
     db = get_db()
     rows = db.execute("SELECT * FROM components ORDER BY bom_id").fetchall()
@@ -22,6 +24,7 @@ def list_components():
 
 
 @bp.get("/<string:component_id>")
+@jwt_required()
 def get_component(component_id: str):
     db = get_db()
     row = db.execute("SELECT * FROM components WHERE component_id = %s", (component_id,)).fetchone()
@@ -31,6 +34,7 @@ def get_component(component_id: str):
 
 
 @bp.post("")
+@jwt_required()
 def create_component():
     data = request.get_json(silent=True) or {}
 
@@ -91,6 +95,7 @@ def create_component():
 
 
 @bp.put("/<string:component_id>")
+@jwt_required()
 def update_component(component_id: str):
     data = request.get_json(silent=True) or {}
     db = get_db()
@@ -175,6 +180,7 @@ def update_component(component_id: str):
 
 
 @bp.delete("/<string:component_id>")
+@jwt_required()
 def delete_component(component_id: str):
     db = get_db()
     id = db.execute("SELECT component_id FROM components WHERE component_id = %s", (component_id,)).fetchone()

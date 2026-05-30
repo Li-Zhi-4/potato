@@ -1,4 +1,5 @@
 from flask import Blueprint, jsonify, request
+from flask_jwt_extended import jwt_required
 from app.db import get_db
 from app.utils.helpers import row_to_dict
 from psycopg2 import errors as pg_errors
@@ -10,6 +11,7 @@ bp = Blueprint('permissions', __name__, url_prefix='/api/permissions')
 # -- api --
 
 @bp.get("")
+@jwt_required()
 def list_permissions():
     db = get_db()
     workspace_id = request.args.get("workspace_id")
@@ -28,6 +30,7 @@ def list_permissions():
 
 
 @bp.get("/<string:permission_id>")
+@jwt_required()
 def get_permission(permission_id: str):
     db = get_db()
     row = db.execute("SELECT * FROM permissions WHERE permission_id = %s", (permission_id,)).fetchone()
@@ -37,6 +40,7 @@ def get_permission(permission_id: str):
 
 
 @bp.post("")
+@jwt_required()
 def create_permission():
     data = request.get_json(silent=True) or {}
 
@@ -82,6 +86,7 @@ def create_permission():
 
 
 @bp.delete("/<string:permission_id>")
+@jwt_required()
 def delete_permission(permission_id: str):
     db = get_db()
     existing = db.execute("SELECT permission_id FROM permissions WHERE permission_id = %s", (permission_id,)).fetchone()

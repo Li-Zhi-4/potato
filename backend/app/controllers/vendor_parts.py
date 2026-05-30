@@ -1,4 +1,5 @@
 from flask import Blueprint, jsonify, request
+from flask_jwt_extended import jwt_required
 from app.db import get_db
 import uuid
 from datetime import datetime
@@ -15,6 +16,7 @@ def row_to_dict(row) -> dict:
 # -- api --
 
 @bp.get("")
+@jwt_required()
 def list_vendor_parts():
     db = get_db()
     rows = db.execute("SELECT * FROM vendor_parts ORDER BY part_id").fetchall()
@@ -22,6 +24,7 @@ def list_vendor_parts():
 
 
 @bp.post("")
+@jwt_required()
 def create_part_vendor():
     data = request.get_json(silent=True) or {}
 
@@ -80,6 +83,7 @@ def create_part_vendor():
 
 
 @bp.get("/<string:vendor_part_id>")
+@jwt_required()
 def get_part_vendor(vendor_part_id: str):
     db = get_db()
     row = db.execute("SELECT * FROM vendor_parts WHERE vendor_part_id = %s", (vendor_part_id,)).fetchone()
@@ -89,6 +93,7 @@ def get_part_vendor(vendor_part_id: str):
 
 
 @bp.put("/<string:vendor_part_id>")
+@jwt_required()
 def update_part_vendor(vendor_part_id: str):
     data = request.get_json(silent=True) or {}
     db = get_db()
@@ -154,6 +159,7 @@ def update_part_vendor(vendor_part_id: str):
 
 
 @bp.delete("/<string:vendor_part_id>")
+@jwt_required()
 def delete_part_vendor(vendor_part_id: str):
     db = get_db()
     id = db.execute("SELECT vendor_part_id FROM vendor_parts WHERE vendor_part_id = %s", (vendor_part_id,)).fetchone()
