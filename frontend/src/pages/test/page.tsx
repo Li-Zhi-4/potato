@@ -1,5 +1,4 @@
 import { AppSidebar } from "@/components/app-sidebar"
-import { DataTable } from "@/components/data-table-2"
 import { SiteHeader } from "@/components/site-header"
 import {
     SidebarInset,
@@ -7,25 +6,17 @@ import {
 } from "@/components/ui/sidebar"
 import { useState } from "react"
 import { useEffect } from "react"
-import { deletePart, getPart, getPartsTable, type Part } from "@/apis/parts"
-import { Input } from "@/components/ui/input"
+import { getPartsTable, type Part } from "@/apis/parts"
 import {
     type ColumnFiltersState,
 } from "@tanstack/react-table"
-import {
-    Select,
-    SelectContent,
-    SelectGroup,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select"
 import { listVendors, type Vendor } from "@/apis/vendors"
 import { useAuth } from "@/context/authContext"
 import { type PartsTable } from "@/apis/parts"
 import { FormSheet } from "@/components/sheets/FormSheet"
 import { CreatePartForm } from "@/components/forms/create-part-form"
 import { Button } from "@/components/custom/Button"
+import { Plus } from "lucide-react"
 
 
 export default function Page() {
@@ -76,7 +67,10 @@ export default function Page() {
                         <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">                            
                             <div className="px-4 lg:px-6 flex flex-col gap-3">
 
-                                <Button>Potato</Button>
+                                <Button command="K" variant="outline">
+                                    <Plus size={18} strokeWidth={1.5}></Plus>
+                                    NEW ENTRY
+                                </Button>
                                 
                             </div>
                         </div>
