@@ -17,7 +17,8 @@ import { FormSheet } from "@/components/sheets/FormSheet"
 import { CreatePartForm } from "@/components/forms/create-part-form"
 import { Button } from "@/components/custom/Button"
 import { Plus } from "lucide-react"
-
+import { Input } from "@/components/custom/Input"
+import { Search } from "lucide-react"
 
 export default function Page() {
     const [partsData, setPartsData] = useState<PartsTable[]>([])
@@ -67,10 +68,10 @@ export default function Page() {
                         <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">                            
                             <div className="px-4 lg:px-6 flex flex-col gap-3">
 
-                                <Button command="K" variant="outline">
-                                    <Plus size={18} strokeWidth={1.5}></Plus>
-                                    NEW ENTRY
-                                </Button>
+<div className="relative">
+    <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-neutral-400" />
+    <Input className="pl-10" placeholder="Search..." />
+</div>
                                 
                             </div>
                         </div>
