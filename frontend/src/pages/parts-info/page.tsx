@@ -20,6 +20,7 @@ import { Store, Component } from "lucide-react"
 import { FormSheet } from "@/components/sheets/FormSheet"
 import { AddVendorForm } from "@/components/forms/add-vendor-form"
 import { AddSubpartForm } from "@/components/forms/add-subpart-form"
+import { Separator } from "@/components/ui/separator"
 
 
 export default function Page() {
@@ -83,12 +84,34 @@ export default function Page() {
                         <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6"> 
                             <div className="px-4 lg:px-6 flex flex-col gap-3">
                                 
-                                <div className="flex flex-col gap-3 pb-3">
-                                    <div className="flex flex-row gap-6 items-center">
-                                        <h1 className="text-4xl">{partData?.part_no}</h1>
-                                        <Badge variant="outline">{(partData?.is_assembly)?.toUpperCase()}</Badge>
+                                <div className="flex flex-col gap-8 pb-3">
+                                    <div className="flex flex-col gap-2">
+                                        <Badge className="rounded-none bg-primary font-mono px-[6px] h-[18px] tracking-[2px]">{(partData?.is_assembly)?.toUpperCase()}</Badge>
+                                        <h1 className="text-5xl font-serif">{partData?.part_no}</h1>
                                     </div>
-                                    <div className="text-neutral-500">{partData?.description}</div>
+                                    <div className="text-xl text-neutral-500 font-serif">{partData?.description}</div>
+                                    <Separator />
+                                    <div className="flex flex-row justify-between">
+                                        <div className="flex flex-col gap-2 w-full px-4">
+                                            <span className="font-mono text-xs tracking-[2px] text-neutral-500">OWNER</span>
+                                            <div className="flex flex-row gap-3 items-center">
+                                                <div className="border border-neutral-950 h-10 w-10 flex items-center justify-center text-sm">JD</div>
+                                                <div className="flex flex-col">
+                                                    <span className="font-serif text-neutral-800">John Doe</span>
+                                                    <span className="text-neutral-400 text-[10px] tracking-[2px]">JOHN@GMAIL.COM</span>
+                                                </div>
+                                            </div>
+                                            <span></span>
+                                        </div>
+                                        <div className="flex flex-col gap-2 w-full px-4">
+                                            <span className="font-mono text-xs tracking-[2px] text-neutral-500">CREATED AT</span>
+                                            <span className="font-serif text-neutral-800">September 1, 2021</span>
+                                        </div>
+                                        <div className="flex flex-col gap-2 w-full px-4">
+                                            <span className="font-mono text-xs tracking-[2px] text-neutral-500">UPDATED AT</span>
+                                            <span className="font-serif text-neutral-800">September 1, 2021</span>
+                                        </div>                                        
+                                    </div>
                                 </div>
 
                                 <Tabs 
