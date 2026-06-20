@@ -21,6 +21,10 @@ import { FormSheet } from "@/components/sheets/FormSheet"
 import { AddVendorForm } from "@/components/forms/add-vendor-form"
 import { AddSubpartForm } from "@/components/forms/add-subpart-form"
 import { Separator } from "@/components/ui/separator"
+import { CustomBadge } from "@/components/custom/CustomBadge"
+import { Avatar } from "@/components/custom/Avatar"
+import { DataPoint, DataPoint2 } from "@/components/custom/DataPoint"
+import { Profile } from "@/components/custom/Profile"
 
 
 export default function Page() {
@@ -84,35 +88,33 @@ export default function Page() {
                         <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6"> 
                             <div className="px-4 lg:px-6 flex flex-col gap-3">
                                 
+                                {/* Header Content */}
                                 <div className="flex flex-col gap-8 pb-3">
                                     <div className="flex flex-col gap-2">
-                                        <Badge className="rounded-none bg-primary font-mono px-[6px] h-[18px] tracking-[2px]">{(partData?.is_assembly)?.toUpperCase()}</Badge>
+                                        {partData && <CustomBadge>{(partData?.is_assembly)?.toUpperCase()}</CustomBadge>}
                                         <h1 className="text-5xl font-serif">{partData?.part_no}</h1>
                                     </div>
                                     <div className="text-xl text-neutral-500 font-serif">{partData?.description}</div>
                                     <Separator />
                                     <div className="flex flex-row justify-between">
-                                        <div className="flex flex-col gap-2 w-full px-4">
-                                            <span className="font-mono text-xs tracking-[2px] text-neutral-500">OWNER</span>
-                                            <div className="flex flex-row gap-3 items-center">
-                                                <div className="border border-neutral-950 h-10 w-10 flex items-center justify-center text-sm">JD</div>
-                                                <div className="flex flex-col">
-                                                    <span className="font-serif text-neutral-800">John Doe</span>
-                                                    <span className="text-neutral-400 text-[10px] tracking-[2px]">JOHN@GMAIL.COM</span>
-                                                </div>
-                                            </div>
-                                            <span></span>
-                                        </div>
-                                        <div className="flex flex-col gap-2 w-full px-4">
-                                            <span className="font-mono text-xs tracking-[2px] text-neutral-500">CREATED AT</span>
-                                            <span className="font-serif text-neutral-800">September 1, 2021</span>
-                                        </div>
-                                        <div className="flex flex-col gap-2 w-full px-4">
-                                            <span className="font-mono text-xs tracking-[2px] text-neutral-500">UPDATED AT</span>
-                                            <span className="font-serif text-neutral-800">September 1, 2021</span>
-                                        </div>                                        
+                                        <DataPoint label="Owner">
+                                            <Profile
+                                                name="John Doe"
+                                                email="john@gmail.com"
+                                            ></Profile>
+                                        </DataPoint>
+                                        <DataPoint2
+                                            label="Created At"
+                                            value="September 1, 2021"
+                                        />
+                                        <DataPoint2
+                                            label="Updated At"
+                                            value="September 1, 2021"
+                                        />                                       
                                     </div>
                                 </div>
+
+                                
 
                                 <Tabs 
                                     value={tabValue}
