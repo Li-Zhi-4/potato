@@ -14,7 +14,6 @@ import { deleteVendorPart } from "@/apis/vendorParts"
 import { deleteAssemblyPart } from "@/apis/assembly_parts"
 import { useParams } from "react-router-dom"
 import { useAuth } from "@/context/authContext"
-import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Store, Component } from "lucide-react"
 import { FormSheet } from "@/components/sheets/FormSheet"
@@ -22,9 +21,9 @@ import { AddVendorForm } from "@/components/forms/add-vendor-form"
 import { AddSubpartForm } from "@/components/forms/add-subpart-form"
 import { Separator } from "@/components/ui/separator"
 import { CustomBadge } from "@/components/custom/CustomBadge"
-import { Avatar } from "@/components/custom/Avatar"
 import { DataPoint, DataPoint2 } from "@/components/custom/DataPoint"
 import { Profile } from "@/components/custom/Profile"
+import { InfoBox, InfoBoxGroup, InfoBoxSpecial } from "@/components/custom/InfoBox"
 
 
 export default function Page() {
@@ -89,32 +88,39 @@ export default function Page() {
                             <div className="px-4 lg:px-6 flex flex-col gap-3">
                                 
                                 {/* Header Content */}
-                                <div className="flex flex-col gap-8 pb-3">
-                                    <div className="flex flex-col gap-2">
-                                        {partData && <CustomBadge>{(partData?.is_assembly)?.toUpperCase()}</CustomBadge>}
-                                        <h1 className="text-5xl font-serif">{partData?.part_no}</h1>
+                                <div className="flex flex-row gap-6">
+                                    <div className="flex flex-col gap-8 pb-3 flex-1 min-w-0">
+                                        <div className="flex flex-col gap-2">
+                                            {partData && <CustomBadge>{(partData?.is_assembly)?.toUpperCase()}</CustomBadge>}
+                                            <h1 className="text-5xl font-serif">{partData?.part_no}</h1>
+                                        </div>
+                                        <div className="text-xl text-neutral-500 font-serif">{partData?.description}</div>
+                                        <Separator />
+                                        <div className="flex flex-row justify-between">
+                                            <DataPoint label="Owner">
+                                                <Profile
+                                                    name="John Doe"
+                                                    email="john@gmail.com"
+                                                ></Profile>
+                                            </DataPoint>
+                                            <DataPoint2
+                                                label="Created At"
+                                                value="September 1, 2021"
+                                            />
+                                            <DataPoint2
+                                                label="Updated At"
+                                                value="September 1, 2021"
+                                            />
+                                        </div>
                                     </div>
-                                    <div className="text-xl text-neutral-500 font-serif">{partData?.description}</div>
-                                    <Separator />
-                                    <div className="flex flex-row justify-between">
-                                        <DataPoint label="Owner">
-                                            <Profile
-                                                name="John Doe"
-                                                email="john@gmail.com"
-                                            ></Profile>
-                                        </DataPoint>
-                                        <DataPoint2
-                                            label="Created At"
-                                            value="September 1, 2021"
-                                        />
-                                        <DataPoint2
-                                            label="Updated At"
-                                            value="September 1, 2021"
-                                        />                                       
-                                    </div>
+                                    <InfoBoxGroup>
+                                        <InfoBox label="Test" value="3" />
+                                        <InfoBox label="Test" value="3" />
+                                        <InfoBox label="Test" value="3" />
+                                        <InfoBox label="Test" value="3" />
+                                        <InfoBoxSpecial label="Test" value="3" className="col-span-2 w-full" />
+                                    </InfoBoxGroup>
                                 </div>
-
-                                
 
                                 <Tabs 
                                     value={tabValue}
