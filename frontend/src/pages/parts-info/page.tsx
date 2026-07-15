@@ -88,7 +88,7 @@ export default function Page() {
                             <div className="px-4 lg:px-6 flex flex-col gap-3">
                                 
                                 {/* Header Content */}
-                                <div className="flex flex-row gap-6">
+                                <div className="flex flex-col lg:flex-row gap-6">
                                     <div className="flex flex-col gap-8 pb-3 flex-1 min-w-0">
                                         <div className="flex flex-col gap-2">
                                             {partData && <CustomBadge>{(partData?.is_assembly)?.toUpperCase()}</CustomBadge>}
@@ -118,7 +118,7 @@ export default function Page() {
                                         <InfoBox label="Test" value="3" />
                                         <InfoBox label="Test" value="3" />
                                         <InfoBox label="Test" value="3" />
-                                        <InfoBoxSpecial label="Test" value="3" className="col-span-2 w-full" />
+                                        <InfoBoxSpecial label="Test" value="3" className="col-span-2 lg:w-full" />
                                     </InfoBoxGroup>
                                 </div>
 
