@@ -17,6 +17,11 @@ import { deleteComponent } from "@/apis/components"
 import { AddComponentForm } from "@/components/forms/add-component-form"
 import { FormSheet } from "@/components/sheets/FormSheet"
 import { useAuth } from "@/context/authContext"
+import { Separator } from "@/components/ui/separator"
+import { CustomBadge } from "@/components/custom/CustomBadge"
+import { DataPoint, DataPoint2 } from "@/components/custom/DataPoint"
+import { Profile } from "@/components/custom/Profile"
+import { InfoBox, InfoBoxGroup, InfoBoxSpecial } from "@/components/custom/InfoBox"
 
 export default function Page() {
     const { job_no } = useParams<{ job_no: string }>();
@@ -87,11 +92,39 @@ export default function Page() {
                         <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6"> 
                             <div className="px-4 lg:px-6 flex flex-col gap-3">
                                 
-                                <div className="flex flex-col gap-3 pb-3">
-                                    <div className="flex flex-row gap-6 items-center">
-                                        <h1 className="text-4xl">{bomData?.job_no}</h1>
+                                {/* Header Content */}
+                                <div className="flex flex-col lg:flex-row gap-6">
+                                    <div className="flex flex-col gap-8 pb-3 flex-1 min-w-0">
+                                        <div className="flex flex-col gap-2">
+                                            {bomData && <CustomBadge>BOM</CustomBadge>}
+                                            <h1 className="text-5xl font-serif">{bomData?.job_no}</h1>
+                                        </div>
+                                        <div className="text-xl text-neutral-500 font-serif">{bomData?.description}</div>
+                                        <Separator />
+                                        <div className="flex flex-row justify-between">
+                                            <DataPoint label="Owner">
+                                                <Profile
+                                                    name="John Doe"
+                                                    email="john@gmail.com"
+                                                />
+                                            </DataPoint>
+                                            <DataPoint2
+                                                label="Created At"
+                                                value="September 1, 2021"
+                                            />
+                                            <DataPoint2
+                                                label="Updated At"
+                                                value="September 1, 2021"
+                                            />
+                                        </div>
                                     </div>
-                                    <div className="text-neutral-500">{bomData?.description}</div>
+                                    <InfoBoxGroup>
+                                        <InfoBox label="Components" value="12" />
+                                        <InfoBox label="Vendors" value="4" />
+                                        <InfoBox label="POs" value="2" />
+                                        <InfoBox label="Status" value="—" />
+                                        <InfoBoxSpecial label="Total Cost" value="$0.00" className="col-span-2 lg:w-full" />
+                                    </InfoBoxGroup>
                                 </div>
 
                                 <Tabs 

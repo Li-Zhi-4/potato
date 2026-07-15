@@ -1,5 +1,6 @@
 import { AppSidebar } from "@/components/app-sidebar"
-import { DataTable } from "@/components/data-table-2"
+import { VendorPartsTable } from "@/components/custom/VendorPartsTable"
+import { SubpartsTable } from "@/components/custom/SubpartsTable"
 import { SiteHeader } from "@/components/site-header"
 import {
     SidebarInset,
@@ -8,14 +9,13 @@ import {
 import { useState } from "react"
 import { useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { createVendorColumns, createSubpartColumns } from "./columns"
 import { getPartByPartNo, type Part, type VendorTable, getVendorsTable, type SubpartTable, getSubpartsTable } from "@/apis/parts"
 import { deleteVendorPart } from "@/apis/vendorParts"
 import { deleteAssemblyPart } from "@/apis/assembly_parts"
 import { useParams } from "react-router-dom"
 import { useAuth } from "@/context/authContext"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Store, Component } from "lucide-react"
+import { Tabs, TabContent } from "@/components/custom/Tabs"
 import { FormSheet } from "@/components/sheets/FormSheet"
 import { AddVendorForm } from "@/components/forms/add-vendor-form"
 import { AddSubpartForm } from "@/components/forms/add-subpart-form"
@@ -24,6 +24,7 @@ import { CustomBadge } from "@/components/custom/CustomBadge"
 import { DataPoint, DataPoint2 } from "@/components/custom/DataPoint"
 import { Profile } from "@/components/custom/Profile"
 import { InfoBox, InfoBoxGroup, InfoBoxSpecial } from "@/components/custom/InfoBox"
+import { SectionHeader } from "@/components/custom/SectionHeader"
 
 
 export default function Page() {
@@ -67,8 +68,6 @@ export default function Page() {
         setRefresh(prev => prev + 1)
     }
 
-    const vendorColumns = createVendorColumns(handleDeleteVendorPart)
-    const subpartColumns = createSubpartColumns(handleDeleteSubpart)
 
     return (
         <SidebarProvider
@@ -122,43 +121,34 @@ export default function Page() {
                                     </InfoBoxGroup>
                                 </div>
 
-                                <Tabs 
+                                <Tabs
+                                    tabs={[
+                                        { value: "vendors", label: "Vendors", icon: <Store size={18} className="text-neutral-500" />, count: vendorTableData.length },
+                                        { value: "subparts", label: "Subparts", icon: <Component size={18} className="text-neutral-500" />, count: subpartTableData.length },
+                                    ]}
                                     value={tabValue}
                                     onValueChange={setTabValue}
-                                    defaultValue="vendors" 
-                                    className="flex flex-col gap-3"
                                 >
-                                    <div className="flex flex-row justify-between items-center">
-                                        <TabsList>
-                                            <TabsTrigger value="vendors">
-                                                <Store />
-                                                Vendors
-                                            </TabsTrigger>
-                                            <TabsTrigger value="subparts">
-                                                <Component />
-                                                Subparts
-                                            </TabsTrigger>
-                                        </TabsList>
-                                        <div>
-                                            {tabValue === "vendors" ? (
-                                                <Button onClick={() => setVendorSheetOpen(true)}>Add a Vendor</Button>
-                                            ) : (
-                                                <Button onClick={() => setSubpartSheetOpen(true)}>Add a Subpart</Button>
-                                            )}
-                                        </div>
-                                    </div>
-                                    <TabsContent value="vendors" className="flex flex-col gap-3">
-                                        <DataTable
-                                            columns={vendorColumns}
-                                            data={vendorTableData}
+                                    <TabContent value="vendors" activeValue={tabValue}>
+                                        <SectionHeader
+                                            label="Vendor Parts"
+                                            title="Part"
+                                            titleAccent="suppliers"
+                                            description="Suppliers qualified to fulfill this part. Compare SKUs, lead times, and pricing; the primary is used by default on new POs."
+                                            action={<Button onClick={() => setVendorSheetOpen(true)}>+ New Supplier</Button>}
                                         />
-                                    </TabsContent>
-                                    <TabsContent value="subparts" className="flex flex-col gap-3">
-                                        <DataTable
-                                            columns={subpartColumns}
-                                            data={subpartTableData}
+                                        <VendorPartsTable data={vendorTableData} onDelete={handleDeleteVendorPart} />
+                                    </TabContent>
+                                    <TabContent value="subparts" activeValue={tabValue}>
+                                        <SectionHeader
+                                            label="Assembly"
+                                            title="Part"
+                                            titleAccent="subparts"
+                                            description="Child parts that make up this assembly."
+                                            action={<Button onClick={() => setSubpartSheetOpen(true)}>+ Add Subpart</Button>}
                                         />
-                                    </TabsContent>
+                                        <SubpartsTable data={subpartTableData} onDelete={handleDeleteSubpart} />
+                                    </TabContent>
                                 </Tabs>
                                 
                             </div>
