@@ -10,6 +10,7 @@ import PartsInfo from "./pages/parts-info/page"
 import BOMsInfo from "./pages/boms-info/page"
 import Signup from "./pages/sign-up/page"
 import Login from "./pages/login/page"
+import Test from "./pages/test/page"
 
 export function App() {
 
@@ -29,6 +30,8 @@ export function App() {
 
         <Route path="/part-vendors" element={<VendorPart />} />
         <Route path="/part-subparts" element={<AssemblyPart />} />
+
+        <Route path="/test" element={<Test />}/>
       </Routes>
     </>
   )

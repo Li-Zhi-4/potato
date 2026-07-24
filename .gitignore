@@ -18,3 +18,5 @@ dist/
 # IDE
 .idea/
 .vscode/
+
+docs

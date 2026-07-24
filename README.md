@@ -30,4 +30,15 @@ Request body:
 }
 ```
 
-Noting checkpoint
+# Updating Frontend UI Context
+
+Currently have the following features setup:
+
+- auth and login/signup workflow
+- ability to create parts, vendors, POs, and BOMs
+- ability to edit said entities above
+- ability to attach vendors and subparts to parts
+
+Currently reworking base UI into new design. 
+
+Notes for later: rework primitives from scratch. Much faster than fighting against ShadCn UI design system.
