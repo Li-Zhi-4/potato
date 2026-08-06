@@ -84,7 +84,7 @@ export default function Page() {
                 <div className="flex flex-1 flex-col">
                     <div className="@container/main flex flex-1 flex-col gap-2">
                         <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6"> 
-                            <div className="px-4 lg:px-6 flex flex-col gap-3">
+                            <div className="px-4 lg:px-6 flex flex-col gap-6">
                                 
                                 {/* Header Content */}
                                 <div className="flex flex-col lg:flex-row gap-6">
@@ -113,11 +113,11 @@ export default function Page() {
                                         </div>
                                     </div>
                                     <InfoBoxGroup>
-                                        <InfoBox label="Test" value="3" />
-                                        <InfoBox label="Test" value="3" />
-                                        <InfoBox label="Test" value="3" />
-                                        <InfoBox label="Test" value="3" />
-                                        <InfoBoxSpecial label="Test" value="3" className="col-span-2 lg:w-full" />
+                                        <InfoBox label="Components" value="12" className="border-r border-b border-neutral-200" />
+                                        <InfoBox label="Vendors" value="4" className="border-b border-neutral-200"/>
+                                        <InfoBox label="POs" value="2" className="border-r border-neutral-200"/>
+                                        <InfoBox label="Status" value="—"/>
+                                        <InfoBoxSpecial label="Total Cost" value="$0.00" className="col-span-2 lg:w-full border-t border-neutral-200" />
                                     </InfoBoxGroup>
                                 </div>
 
@@ -131,7 +131,7 @@ export default function Page() {
                                 >
                                     <TabContent value="vendors" activeValue={tabValue}>
                                         <SectionHeader
-                                            label="Vendor Parts"
+                                            // label="Vendor Parts"
                                             title="Part"
                                             titleAccent="suppliers"
                                             description="Suppliers qualified to fulfill this part. Compare SKUs, lead times, and pricing; the primary is used by default on new POs."
@@ -141,7 +141,7 @@ export default function Page() {
                                     </TabContent>
                                     <TabContent value="subparts" activeValue={tabValue}>
                                         <SectionHeader
-                                            label="Assembly"
+                                            // label="Assembly"
                                             title="Part"
                                             titleAccent="subparts"
                                             description="Child parts that make up this assembly."

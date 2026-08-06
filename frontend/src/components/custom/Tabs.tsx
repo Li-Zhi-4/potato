@@ -19,7 +19,7 @@ interface TabsProps {
 
 export function Tabs({ tabs, value, onValueChange, action, children }: TabsProps) {
     return (
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-4">
             <div className="border-t border-b border-neutral-200 flex h-12 items-center w-full">
                 {tabs.map((tab) => {
                     const isActive = value === tab.value

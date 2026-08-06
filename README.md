@@ -42,3 +42,29 @@ Currently have the following features setup:
 Currently reworking base UI into new design. 
 
 Notes for later: rework primitives from scratch. Much faster than fighting against ShadCn UI design system.
+
+
+```javascript
+{
+    "Name":                 "name of mod",
+    "Author":               "author of mod",
+    "Version":              "version of mod (1.4.0)",
+    "Description":          "Animates fish and fishing related items",
+    "UniqueID":             "Gervig91.AnimatedFish",
+    "MinimumApiVersion":    "2.10.0",
+    "UpdateKeys": [
+        "Nexus:5735"
+    ],
+    "ContentPackFor": {
+        "UniqueID": "Pathoschild.ContentPatcher",
+        "MinimumVersion": "1.6.0"
+    },
+    "Dependencies": [
+        {
+            "UniqueID": "spacechase0.SpaceCore",
+            "Required": true
+        }
+    ]
+}
+
+```
