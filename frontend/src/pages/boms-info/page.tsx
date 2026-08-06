@@ -119,11 +119,11 @@ export default function Page() {
                                         </div>
                                     </div>
                                     <InfoBoxGroup>
-                                        <InfoBox label="Components" value="12" />
-                                        <InfoBox label="Vendors" value="4" />
-                                        <InfoBox label="POs" value="2" />
-                                        <InfoBox label="Status" value="—" />
-                                        <InfoBoxSpecial label="Total Cost" value="$0.00" className="col-span-2 lg:w-full" />
+                                        <InfoBox label="Components" value="12" className="border-r border-b border-neutral-200" />
+                                        <InfoBox label="Vendors" value="4" className="border-b border-neutral-200"/>
+                                        <InfoBox label="POs" value="2" className="border-r border-neutral-200"/>
+                                        <InfoBox label="Status" value="—"/>
+                                        <InfoBoxSpecial label="Total Cost" value="$0.00" className="col-span-2 lg:w-full border-t border-neutral-200" />
                                     </InfoBoxGroup>
                                 </div>
 
